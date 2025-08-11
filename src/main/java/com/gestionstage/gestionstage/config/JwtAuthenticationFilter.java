@@ -1,12 +1,13 @@
 package com.gestionstage.gestionstage.config;
 
 import com.gestionstage.gestionstage.services.JwtService;
-import com.gestionstage.gestionstage.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,42 +30,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        // Ignorer le filtre pour les routes /auth/**
-        if (request.getRequestURI().startsWith("/auth")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        final String authHeader = request.getHeader("Authorization");
-        
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        final String jwt = authHeader.substring(7);
-        final String email = jwtService.extractUsername(jwt);
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
-
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
             try {
-                if (jwtService.validateToken(jwt)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
+                if (jwtService.validateToken(token)) {
+                    String username = jwtService.extractUsername(token);
+                    String role = jwtService.extractRole(token);
+                    System.out.println("Token validation successful for user: " + username);
+                    System.out.println("Role in token: " + role);
+                    
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    
+                    // Créer une autorité avec le rôle de l'utilisateur (le rôle est déjà au format ROLE_*)
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+                    
+                    // Créer un token d'authentification avec les autorités
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, 
                             userDetails.getAuthorities()
                     );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                } else {
-                    System.out.println("Token invalide");
+                    
+                    // Ajout des détails de l'authentification
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                System.out.println("Erreur lors de l'authentification: " + e.getMessage());
+                System.out.println("Error validating token: " + e.getMessage());
+                SecurityContextHolder.clearContext();
+                throw e;
             }
         }
-
         chain.doFilter(request, response);
     }
 }

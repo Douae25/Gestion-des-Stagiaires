@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -23,6 +24,7 @@ public class CandidatureController {
     private CandidatureService candidatureService;
 
     @PostMapping(consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('stagiaire')")
     @ResponseStatus(HttpStatus.CREATED)
     public CandidatureDTO create(
             @RequestParam("id_stagiaire") Integer idStagiaire,
@@ -52,6 +54,7 @@ public class CandidatureController {
     }
 
     @PostMapping(value = "/conventions", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('stagiaire')")
     public ResponseEntity<String> uploadConvention(
             @RequestParam("id_candidature") Integer idCandidature,
             @RequestParam("convention_stage") MultipartFile convention
@@ -61,6 +64,7 @@ public class CandidatureController {
     }
 
     @PostMapping(value = "/attestations", consumes = "multipart/form-data")
+    @PreAuthorize("hasRole('rh')")
     public ResponseEntity<String> uploadAttestation(
             @RequestParam("id_candidature") Integer idCandidature,
             @RequestParam("attestation") MultipartFile attestation
@@ -70,44 +74,47 @@ public class CandidatureController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
     public List<CandidatureDTO> getAllCandidatures() {
         return candidatureService.getAll();
     }
 
     @PatchMapping("/{id}/accepter")
+    @PreAuthorize("hasRole('rh')")
     public ResponseEntity<String> accepterCandidature(@PathVariable Integer id) {
         candidatureService.changerStatut(id, "acceptee");
         return ResponseEntity.ok("Candidature acceptée");
     }
 
     @PatchMapping("/{id}/refuser")
+    @PreAuthorize("hasRole('rh')")
     public ResponseEntity<String> refuserCandidature(@PathVariable Integer id) {
         candidatureService.changerStatut(id, "refusee");
         return ResponseEntity.ok("Candidature refusée");
     }
 
     @PatchMapping("/{id}/affecter-encadrant")
-public ResponseEntity<String> affecterEncadrant(
-        @PathVariable Integer id,
-        @RequestBody AffectationEncadrantRequest request
-) {
-    candidatureService.affecterEncadrant(id, request.getId_encadrant());
-    return ResponseEntity.ok("Encadrant affecté à la candidature");
-}
-
-
-@PatchMapping("/{id}/convention-signee")
-public ResponseEntity<String> deposerConventionParRH(
-        @PathVariable Integer id,
-        @RequestParam("file") MultipartFile fichierConvention) {
-
-    try {
-        candidatureService.deposerConventionSigneeParRH(id, fichierConvention.getBytes());
-        return ResponseEntity.ok("Convention signée déposée. Notification envoyée au RH pour l'attestation.");
-    } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Erreur lors du traitement du fichier.");
+    @PreAuthorize("hasRole('rh')")
+    public ResponseEntity<String> affecterEncadrant(
+            @PathVariable Integer id,
+            @RequestBody AffectationEncadrantRequest request
+    ) {
+        candidatureService.affecterEncadrant(id, request.getId_encadrant());
+        return ResponseEntity.ok("Encadrant affecté à la candidature");
     }
-}
 
+    @PatchMapping("/{id}/convention-signee")
+    @PreAuthorize("hasRole('rh')")
+    public ResponseEntity<String> deposerConventionParRH(
+            @PathVariable Integer id,
+            @RequestParam("file") MultipartFile fichierConvention) {
+
+        try {
+            candidatureService.deposerConventionSigneeParRH(id, fichierConvention.getBytes());
+            return ResponseEntity.ok("Convention signée déposée. Notification envoyée au RH pour l'attestation.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur lors du traitement du fichier.");
+        }
+    }
 }

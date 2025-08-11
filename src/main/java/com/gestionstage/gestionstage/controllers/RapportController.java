@@ -6,6 +6,7 @@ import com.gestionstage.gestionstage.services.RapportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class RapportController {
     private RapportService rapportService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('stagiaire')")
     public RapportDTO ajouterRapport(
             @RequestParam("titre") String titre,
             @RequestParam("idCandidature") Integer idCandidature,
@@ -33,6 +35,7 @@ public class RapportController {
     }
 
     @GetMapping("/candidature/{idCandidature}")
+    @PreAuthorize("hasAnyRole('stagiaire', 'rh', 'encadrant', 'admin')")
     public List<RapportDTO> getParCandidature(@PathVariable Integer idCandidature) {
         return rapportService.getRapportsParCandidature(idCandidature);
     }

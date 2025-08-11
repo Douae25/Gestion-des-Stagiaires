@@ -78,8 +78,11 @@ public class CandidatureService {
     }
 
     public void uploadDocument(Integer idCandidature, String type, byte[] fileData) {
+        System.out.println("Tentative d'upload pour la candidature ID: " + idCandidature);
+        System.out.println("Type de document: " + type);
         Candidature candidature = candidatureRepository.findById(idCandidature)
                 .orElseThrow(() -> new IllegalArgumentException("Candidature introuvable"));
+        System.out.println("Candidature trouvée: " + candidature.getId());
 
         if ("convention".equals(type)) {
             candidature.setConvention_stage(fileData);

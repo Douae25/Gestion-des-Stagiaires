@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,15 +32,21 @@ public class AuthController {
             System.out.println("Mot de passe fourni: " + request.getMot_de_passe());
 
             // Authentifier l'utilisateur
-            authenticationManager.authenticate(
+            var authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getEmail().trim(),
                             request.getMot_de_passe().trim()
                     )
             );
 
-            // Générer le token JWT
-            String token = jwtService.generateToken(request.getEmail());
+            // Récupérer le rôle de l'utilisateur
+            String role = authentication.getAuthorities().stream()
+                    .findFirst()
+                    .map(GrantedAuthority::getAuthority)
+                    .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
+
+            // Générer le token JWT avec le rôle
+            String token = jwtService.generateToken(request.getEmail(), role);
             // Retourner le token au client
             return ResponseEntity.ok(new JwtResponse(token));
 

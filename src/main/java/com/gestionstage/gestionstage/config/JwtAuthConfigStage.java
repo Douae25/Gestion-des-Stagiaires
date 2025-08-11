@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -14,6 +15,7 @@ import com.gestionstage.gestionstage.services.JwtService;
 import com.gestionstage.gestionstage.services.CustomUserDetailsService;
 
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class JwtAuthConfigStage {
 
     @Autowired
@@ -27,42 +29,35 @@ public class JwtAuthConfigStage {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/**", "/offres/actives").permitAll()
                         
                         // Stagiaire
-                        .requestMatchers("/candidatures/**").hasAnyRole("STAGIAIRE")
-                        .requestMatchers("/conventions/deposer").hasAnyRole("STAGIAIRE")
-                        .requestMatchers("/rapports/**").hasAnyRole("STAGIAIRE")
-                        .requestMatchers("/offres/actives").hasAnyRole("STAGIAIRE")
+                        .requestMatchers("/api/candidatures").hasAnyRole("STAGIAIRE", "RH")
+                        .requestMatchers("/api/candidatures/conventions").hasRole("STAGIAIRE")
+                        .requestMatchers("/api/candidatures/attestations").hasRole("STAGIAIRE")
                         
                         // RH
-                        .requestMatchers("/attestations/**").hasAnyRole("RH")
-                        .requestMatchers("/candidatures/liste").hasAnyRole("RH")
-                        .requestMatchers("/candidatures/accepter").hasAnyRole("RH")
-                        .requestMatchers("/candidatures/refuser").hasAnyRole("RH")
-                        .requestMatchers("/candidatures/affecter-encadrant").hasAnyRole("RH")
-                        .requestMatchers("/conventions/signer").hasAnyRole("RH")
-                        .requestMatchers("/offres/**").hasAnyRole("RH")
-                        .requestMatchers("/encadrants/**").hasAnyRole("RH")
+                        .requestMatchers("/api/candidatures/accepter/*").hasRole("RH")
+                        .requestMatchers("/api/candidatures/refuser/*").hasRole("RH")
+                        .requestMatchers("/api/candidatures/affecter-encadrant/*").hasRole("RH")
+                        .requestMatchers("/api/candidatures/convention-signee/*").hasRole("RH")
                         
                         // Encadrant
-                        .requestMatchers("/rapports/**").hasAnyRole("ENCADRANT")
-                        .requestMatchers("/candidatures/par-rapport").hasAnyRole("ENCADRANT")
-                        .requestMatchers("/evaluations/**").hasAnyRole("ENCADRANT")
+                        .requestMatchers("/api/candidatures/par-rapport/*").hasRole("ENCADRANT")
                         
                         // Admin
-                        .requestMatchers("/utilisateurs/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/api/utilisateurs/**").hasRole("ADMIN")
+                        .requestMatchers("/api/offres/**").hasAnyRole("STAGIAIRE", "RH", "ADMIN")
                         
                         // Tous les rôles
-                        .requestMatchers("/rapports/getParRapport").hasAnyRole("STAGIAIRE", "ENCADRANT", "RH", "ADMIN")
-                        .requestMatchers("/offres/**").hasAnyRole("STAGIAIRE", "RH", "ADMIN")
-                        .requestMatchers("/candidatures/par-candidature").hasAnyRole("STAGIAIRE", "ENCADRANT", "RH", "ADMIN")
+                        .requestMatchers("/api/candidatures/par-candidature/*").hasAnyRole("STAGIAIRE", "ENCADRANT", "RH", "ADMIN")
+                        .requestMatchers("/api/rapports/getParRapport").hasAnyRole("STAGIAIRE", "ENCADRANT", "RH", "ADMIN")
                         
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        
         return http.build();
     }
 

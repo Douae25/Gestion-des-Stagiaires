@@ -33,6 +33,7 @@ public class Utilisateur {
     public enum TypeUtilisateur {
         stagiaire, encadrant, rh, admin
     }
+    
 
     public enum Statut {
         active, archive
