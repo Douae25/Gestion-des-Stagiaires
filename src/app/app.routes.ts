@@ -8,10 +8,11 @@ export const routes: Routes = [
     loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent)
   },
 
-  // Route pour toutes les offres
+  // Route pour toutes les offres (protégée par authentification)
   {
     path: 'offres',
-    loadComponent: () => import('./components/offres/offres.component').then(m => m.OffresComponent)
+    loadComponent: () => import('./components/offres/offres.component').then(m => m.OffresComponent),
+    canActivate: [AuthGuard]
   },
 
   // Routes d'authentification (accès aux visiteurs non connectés)
@@ -45,13 +46,6 @@ export const routes: Routes = [
     loadComponent: () => import('./components/unauthorized/unauthorized.component').then(m => m.UnauthorizedComponent)
   },
 
-  // Routes protégées par authentification - Dashboard simple
-  {
-    path: 'dashboard',
-    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
-    canActivate: [AuthGuard]
-  },
-
   // Routes pour les stagiaires
   {
     path: 'stagiaire',
@@ -66,6 +60,22 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./components/stagiaire/dashboard/stagiaire-dashboard.component').then(m => m.StagiaireDashboardComponent)
+      },
+      {
+        path: 'candidatures',
+        loadComponent: () => import('./components/stagiaire/candidatures/candidatures.component').then(m => m.CandidaturesComponent)
+      },
+      {
+        path: 'candidatures/:id',
+        loadComponent: () => import('./components/stagiaire/candidature-detail/candidature-detail.component').then(m => m.CandidatureDetailComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/stagiaire/profile/profile.component').then(m => m.ProfileComponent)
+      },
+      {
+        path: 'documents',
+        loadComponent: () => import('./components/stagiaire/documents/documents.component').then(m => m.DocumentsComponent)
       }
     ]
   },

@@ -13,7 +13,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-landing',
@@ -30,7 +33,9 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    MatMenuModule,
+    MatDividerModule
   ]
 })
 export class LandingComponent implements OnInit, AfterViewInit {
@@ -38,15 +43,24 @@ export class LandingComponent implements OnInit, AfterViewInit {
   loading = false;
   error: string | null = null;
   isMenuOpen = false; // Pour le menu mobile
+  currentUser: User | null = null;
+  isAuthenticated = false;
 
   constructor(
     private offreStageService: OffreStageService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    // Vérifier l'état d'authentification
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isAuthenticated = !!user;
+    });
+    
     this.loadOffres();
   }
 
@@ -187,8 +201,83 @@ export class LandingComponent implements OnInit, AfterViewInit {
   }
 
   voirToutesLesOffres(): void {
+    // Vérifier si le stagiaire est connecté avant d'accéder aux offres
+    if (!this.isAuthenticated) {
+      this.snackBar.open('Vous devez vous connecter pour consulter toutes les offres', 'Se connecter', {
+        duration: 5000,
+        panelClass: ['warning-snackbar']
+      }).onAction().subscribe(() => {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: '/offres' } });
+      });
+      return;
+    }
+    
     // Navigation vers la page de toutes les offres
-    console.log('Navigation vers toutes les offres');
+    this.router.navigate(['/offres']);
+  }
+
+  // Méthode pour consulter une offre spécifique
+  consulterOffre(offre: OffreStage): void {
+    if (!this.isAuthenticated) {
+      this.snackBar.open('Vous devez vous connecter pour consulter cette offre', 'Se connecter', {
+        duration: 5000,
+        panelClass: ['warning-snackbar']
+      }).onAction().subscribe(() => {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: `/offres/${offre.id}` } });
+      });
+      return;
+    }
+    
+    // Navigation vers le détail de l'offre
+    this.router.navigate(['/offres', offre.id]);
+  }
+
+  // Méthode pour postuler à une offre
+  postulerOffre(offre: OffreStage): void {
+    // Vérifier d'abord si l'offre est active
+    if (offre.statut !== 'en_cours') {
+      this.snackBar.open('Cette offre n\'est plus disponible pour les candidatures', 'Fermer', {
+        duration: 3000,
+        panelClass: ['warning-snackbar']
+      });
+      return;
+    }
+
+    // Vérifier si l'utilisateur est connecté
+    if (!this.isAuthenticated) {
+      // Redirection directe vers la page de login
+      this.router.navigate(['/login'], { 
+        queryParams: { 
+          returnUrl: `/candidature/${offre.id}`,
+          offre: JSON.stringify({
+            id: offre.id,
+            titre: offre.titre,
+            entreprise: offre.entreprise?.nom || 'Entreprise',
+            localisation: offre.localisation || 'Non spécifiée'
+          })
+        } 
+      });
+      return;
+    }
+
+    // Vérifier si l'utilisateur est un stagiaire
+    if (this.currentUser?.role !== 'stagiaire') {
+      this.snackBar.open('Seuls les stagiaires peuvent postuler aux offres', 'Fermer', {
+        duration: 4000,
+        panelClass: ['warning-snackbar']
+      });
+      return;
+    }
+
+    // Si tout est ok, rediriger vers le formulaire de candidature
+    // TODO: À implémenter - pour l'instant on affiche un message
+    this.snackBar.open(`Candidature pour "${offre.titre}" - Formulaire à implémenter`, 'Fermer', {
+      duration: 3000,
+      panelClass: ['info-snackbar']
+    });
+    
+    // Dans le futur, on redirigera vers :
+    // this.router.navigate(['/candidature', offre.id]);
   }
 
   onSearch(): void {
@@ -204,6 +293,53 @@ export class LandingComponent implements OnInit, AfterViewInit {
   onContactClick(): void {
     // Action pour le bouton de contact
     console.log('Contact clicked');
+  }
+
+  // Méthodes d'authentification
+  goToDashboard(): void {
+    if (this.currentUser) {
+      switch (this.currentUser.role) {
+        case 'stagiaire':
+          this.router.navigate(['/stagiaire/dashboard']);
+          break;
+        case 'rh':
+          this.router.navigate(['/rh/dashboard']);
+          break;
+        case 'admin':
+          this.router.navigate(['/admin/dashboard']);
+          break;
+        case 'encadrant':
+          this.router.navigate(['/encadrant/dashboard']);
+          break;
+        default:
+          this.router.navigate(['/']);
+      }
+    }
+  }
+
+  goToProfile(): void {
+    if (this.currentUser) {
+      switch (this.currentUser.role) {
+        case 'stagiaire':
+          this.router.navigate(['/stagiaire/profile']);
+          break;
+        case 'rh':
+          this.router.navigate(['/rh/profile']);
+          break;
+        case 'admin':
+          this.router.navigate(['/admin/profile']);
+          break;
+        case 'encadrant':
+          this.router.navigate(['/encadrant/profile']);
+          break;
+        default:
+          this.router.navigate(['/']);
+      }
+    }
+  }
+
+  logout(): void {
+    this.authService.logout();
   }
 
   // Méthode pour obtenir le label du statut

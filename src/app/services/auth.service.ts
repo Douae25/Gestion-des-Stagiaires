@@ -101,9 +101,13 @@ export class AuthService {
       }
 
       const payload = JSON.parse(atob(tokenParts[1]));
+      const rawRole = payload.role || payload.authorities?.[0] || 'stagiaire';
+      // Nettoyer le rôle en supprimant le préfixe ROLE_ s'il existe
+      const cleanRole = rawRole.startsWith('ROLE_') ? rawRole.substring(5) : rawRole;
+      
       return {
         email: payload.sub || payload.email,
-        role: payload.role || payload.authorities?.[0] || 'stagiaire'
+        role: cleanRole
       };
     } catch (error) {
       console.error('Erreur lors du décodage du token JWT:', error);

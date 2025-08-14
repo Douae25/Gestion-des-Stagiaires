@@ -1,0 +1,82 @@
+<div class="candidatures-container">
+  <!-- Header -->
+  <mat-toolbar color="primary" class="page-toolbar">
+    <button mat-icon-button (click)="goBack()" matTooltip="Retour au dashboard">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="page-title">Mes candidatures</span>
+    <span class="toolbar-spacer"></span>
+    <span class="candidatures-count" *ngIf="candidatures.length > 0">
+      {{ candidatures.length }} candidature{{ candidatures.length > 1 ? 's' : '' }}
+    </span>
+  </mat-toolbar>
+
+  <!-- Content -->
+  <div class="candidatures-content">
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
+      <p>Chargement de vos candidatures...</p>
+    </div>
+
+    <!-- Candidatures List -->
+    <div class="candidatures-list" *ngIf="!loading">
+      <mat-card class="candidature-card" *ngFor="let candidature of candidatures" (click)="viewCandidature(candidature)">
+        <mat-card-header>
+          <div class="candidature-header">
+            <div class="candidature-title">
+              <h3>{{ candidature.offre.titre }}</h3>
+              <span class="entreprise">{{ candidature.offre.entreprise }}</span>
+            </div>
+            <div class="candidature-status">
+              <mat-chip [color]="getStatusColor(candidature.statut)" selected>
+                {{ getStatusLabel(candidature.statut) }}
+              </mat-chip>
+            </div>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="candidature-details">
+            <div class="detail-item">
+              <mat-icon>location_on</mat-icon>
+              <span>{{ candidature.offre.localisation }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>work</mat-icon>
+              <span>{{ candidature.offre.type }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>calendar_today</mat-icon>
+              <span>Candidature envoyée le {{ formatDate(candidature.dateCandidature) }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button mat-stroked-button (click)="viewCandidature(candidature); $event.stopPropagation()">
+            <mat-icon>visibility</mat-icon>
+            Voir détails
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!loading && candidatures.length === 0">
+      <mat-card class="empty-card">
+        <mat-card-content>
+          <div class="empty-content">
+            <mat-icon class="empty-icon">assignment</mat-icon>
+            <h3>Aucune candidature</h3>
+            <p>Vous n'avez envoyé aucune candidature pour le moment. Découvrez les offres disponibles et postulez !</p>
+            <button mat-raised-button color="primary" (click)="goBack()">
+              <mat-icon>search</mat-icon>
+              Découvrir les offres
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -20,15 +20,42 @@
       </div>
       
       <div class="nav-actions">
-        <button mat-button class="nav-btn secondary" (click)="onLoginClick()">
-          <mat-icon>login</mat-icon>
-          Connexion
-        </button>
-        <button mat-raised-button color="primary" class="nav-btn primary" (click)="onRegisterClick()">
-          <mat-icon>person_add</mat-icon>
-          S'inscrire
-        </button>
-
+        <!-- Affichage conditionnel selon l'état d'authentification -->
+        <ng-container *ngIf="!isAuthenticated">
+          <button mat-button class="nav-btn secondary" (click)="onLoginClick()">
+            <mat-icon>login</mat-icon>
+            Connexion
+          </button>
+          <button mat-raised-button color="primary" class="nav-btn primary" (click)="onRegisterClick()">
+            <mat-icon>person_add</mat-icon>
+            S'inscrire
+          </button>
+        </ng-container>
+        
+        <!-- Menu utilisateur connecté -->
+        <ng-container *ngIf="isAuthenticated && currentUser">
+          <button mat-button class="nav-btn user-btn" [matMenuTriggerFor]="userMenu">
+            <mat-icon>account_circle</mat-icon>
+            {{ currentUser.prenom || 'Mon compte' }}
+            <mat-icon>arrow_drop_down</mat-icon>
+          </button>
+          
+          <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="goToDashboard()">
+              <mat-icon>dashboard</mat-icon>
+              <span>Mon espace</span>
+            </button>
+            <button mat-menu-item (click)="goToProfile()">
+              <mat-icon>person</mat-icon>
+              <span>Mon profil</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()" class="logout-item">
+              <mat-icon>logout</mat-icon>
+              <span>Déconnexion</span>
+            </button>
+          </mat-menu>
+        </ng-container>
       </div>
       
       <button class="nav-toggle" (click)="toggleMenu()" aria-label="Ouvrir le menu de navigation">
@@ -220,7 +247,8 @@
         <div class="offer-footer">
           <button mat-raised-button color="primary" class="apply-btn" 
                   [disabled]="offre.statut !== 'en_cours'"
-                  [class.disabled]="offre.statut !== 'en_cours'">
+                  [class.disabled]="offre.statut !== 'en_cours'"
+                  (click)="postulerOffre(offre)">
             <mat-icon aria-hidden="true">send</mat-icon>
             {{ offre.statut === 'en_cours' ? 'Postuler maintenant' : 'Offre fermée' }}
           </button>

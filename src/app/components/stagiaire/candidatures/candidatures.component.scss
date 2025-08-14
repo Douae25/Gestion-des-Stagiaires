@@ -1,0 +1,226 @@
+.candidatures-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding-bottom: 2rem;
+}
+
+.page-toolbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #374151 !important;
+  backdrop-filter: blur(10px);
+  
+  .page-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+  }
+  
+  .toolbar-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .candidatures-count {
+    background: rgba(99, 102, 241, 0.1);
+    color: #6366f1;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+}
+
+.candidatures-content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: white;
+  
+  p {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+}
+
+.candidatures-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.candidature-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 1);
+  }
+  
+  .candidature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    
+    .candidature-title {
+      h3 {
+        margin: 0 0 0.5rem 0;
+        color: #374151;
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      
+      .entreprise {
+        color: #6b7280;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+    
+    .candidature-status {
+      margin-left: 1rem;
+    }
+  }
+  
+  .candidature-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #6b7280;
+      font-size: 0.95rem;
+      
+      mat-icon {
+        font-size: 1.1rem;
+        width: 1.1rem;
+        height: 1.1rem;
+        color: #6366f1;
+      }
+    }
+  }
+  
+  mat-card-actions {
+    padding: 1rem 1.5rem;
+    
+    button {
+      font-size: 0.9rem;
+      
+      mat-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.empty-state {
+  .empty-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    
+    .empty-content {
+      text-align: center;
+      padding: 3rem 2rem;
+      
+      .empty-icon {
+        font-size: 4rem;
+        width: 4rem;
+        height: 4rem;
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+      }
+      
+      h3 {
+        margin: 0 0 1rem 0;
+        color: #374151;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0 0 2rem 0;
+        color: #6b7280;
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      
+      button {
+        padding: 0.75rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        
+        mat-icon {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .candidatures-content {
+    padding: 1rem;
+  }
+  
+  .candidature-card .candidature-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+    
+    .candidature-status {
+      margin-left: 0;
+    }
+  }
+  
+  .candidature-details {
+    .detail-item {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .page-toolbar {
+    .candidatures-count {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-toolbar {
+    .page-title {
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+  }
+  
+  .candidature-card {
+    .candidature-title h3 {
+      font-size: 1.1rem;
+    }
+    
+    .candidature-details .detail-item {
+      gap: 0.5rem;
+    }
+  }
+}

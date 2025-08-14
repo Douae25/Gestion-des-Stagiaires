@@ -1,57 +1,230 @@
 <div class="stagiaire-dashboard-container">
+  <!-- Navigation Header -->
   <mat-toolbar color="primary" class="dashboard-toolbar">
-    <span>Dashboard Stagiaire - StageManager</span>
+    <div class="toolbar-left">
+      <mat-icon class="dashboard-icon">school</mat-icon>
+      <span class="dashboard-title">Espace Stagiaire</span>
+    </div>
+    
     <span class="toolbar-spacer"></span>
-    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
-      <mat-icon>home</mat-icon>
-    </button>
-    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
-      <mat-icon>logout</mat-icon>
-    </button>
+    
+    <div class="toolbar-actions">
+      <button mat-icon-button [matMenuTriggerFor]="notificationMenu" matTooltip="Notifications">
+        <mat-icon [matBadge]="notificationCount" matBadgeColor="warn" [matBadgeHidden]="notificationCount === 0">notifications</mat-icon>
+      </button>
+      
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Menu utilisateur">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    </div>
   </mat-toolbar>
 
-  <div class="dashboard-content">
-    <mat-card class="welcome-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>school</mat-icon>
-          Espace Stagiaire
-        </mat-card-title>
-        <mat-card-subtitle>
-          Bienvenue dans votre espace personnel de gestion de stage
-        </mat-card-subtitle>
-      </mat-card-header>
-      
-      <mat-card-content>
-        <div class="user-info" *ngIf="currentUser">
-          <p><strong>Email :</strong> {{ currentUser.email }}</p>
-          <p><strong>Rôle :</strong> 
-            <span class="role-badge stagiaire">{{ currentUser.role }}</span>
-          </p>
+  <!-- Menu Notifications -->
+  <mat-menu #notificationMenu="matMenu">
+    <div class="notification-header">
+      <span>Notifications</span>
+      <button mat-icon-button (click)="markAllAsRead()" matTooltip="Tout marquer comme lu">
+        <mat-icon>done_all</mat-icon>
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="notification-list" *ngIf="notifications.length > 0; else noNotifications">
+      <button mat-menu-item *ngFor="let notification of notifications.slice(0, 5)" class="notification-item">
+        <mat-icon [color]="notification.type === 'success' ? 'primary' : 'warn'">
+          {{ getNotificationIcon(notification.type) }}
+        </mat-icon>
+        <div class="notification-content">
+          <span class="notification-title">{{ notification.title }}</span>
+          <span class="notification-time">{{ formatNotificationTime(notification.date) }}</span>
         </div>
-        
-        <div class="features-section">
-          <h3>Fonctionnalités disponibles</h3>
-          <div class="features-grid">
-            <div class="feature-item">
-              <mat-icon>work</mat-icon>
-              <h4>Consulter les offres</h4>
-              <p>Parcourir les offres de stage disponibles</p>
+      </button>
+    </div>
+    <ng-template #noNotifications>
+      <div class="no-notifications">
+        <mat-icon>notifications_none</mat-icon>
+        <span>Aucune notification</span>
+      </div>
+    </ng-template>
+  </mat-menu>
+
+  <!-- Menu Utilisateur -->
+  <mat-menu #userMenu="matMenu">
+    <div class="user-menu-header" *ngIf="currentUser">
+      <mat-icon>person</mat-icon>
+      <div class="user-info">
+        <span class="user-name">{{ currentUser.prenom || 'Utilisateur' }}</span>
+        <span class="user-email">{{ currentUser.email }}</span>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="goToProfile()">
+      <mat-icon>settings</mat-icon>
+      <span>Mon profil</span>
+    </button>
+    <button mat-menu-item (click)="goToLanding()">
+      <mat-icon>home</mat-icon>
+      <span>Accueil</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()" class="logout-item">
+      <mat-icon>logout</mat-icon>
+      <span>Déconnexion</span>
+    </button>
+  </mat-menu>
+
+  <!-- Contenu Principal -->
+  <div class="dashboard-content">
+    <!-- Carte de bienvenue -->
+    <mat-card class="welcome-card">
+      <mat-card-content>
+        <div class="welcome-header">
+          <div class="welcome-text">
+            <h2>Bienvenue {{ currentUser?.prenom || 'Stagiaire' }} ! 👋</h2>
+            <p>Gérez vos candidatures et suivez vos stages depuis votre espace personnel</p>
+          </div>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <span class="stat-number">{{ candidaturesCount }}</span>
+              <span class="stat-label">Candidatures</span>
             </div>
-            <div class="feature-item">
-              <mat-icon>assignment</mat-icon>
-              <h4>Mes candidatures</h4>
-              <p>Suivre l'état de vos candidatures</p>
-            </div>
-            <div class="feature-item">
-              <mat-icon>person</mat-icon>
-              <h4>Mon profil</h4>
-              <p>Gérer vos informations personnelles</p>
+            <div class="stat-item">
+              <span class="stat-number">{{ offresCount }}</span>
+              <span class="stat-label">Offres disponibles</span>
             </div>
           </div>
         </div>
       </mat-card-content>
     </mat-card>
+
+    <!-- Actions rapides -->
+    <div class="quick-actions">
+      <h3>Actions rapides</h3>
+      <div class="actions-grid">
+        <mat-card class="action-card" (click)="navigateToOffres()">
+          <mat-card-content>
+            <mat-icon class="action-icon">work</mat-icon>
+            <h4>Consulter les offres</h4>
+            <p>Découvrez les nouvelles opportunités de stage</p>
+            <span class="action-badge" *ngIf="newOffresCount > 0">{{ newOffresCount }} nouvelles</span>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToCandidatures()">
+          <mat-card-content>
+            <mat-icon class="action-icon">assignment</mat-icon>
+            <h4>Mes candidatures</h4>
+            <p>Suivez l'état de vos candidatures en cours</p>
+            <span class="action-badge" *ngIf="pendingCandidaturesCount > 0">{{ pendingCandidaturesCount }} en attente</span>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToProfile()">
+          <mat-card-content>
+            <mat-icon class="action-icon">person</mat-icon>
+            <h4>Mon profil</h4>
+            <p>Mettez à jour vos informations personnelles</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="action-card" (click)="navigateToDocuments()">
+          <mat-card-content>
+            <mat-icon class="action-icon">description</mat-icon>
+            <h4>Mes documents</h4>
+            <p>Gérez vos CV, lettres de motivation et attestations</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Candidatures récentes -->
+    <div class="recent-applications" *ngIf="recentCandidatures.length > 0">
+      <div class="section-header">
+        <h3>Candidatures récentes</h3>
+        <button mat-button (click)="navigateToCandidatures()" class="view-all-btn">
+          Voir tout
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+      
+      <div class="applications-list">
+        <mat-card class="application-card" *ngFor="let candidature of recentCandidatures.slice(0, 3)">
+          <mat-card-content>
+            <div class="application-header">
+              <div class="application-title">
+                <h4>{{ candidature.offre?.titre || 'Titre non disponible' }}</h4>
+                <span class="company-name">{{ candidature.offre?.entreprise || 'Entreprise' }}</span>
+              </div>
+              <div class="application-status">
+                <mat-chip [color]="getStatusColor(candidature.statut)" selected>
+                  {{ getStatusLabel(candidature.statut) }}
+                </mat-chip>
+              </div>
+            </div>
+            
+            <div class="application-details">
+              <div class="application-info">
+                <mat-icon>calendar_today</mat-icon>
+                <span>Candidature envoyée le {{ formatDate(candidature.dateCandidature) }}</span>
+              </div>
+              
+              <div class="application-actions">
+                <button mat-stroked-button (click)="viewCandidature(candidature)">
+                  <mat-icon>visibility</mat-icon>
+                  Voir détails
+                </button>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- État vide si aucune candidature -->
+    <div class="empty-state" *ngIf="recentCandidatures.length === 0">
+      <mat-card class="empty-card">
+        <mat-card-content>
+          <div class="empty-content">
+            <mat-icon class="empty-icon">work_outline</mat-icon>
+            <h3>Aucune candidature pour le moment</h3>
+            <p>Commencez par consulter les offres de stage disponibles et postulez à celles qui vous intéressent</p>
+            <button mat-raised-button color="primary" (click)="navigateToOffres()">
+              <mat-icon>search</mat-icon>
+              Découvrir les offres
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Conseils et astuces -->
+    <div class="tips-section">
+      <h3>Conseils pour optimiser vos candidatures</h3>
+      <div class="tips-grid">
+        <mat-card class="tip-card">
+          <mat-card-content>
+            <mat-icon class="tip-icon">lightbulb</mat-icon>
+            <h4>Personnalisez votre CV</h4>
+            <p>Adaptez votre CV selon le poste visé pour maximiser vos chances de succès</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="tip-card">
+          <mat-card-content>
+            <mat-icon class="tip-icon">schedule</mat-icon>
+            <h4>Postulez rapidement</h4>
+            <p>Les meilleures offres partent vite. Suivez régulièrement les nouvelles opportunités</p>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="tip-card">
+          <mat-card-content>
+            <mat-icon class="tip-icon">email</mat-icon>
+            <h4>Soignez votre lettre</h4>
+            <p>Une lettre de motivation personnalisée fait toute la différence</p>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
   </div>
 </div>
 

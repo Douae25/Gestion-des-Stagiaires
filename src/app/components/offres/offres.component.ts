@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { AuthService, User } from '../../services/auth.service';
 
 @Component({
   selector: 'app-offres',
@@ -29,6 +30,8 @@ export class OffresComponent implements OnInit {
   offresFiltrees: OffreStage[] = [];
   loading = false;
   error: string | null = null;
+  currentUser: User | null = null;
+  isAuthenticated = false;
 
   // Propriétés pour le filtrage et tri
   viewMode: 'grid' | 'list' = 'grid';
@@ -47,10 +50,28 @@ export class OffresComponent implements OnInit {
   constructor(
     private offreStageService: OffreStageService,
     private snackBar: MatSnackBar,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
+    // Vérifier l'authentification
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+      this.isAuthenticated = !!user;
+      
+      if (!this.isAuthenticated) {
+        // Rediriger vers la page de connexion avec returnUrl
+        this.snackBar.open('Vous devez vous connecter pour accéder aux offres', 'Se connecter', {
+          duration: 5000,
+          panelClass: ['warning-snackbar']
+        }).onAction().subscribe(() => {
+          this.router.navigate(['/login'], { queryParams: { returnUrl: '/offres' } });
+        });
+        return;
+      }
+    });
+    
     this.loadAllOffres();
     // Charger la préférence de vue depuis le localStorage
     const savedViewMode = localStorage.getItem('offres-view-mode');

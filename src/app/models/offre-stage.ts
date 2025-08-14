@@ -13,4 +13,9 @@ export interface OffreStage {
   statut: string;     // en_cours, fermee, archivee
   localisation: string;
   competence_requise: string;
+  entreprise?: {
+    id: number;
+    nom: string;
+    logo?: string;
+  };
 }
