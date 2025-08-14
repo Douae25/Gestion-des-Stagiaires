@@ -1,0 +1,235 @@
+<div class="register-container">
+  <!-- Navbar de navigation -->
+  <nav class="register-navbar">
+    <div class="navbar-content">
+      <!-- Logo et retour accueil -->
+      <div class="navbar-brand">
+        <button mat-button class="home-btn" routerLink="/" aria-label="Retour à l'accueil">
+          <mat-icon>home</mat-icon>
+          <span>Accueil</span>
+        </button>
+      </div>
+
+      <!-- Actions de droite -->
+      <div class="navbar-actions">
+        <span class="auth-mode-text">Déjà un compte ?</span>
+        <button 
+          mat-stroked-button 
+          color="accent" 
+          class="switch-mode-btn"
+          (click)="goToLogin()"
+        >
+          <mat-icon>login</mat-icon>
+          <span>Se connecter</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="register-background">
+    <div class="register-card">
+      <!-- En-tête -->
+      <div class="register-header">
+        <div class="logo-section">
+          <mat-icon class="logo-icon">school</mat-icon>
+          <h1 class="app-title">Inscription Stagiaire</h1>
+        </div>
+        <p class="register-subtitle">
+          Créez votre compte pour accéder aux offres de stage
+        </p>
+      </div>
+
+      <!-- Formulaire d'inscription avec stepper -->
+      <div class="register-content">
+        <mat-stepper #stepper orientation="horizontal" linear="true" class="register-stepper">
+          <!-- Étape 1: Informations personnelles -->
+          <mat-step [stepControl]="personalInfoForm" label="Informations personnelles">
+            <form [formGroup]="personalInfoForm" class="step-form">
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Nom</mat-label>
+                  <input
+                    matInput
+                    formControlName="nom"
+                    placeholder="Votre nom de famille"
+                    autocomplete="family-name"
+                  >
+                  <mat-icon matSuffix>person</mat-icon>
+                  <mat-error *ngIf="nomControl?.invalid && nomControl?.touched">
+                    {{ getFieldErrorMessage('nom') }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Prénom</mat-label>
+                  <input
+                    matInput
+                    formControlName="prenom"
+                    placeholder="Votre prénom"
+                    autocomplete="given-name"
+                  >
+                  <mat-icon matSuffix>person_outline</mat-icon>
+                  <mat-error *ngIf="prenomControl?.invalid && prenomControl?.touched">
+                    {{ getFieldErrorMessage('prenom') }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Adresse email</mat-label>
+                <input
+                  matInput
+                  type="email"
+                  formControlName="email"
+                  placeholder="votre.email@exemple.com"
+                  autocomplete="email"
+                >
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="emailControl?.invalid && emailControl?.touched">
+                  {{ getFieldErrorMessage('email') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Numéro de téléphone</mat-label>
+                <input
+                  matInput
+                  formControlName="numero_telephone"
+                  placeholder="06 12 34 56 78"
+                  autocomplete="tel"
+                >
+                <mat-icon matSuffix>phone</mat-icon>
+                <mat-error *ngIf="telephoneControl?.invalid && telephoneControl?.touched">
+                  {{ getFieldErrorMessage('numero_telephone') }}
+                </mat-error>
+              </mat-form-field>
+
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Mot de passe</mat-label>
+                  <input
+                    matInput
+                    [type]="hidePassword ? 'password' : 'text'"
+                    formControlName="mot_de_passe"
+                    placeholder="Minimum 8 caractères"
+                    autocomplete="new-password"
+                  >
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="togglePasswordVisibility('password')"
+                  >
+                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  <mat-error *ngIf="passwordControl?.invalid && passwordControl?.touched">
+                    {{ getFieldErrorMessage('mot_de_passe') }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Confirmer le mot de passe</mat-label>
+                  <input
+                    matInput
+                    [type]="hideConfirmPassword ? 'password' : 'text'"
+                    formControlName="confirm_password"
+                    placeholder="Répétez votre mot de passe"
+                    autocomplete="new-password"
+                  >
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="togglePasswordVisibility('confirm')"
+                  >
+                    <mat-icon>{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  </button>
+                  <mat-error *ngIf="confirmPasswordControl?.invalid && confirmPasswordControl?.touched">
+                    {{ getFieldErrorMessage('confirm_password') }}
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <div class="step-actions">
+                <button mat-flat-button color="primary" matStepperNext [disabled]="personalInfoForm.invalid">
+                  <span>Suivant</span>
+                  <mat-icon>arrow_forward</mat-icon>
+                </button>
+              </div>
+            </form>
+          </mat-step>
+
+          <!-- Étape 2: Informations académiques -->
+          <mat-step [stepControl]="academicInfoForm" label="Informations académiques">
+            <form [formGroup]="academicInfoForm" class="step-form">
+              <div class="academic-info">
+                <mat-icon class="section-icon">school</mat-icon>
+                <h3>Informations sur vos études</h3>
+                <p>Ces informations nous aideront à mieux vous proposer des stages adaptés</p>
+              </div>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Niveau d'étude</mat-label>
+                <mat-select formControlName="niveau_etude">
+                  <mat-option *ngFor="let niveau of niveauxEtude" [value]="niveau.value">
+                    {{ niveau.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>school</mat-icon>
+                <mat-error *ngIf="niveauEtudeControl?.invalid && niveauEtudeControl?.touched">
+                  {{ getFieldErrorMessage('niveau_etude') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Établissement</mat-label>
+                <input
+                  matInput
+                  formControlName="etablissement"
+                  placeholder="Nom de votre université, école ou lycée"
+                >
+                <mat-icon matSuffix>business</mat-icon>
+                <mat-error *ngIf="etablissementControl?.invalid && etablissementControl?.touched">
+                  {{ getFieldErrorMessage('etablissement') }}
+                </mat-error>
+              </mat-form-field>
+
+              <div class="step-actions">
+                <button mat-button matStepperPrevious>
+                  <mat-icon>arrow_back</mat-icon>
+                  <span>Précédent</span>
+                </button>
+                
+                <button 
+                  mat-flat-button 
+                  color="primary" 
+                  type="button"
+                  (click)="onRegister()"
+                  [disabled]="isLoading || personalInfoForm.invalid || academicInfoForm.invalid"
+                  class="register-button"
+                >
+                  <mat-spinner
+                    *ngIf="isLoading"
+                    diameter="20"
+                    color="accent"
+                    class="register-spinner"
+                  ></mat-spinner>
+                  <span *ngIf="!isLoading">Créer mon compte</span>
+                  <span *ngIf="isLoading">Création en cours...</span>
+                </button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-stepper>
+      </div>
+
+      <!-- Informations supplémentaires -->
+      <div class="register-footer">
+        <div class="security-info">
+          <mat-icon>security</mat-icon>
+          <p>Vos données sont sécurisées et ne seront utilisées que dans le cadre de votre recherche de stage.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

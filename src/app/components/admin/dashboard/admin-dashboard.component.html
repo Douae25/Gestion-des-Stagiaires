@@ -1,0 +1,57 @@
+<div class="admin-dashboard-container">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <span>Dashboard Administrateur - StageManager</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>admin_panel_settings</mat-icon>
+          Espace Administrateur
+        </mat-card-title>
+        <mat-card-subtitle>
+          Gestion complète de la plateforme
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="user-info" *ngIf="currentUser">
+          <p><strong>Email :</strong> {{ currentUser.email }}</p>
+          <p><strong>Rôle :</strong> 
+            <span class="role-badge admin">{{ currentUser.role }}</span>
+          </p>
+        </div>
+        
+        <div class="features-section">
+          <h3>Fonctionnalités Administrateur</h3>
+          <div class="features-grid">
+            <div class="feature-item">
+              <mat-icon>people</mat-icon>
+              <h4>Gestion des utilisateurs</h4>
+              <p>Créer et gérer tous les comptes</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>security</mat-icon>
+              <h4>Gestion des rôles</h4>
+              <p>Configurer les permissions</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>settings</mat-icon>
+              <h4>Configuration</h4>
+              <p>Paramètres de la plateforme</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

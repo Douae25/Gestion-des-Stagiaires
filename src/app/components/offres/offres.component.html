@@ -1,0 +1,310 @@
+<div class="offres-container">
+  <!-- Header avec design moderne -->
+  <header class="offres-header">
+    <div class="header-background">
+      <div class="header-pattern"></div>
+      <div class="header-overlay"></div>
+    </div>
+    <div class="container">
+      <button mat-button class="back-button" (click)="retourAccueil()">
+        <mat-icon>arrow_back</mat-icon>
+        Retour à l'accueil
+      </button>
+      <div class="header-content">
+        <h1 class="page-title">Toutes nos offres de stage</h1>
+        <p class="page-subtitle">Découvrez toutes les opportunités de stage disponibles et trouvez celle qui vous correspond</p>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" class="filter-btn" (click)="toggleFilters()">
+            <mat-icon>filter_list</mat-icon>
+            Filtrer
+          </button>
+          <button mat-stroked-button color="accent" class="sort-btn" (click)="toggleSortMenu()">
+            <mat-icon>{{ getSortIcon() }}</mat-icon>
+            {{ getSortLabel() }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Panneau de filtres simple et pratique -->
+  <div class="filters-panel" [class.active]="showFilters">
+    <div class="container">
+      <div class="filters-content">
+        <!-- Section Localisation -->
+        <div class="filter-section location-section">
+          <div class="filter-label">
+            <mat-icon>location_on</mat-icon>
+            Localisation
+          </div>
+          <div class="filter-chips">
+            <button 
+              *ngFor="let option of locationOptions" 
+              mat-button 
+              [class.active]="selectedLocation === option.value"
+              (click)="changeLocationFilter(option.value)"
+              class="filter-chip">
+              <mat-icon>{{ getLocationIcon(option.value) }}</mat-icon>
+              {{ option.label }}
+              <span class="chip-count" *ngIf="getLocationCount(option.value) > 0">
+                {{ getLocationCount(option.value) }}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section Tri -->
+        <div class="filter-section sort-section">
+          <div class="filter-label">
+            <mat-icon>sort</mat-icon>
+            Trier par
+          </div>
+          <div class="filter-chips">
+            <button 
+              *ngFor="let option of sortOptions" 
+              mat-button 
+              [class.active]="sortBy === option.value"
+              [class.sort-asc]="sortBy === option.value && sortOrder === 'asc'"
+              [class.sort-desc]="sortBy === option.value && sortOrder === 'desc'"
+              (click)="handleSortChange(option.value)"
+              class="filter-chip">
+              <mat-icon>{{ getSortOptionIcon(option.value) }}</mat-icon>
+              {{ option.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="filter-actions">
+          <div class="results-count">
+            <span class="count">{{ offresFiltrees.length }}</span> 
+            offre{{ offresFiltrees.length > 1 ? 's' : '' }}
+          </div>
+          <div class="action-buttons">
+            <button 
+              mat-button 
+              class="clear-btn" 
+              (click)="resetFilters()" 
+              *ngIf="hasActiveFilters()">
+              <mat-icon>clear_all</mat-icon>
+              Effacer
+            </button>
+            <button 
+              mat-icon-button 
+              class="close-btn" 
+              (click)="toggleFilters()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Spinner avec design amélioré -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-content">
+      <div class="loading-spinner-wrapper">
+        <mat-spinner diameter="60"></mat-spinner>
+      </div>
+      <h3>Chargement des offres</h3>
+      <p>Nous récupérons toutes les opportunités disponibles...</p>
+      <div class="loading-dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message avec design amélioré -->
+  <div *ngIf="error && !loading" class="error-container">
+    <div class="error-content">
+      <div class="error-icon-wrapper">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+      </div>
+      <h3>Erreur de chargement</h3>
+      <p>{{ error }}</p>
+      <button mat-raised-button color="primary" class="retry-btn" (click)="loadAllOffres()">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </div>
+  </div>
+
+  <!-- Offres List avec design moderne -->
+  <div *ngIf="!loading && !error" class="offres-content">
+    <div class="container">
+      <!-- En-tête de la liste avec compteur -->
+      <div class="offres-header-info">
+        <div class="offres-count">
+          <h2>{{ offresFiltrees.length }} offre{{ offresFiltrees.length > 1 ? 's' : '' }} disponible{{ offresFiltrees.length > 1 ? 's' : '' }}</h2>
+          <p>Explorez toutes nos opportunités de stage</p>
+          <div class="active-filters" *ngIf="selectedLocation !== 'all'">
+            <span class="filter-tag" *ngIf="selectedLocation !== 'all'">
+              {{ getLocationLabel() }}
+              <button mat-icon-button (click)="changeLocationFilter('all')">
+                <mat-icon>close</mat-icon>
+              </button>
+            </span>
+          </div>
+        </div>
+        <div class="view-controls">
+          <button mat-icon-button 
+                  class="view-toggle" 
+                  [class.active]="viewMode === 'grid'"
+                  (click)="changeViewMode('grid')" 
+                  title="Vue grille">
+            <mat-icon>grid_view</mat-icon>
+          </button>
+          <button mat-icon-button 
+                  class="view-toggle" 
+                  [class.active]="viewMode === 'list'"
+                  (click)="changeViewMode('list')" 
+                  title="Vue liste">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Offres Grid avec design amélioré -->
+      <div class="offres-grid" [class.list-view]="viewMode === 'list'">
+        <div *ngFor="let offre of offresFiltrees; trackBy: trackByOffre" class="offre-card" [class.active]="isOffreActive(offre.statut)">
+          <!-- Badge de statut flottant -->
+          <div class="status-badge" [class]="getStatusClass(offre.statut)">
+            {{ getStatusLabel(offre.statut) }}
+          </div>
+
+          <!-- Layout pour mode liste -->
+          <div *ngIf="viewMode === 'list'" class="offre-main">
+            <!-- Section gauche : Titre et métadonnées -->
+            <div class="offre-header-section">
+              <h3 class="offre-title">{{ offre.titre }}</h3>
+              <div class="offre-meta">
+                <span class="offre-duration">
+                  <mat-icon>schedule</mat-icon>
+                  {{ offre.duree }} mois
+                </span>
+                <span class="offre-location">
+                  <mat-icon>location_on</mat-icon>
+                  {{ offre.localisation }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Section milieu : Description et compétences -->
+            <div class="offre-content-section">
+              <p class="offre-description">{{ offre.description }}</p>
+              <div class="offre-competences-inline" *ngIf="offre.competence_requise">
+                <span *ngFor="let competence of getCompetences(offre.competence_requise)" class="competence-tag">
+                  {{ competence }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Section droite : Dates et période -->
+            <div class="offre-dates-section">
+              <div class="date-label">Période</div>
+              <div class="date-range">
+                {{ offre.date_debut | date:'MMM yyyy' }} - {{ offre.date_fin | date:'MMM yyyy' }}
+              </div>
+              <div class="duration-badge">
+                <mat-icon>timer</mat-icon>
+                {{ offre.duree }} mois
+              </div>
+            </div>
+          </div>
+
+          <!-- En-tête de l'offre (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid'" class="offre-header">
+            <div class="offre-title-section">
+              <h3 class="offre-title">{{ offre.titre }}</h3>
+              <div class="offre-meta">
+                <span class="offre-duration">
+                  <mat-icon>schedule</mat-icon>
+                  {{ offre.duree }} mois
+                </span>
+                <span class="offre-location">
+                  <mat-icon>location_on</mat-icon>
+                  {{ offre.localisation }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description avec gradient de texte (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid'" class="offre-description-wrapper">
+            <p class="offre-description">{{ offre.description }}</p>
+          </div>
+
+          <!-- Détails de l'offre avec icônes (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid'" class="offre-details">
+            <div class="detail-row">
+              <div class="detail-item">
+                <mat-icon>event</mat-icon>
+                <div class="detail-text">
+                  <span class="detail-label">Période</span>
+                  <span class="detail-value">{{ offre.date_debut | date:'MMM yyyy' }} - {{ offre.date_fin | date:'MMM yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compétences avec design moderne (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid' && offre.competence_requise" class="offre-competences">
+            <h4>Compétences requises</h4>
+            <div class="competences-grid">
+              <span *ngFor="let competence of getCompetences(offre.competence_requise)" class="competence-tag">
+                {{ competence }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Actions avec design amélioré -->
+          <div class="offre-actions">
+            <button mat-raised-button color="primary" class="apply-btn" [disabled]="!isOffreActive(offre.statut)">
+              <mat-icon>send</mat-icon>
+              {{ isOffreActive(offre.statut) ? 'Postuler' : 'Fermée' }}
+            </button>
+            <button mat-button color="accent" class="info-btn">
+              <mat-icon>info</mat-icon>
+              Détails
+            </button>
+          </div>
+
+          <!-- Indicateur de popularité (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid' && isOffreActive(offre.statut)" class="offre-popularity">
+            <mat-icon>trending_up</mat-icon>
+            <span>Populaire</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message si aucune offre -->
+      <div *ngIf="offresFiltrees.length === 0 && !loading && !error" class="no-offres">
+        <div class="no-offres-content">
+          <div class="no-offres-illustration">
+            <mat-icon class="no-offres-icon">work_off</mat-icon>
+          </div>
+          <h3>Aucune offre disponible</h3>
+          <p *ngIf="selectedLocation !== 'all'">
+            Aucune offre ne correspond à vos critères de recherche. Essayez de modifier vos filtres.
+          </p>
+          <p *ngIf="selectedLocation === 'all'">
+            Il n'y a actuellement aucune offre de stage disponible. Revenez plus tard pour découvrir nos nouvelles opportunités !
+          </p>
+          <div class="no-offres-actions">
+            <button mat-raised-button color="primary" class="home-btn" (click)="retourAccueil()">
+              <mat-icon>home</mat-icon>
+              Retour à l'accueil
+            </button>
+            <button mat-stroked-button color="accent" *ngIf="selectedLocation !== 'all'" (click)="resetFilters()">
+              <mat-icon>clear</mat-icon>
+              Réinitialiser les filtres
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

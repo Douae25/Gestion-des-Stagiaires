@@ -23,8 +23,10 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
-              }
+                "input": "src/assets",
+                "output": "/assets/"
+              },
+              "src/favicon.ico"
             ],
             "styles": [
               "src/styles.css"
@@ -57,12 +59,16 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "gestion-stage-frontend:build:production"
             },
             "development": {
-              "buildTarget": "gestion-stage-frontend:build:development"
+              "buildTarget": "gestion-stage-frontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
@@ -81,8 +87,10 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
-              }
+                "input": "src/assets",
+                "output": "/assets/"
+              },
+              "src/favicon.ico"
             ],
             "styles": [
               "src/styles.css"
@@ -92,5 +100,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "54bdbf70-0285-45f3-b090-9566c889bb7f"
   }
 }

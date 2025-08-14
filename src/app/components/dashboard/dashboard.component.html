@@ -1,0 +1,41 @@
+<div class="dashboard-container">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <span>Dashboard - StageManager</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>dashboard</mat-icon>
+          Bienvenue sur votre Dashboard
+        </mat-card-title>
+        <mat-card-subtitle>
+          Redirection automatique vers votre espace personnel...
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="user-info" *ngIf="currentUser">
+          <p><strong>Email :</strong> {{ currentUser.email }}</p>
+          <p><strong>Rôle :</strong> 
+            <span class="role-badge">{{ currentUser.role }}</span>
+          </p>
+        </div>
+        
+        <div class="loading-info">
+          <mat-icon class="loading-icon">sync</mat-icon>
+          <p>Redirection en cours vers votre espace {{ currentUser?.role }}...</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

@@ -1,3 +1,132 @@
 import { Routes } from '@angular/router';
+import { AuthGuard, RoleGuard, GuestGuard } from './guards/auth.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  // Route par défaut - Landing page
+  {
+    path: '',
+    loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent)
+  },
+
+  // Route pour toutes les offres
+  {
+    path: 'offres',
+    loadComponent: () => import('./components/offres/offres.component').then(m => m.OffresComponent)
+  },
+
+  // Routes d'authentification (accès aux visiteurs non connectés)
+  {
+    path: 'login',
+    loadComponent: () => import('./components/auth/auth.component').then(m => m.AuthComponent),
+    canActivate: [GuestGuard]
+  },
+
+  {
+    path: 'auth',
+    loadComponent: () => import('./components/auth/auth.component').then(m => m.AuthComponent),
+    canActivate: [GuestGuard]
+  },
+
+  {
+    path: 'register',
+    loadComponent: () => import('./components/register/register.component').then(m => m.RegisterComponent),
+    canActivate: [GuestGuard]
+  },
+
+  {
+    path: 'inscription',
+    loadComponent: () => import('./components/register/register.component').then(m => m.RegisterComponent),
+    canActivate: [GuestGuard]
+  },
+
+  // Page d'accès non autorisé
+  {
+    path: 'unauthorized',
+    loadComponent: () => import('./components/unauthorized/unauthorized.component').then(m => m.UnauthorizedComponent)
+  },
+
+  // Routes protégées par authentification - Dashboard simple
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard]
+  },
+
+  // Routes pour les stagiaires
+  {
+    path: 'stagiaire',
+    canActivate: [RoleGuard],
+    data: { role: 'stagiaire' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/stagiaire/dashboard/stagiaire-dashboard.component').then(m => m.StagiaireDashboardComponent)
+      }
+    ]
+  },
+
+  // Routes pour les RH
+  {
+    path: 'rh',
+    canActivate: [RoleGuard],
+    data: { role: 'rh' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/rh/dashboard/rh-dashboard.component').then(m => m.RhDashboardComponent)
+      }
+    ]
+  },
+
+  // Routes pour les administrateurs
+  {
+    path: 'admin',
+    canActivate: [RoleGuard],
+    data: { role: 'admin' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      }
+    ]
+  },
+
+  // Routes pour les encadrants
+  {
+    path: 'encadrant',
+    canActivate: [RoleGuard],
+    data: { role: 'encadrant' },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/encadrant/dashboard/encadrant-dashboard.component').then(m => m.EncadrantDashboardComponent)
+      }
+    ]
+  },
+
+  // Route de fallback - Page 404
+  {
+    path: '**',
+    redirectTo: ''
+  }
+];

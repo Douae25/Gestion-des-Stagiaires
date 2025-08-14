@@ -1,0 +1,216 @@
+<div class="auth-container">
+  <!-- Navbar de navigation -->
+  <nav class="auth-navbar">
+    <div class="navbar-content">
+      <!-- Logo et retour accueil -->
+      <div class="navbar-brand">
+        <button mat-button class="home-btn" routerLink="/" aria-label="Retour à l'accueil">
+          <mat-icon>home</mat-icon>
+          <span>Accueil</span>
+        </button>
+      </div>
+
+      <!-- Actions de droite -->
+      <div class="navbar-actions">
+        <span class="auth-mode-text" *ngIf="currentView === 'login'">Pas encore de compte ?</span>
+        <span class="auth-mode-text" *ngIf="currentView === 'forgot-password'">Retour à la</span>
+        
+        <button 
+          mat-stroked-button 
+          color="accent" 
+          class="switch-mode-btn"
+          *ngIf="currentView === 'login'"
+          (click)="goToRegister()"
+        >
+          <mat-icon>person_add</mat-icon>
+          <span>S'inscrire</span>
+        </button>
+
+        <button 
+          mat-button 
+          color="accent" 
+          class="switch-mode-btn"
+          *ngIf="currentView === 'forgot-password'"
+          (click)="switchToLogin()"
+        >
+          <mat-icon>login</mat-icon>
+          <span>Connexion</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-background">
+    <div class="auth-card">
+      <!-- En-tête avec logo et titre -->
+      <div class="auth-header">
+        <div class="logo-section">
+          <mat-icon class="logo-icon">business</mat-icon>
+          <h1 class="app-title">Gestion Stages</h1>
+        </div>
+        <p class="auth-subtitle" *ngIf="currentView === 'login'">
+          Connectez-vous à votre espace professionnel
+        </p>
+        <p class="auth-subtitle" *ngIf="currentView === 'forgot-password'">
+          Récupération sécurisée de votre mot de passe
+        </p>
+      </div>
+
+      <!-- Formulaire de connexion -->
+      <div class="auth-content" *ngIf="currentView === 'login'">
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+          <!-- Champ Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse email</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="votre.email@exemple.com"
+              autocomplete="email"
+            >
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="emailControl?.invalid && emailControl?.touched">
+              {{ getEmailErrorMessage() }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Champ Mot de passe -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="mot_de_passe"
+              placeholder="Votre mot de passe"
+              autocomplete="current-password"
+            >
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="'Afficher le mot de passe'"
+              [attr.aria-pressed]="!hidePassword"
+            >
+              <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="passwordControl?.invalid && passwordControl?.touched">
+              {{ getPasswordErrorMessage() }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Actions de connexion -->
+          <div class="auth-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="isLoading || loginForm.invalid"
+              class="login-button"
+            >
+              <mat-spinner
+                *ngIf="isLoading"
+                diameter="20"
+                color="accent"
+                class="login-spinner"
+              ></mat-spinner>
+              <span *ngIf="!isLoading">Se connecter</span>
+              <span *ngIf="isLoading">Connexion...</span>
+            </button>
+
+            <button
+              mat-button
+              type="button"
+              color="accent"
+              (click)="switchToForgotPassword()"
+              class="forgot-password-link"
+            >
+              Mot de passe oublié ?
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Formulaire de récupération de mot de passe -->
+      <div class="auth-content" *ngIf="currentView === 'forgot-password'">
+        <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()" class="auth-form">
+          <div class="forgot-password-info">
+            <mat-icon class="info-icon">info</mat-icon>
+            <p>Saisissez votre adresse email professionnelle pour recevoir un lien de réinitialisation sécurisé. Vérifiez également votre dossier de courriers indésirables.</p>
+          </div>
+
+          <!-- Champ Email pour récupération -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse email</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="votre.email@exemple.com"
+              autocomplete="email"
+            >
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="forgotEmailControl?.invalid && forgotEmailControl?.touched">
+              {{ getEmailErrorMessage() }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Actions de récupération -->
+          <div class="auth-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="isLoading || forgotPasswordForm.invalid"
+              class="recover-button"
+            >
+              <mat-spinner
+                *ngIf="isLoading"
+                diameter="20"
+                color="accent"
+                class="login-spinner"
+              ></mat-spinner>
+              <span *ngIf="!isLoading">Envoyer les instructions</span>
+              <span *ngIf="isLoading">Envoi en cours...</span>
+            </button>
+
+            <button
+              mat-button
+              type="button"
+              color="accent"
+              (click)="switchToLogin()"
+              class="back-to-login-link"
+            >
+              <mat-icon>arrow_back</mat-icon>
+              Retour à la connexion
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Informations sur les rôles -->
+      <div class="roles-info" *ngIf="currentView === 'login'">
+        <h3>Accès sécurisé par rôle</h3>
+        <div class="roles-grid">
+          <div class="role-item">
+            <mat-icon>school</mat-icon>
+            <span>Espace Stagiaire</span>
+          </div>
+          <div class="role-item">
+            <mat-icon>people</mat-icon>
+            <span>Espace RH</span>
+          </div>
+          <div class="role-item">
+            <mat-icon>supervisor_account</mat-icon>
+            <span>Espace Encadrant</span>
+          </div>
+          <div class="role-item">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <span>Administration</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

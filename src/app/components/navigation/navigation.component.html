@@ -1,0 +1,42 @@
+<mat-toolbar color="primary" class="nav-toolbar">
+  <button mat-icon-button class="menu-btn" [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <mat-menu #menu="matMenu" xPosition="before">
+    <button mat-menu-item routerLink="/accueil" routerLinkActive="active">
+      <mat-icon>home</mat-icon>
+      <span>Accueil</span>
+    </button>
+    <button mat-menu-item routerLink="/offres" routerLinkActive="active">
+      <mat-icon>list</mat-icon>
+      <span>Toutes les offres</span>
+    </button>
+    <button mat-menu-item routerLink="/entreprises" routerLinkActive="active">
+      <mat-icon>business</mat-icon>
+      <span>Entreprises</span>
+    </button>
+    <button mat-menu-item routerLink="/contact" routerLinkActive="active">
+      <mat-icon>mail_outline</mat-icon>
+      <span>Contact</span>
+    </button>
+  </mat-menu>
+
+  <span class="nav-title">Gestionnaire de Stages</span>
+
+  <div class="nav-actions">
+    <button mat-icon-button matTooltip="Rechercher">
+      <mat-icon>search</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Notifications">
+      <mat-icon>notifications</mat-icon>
+    </button>
+    <button mat-button routerLink="/login" class="login-btn">
+      <mat-icon>login</mat-icon>
+      <span>Connexion</span>
+    </button>
+    <button mat-icon-button matTooltip="Profil">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>

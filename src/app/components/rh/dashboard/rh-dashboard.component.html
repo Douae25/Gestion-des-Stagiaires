@@ -1,0 +1,57 @@
+<div class="rh-dashboard-container">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <span>Dashboard RH - StageManager</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>business</mat-icon>
+          Espace Ressources Humaines
+        </mat-card-title>
+        <mat-card-subtitle>
+          Gestion des offres de stage et des candidatures
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="user-info" *ngIf="currentUser">
+          <p><strong>Email :</strong> {{ currentUser.email }}</p>
+          <p><strong>Rôle :</strong> 
+            <span class="role-badge rh">{{ currentUser.role }}</span>
+          </p>
+        </div>
+        
+        <div class="features-section">
+          <h3>Fonctionnalités RH</h3>
+          <div class="features-grid">
+            <div class="feature-item">
+              <mat-icon>work</mat-icon>
+              <h4>Gérer les offres</h4>
+              <p>Créer et modifier les offres de stage</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>people</mat-icon>
+              <h4>Candidatures</h4>
+              <p>Examiner les candidatures reçues</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>school</mat-icon>
+              <h4>Stagiaires</h4>
+              <p>Suivre les stagiaires en poste</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

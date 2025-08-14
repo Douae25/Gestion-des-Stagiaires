@@ -1,0 +1,57 @@
+<div class="encadrant-dashboard-container">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <span>Dashboard Encadrant - StageManager</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>supervisor_account</mat-icon>
+          Espace Encadrant
+        </mat-card-title>
+        <mat-card-subtitle>
+          Suivi et évaluation des stagiaires
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="user-info" *ngIf="currentUser">
+          <p><strong>Email :</strong> {{ currentUser.email }}</p>
+          <p><strong>Rôle :</strong> 
+            <span class="role-badge encadrant">{{ currentUser.role }}</span>
+          </p>
+        </div>
+        
+        <div class="features-section">
+          <h3>Fonctionnalités Encadrant</h3>
+          <div class="features-grid">
+            <div class="feature-item">
+              <mat-icon>school</mat-icon>
+              <h4>Mes stagiaires</h4>
+              <p>Suivre les stagiaires encadrés</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>assessment</mat-icon>
+              <h4>Évaluations</h4>
+              <p>Évaluer les performances</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>schedule</mat-icon>
+              <h4>Planning</h4>
+              <p>Organiser les rendez-vous</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

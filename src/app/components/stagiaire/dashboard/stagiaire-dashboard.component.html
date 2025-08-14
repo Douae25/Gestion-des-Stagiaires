@@ -1,0 +1,57 @@
+<div class="stagiaire-dashboard-container">
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+    <span>Dashboard Stagiaire - StageManager</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
+      <mat-icon>home</mat-icon>
+    </button>
+    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="dashboard-content">
+    <mat-card class="welcome-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>school</mat-icon>
+          Espace Stagiaire
+        </mat-card-title>
+        <mat-card-subtitle>
+          Bienvenue dans votre espace personnel de gestion de stage
+        </mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="user-info" *ngIf="currentUser">
+          <p><strong>Email :</strong> {{ currentUser.email }}</p>
+          <p><strong>Rôle :</strong> 
+            <span class="role-badge stagiaire">{{ currentUser.role }}</span>
+          </p>
+        </div>
+        
+        <div class="features-section">
+          <h3>Fonctionnalités disponibles</h3>
+          <div class="features-grid">
+            <div class="feature-item">
+              <mat-icon>work</mat-icon>
+              <h4>Consulter les offres</h4>
+              <p>Parcourir les offres de stage disponibles</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>assignment</mat-icon>
+              <h4>Mes candidatures</h4>
+              <p>Suivre l'état de vos candidatures</p>
+            </div>
+            <div class="feature-item">
+              <mat-icon>person</mat-icon>
+              <h4>Mon profil</h4>
+              <p>Gérer vos informations personnelles</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
