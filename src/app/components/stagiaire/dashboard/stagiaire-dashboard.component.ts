@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
+import { StagiaireService, Candidature, StagiaireProfile } from '../../../services/stagiaire.service';
 
 interface Notification {
   id: number;
@@ -17,16 +18,6 @@ interface Notification {
   type: 'success' | 'warning' | 'info';
   date: Date;
   read: boolean;
-}
-
-interface Candidature {
-  id: number;
-  statut: 'en_attente' | 'acceptee' | 'refusee' | 'en_cours_evaluation';
-  dateCandidature: Date;
-  offre?: {
-    titre: string;
-    entreprise: string;
-  };
 }
 
 @Component({
@@ -54,6 +45,7 @@ export class StagiaireDashboardComponent implements OnInit {
   offresCount = 0;
   newOffresCount = 0;
   pendingCandidaturesCount = 0;
+  activeStagesCount = 0;
   notificationCount = 0;
   
   // Notifications
@@ -79,26 +71,47 @@ export class StagiaireDashboardComponent implements OnInit {
     {
       id: 1,
       statut: 'en_attente',
-      dateCandidature: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-      offre: {
+      date_soumission: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      id_offre: 1,
+      id_stagiaire: 1,
+      offre_info: {
+        id: 1,
+        id_rh: 1,
         titre: 'Stage Développement Web',
-        entreprise: 'TechCorp'
+        description: 'Développement d\'applications web',
+        date_debut: '2024-09-01',
+        date_fin: '2025-02-28',
+        duree: 6,
+        statut: 'en_cours',
+        localisation: 'Paris',
+        competence_requise: 'React, Node.js'
       }
     },
     {
       id: 2,
-      statut: 'en_cours_evaluation',
-      dateCandidature: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-      offre: {
+      statut: 'en_attente',
+      date_soumission: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      id_offre: 2,
+      id_stagiaire: 1,
+      offre_info: {
+        id: 2,
+        id_rh: 2,
         titre: 'Stage Marketing Digital',
-        entreprise: 'DigitalAgency'
+        description: 'Stratégies marketing digitales',
+        date_debut: '2024-10-01',
+        date_fin: '2025-03-31',
+        duree: 6,
+        statut: 'en_cours',
+        localisation: 'Lyon',
+        competence_requise: 'SEO, Analytics'
       }
     }
   ];
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private stagiaireService: StagiaireService
   ) {}
 
   ngOnInit(): void {
@@ -115,11 +128,37 @@ export class StagiaireDashboardComponent implements OnInit {
   }
 
   private loadDashboardData(): void {
-    // Simulation de données - à remplacer par de vrais appels API
-    this.candidaturesCount = this.recentCandidatures.length;
+    // Charger les candidatures réelles depuis l'API
+    this.stagiaireService.getCandidatures(1, 5).subscribe({
+      next: (response: Candidature[]) => {
+        this.recentCandidatures = response || [];
+        this.candidaturesCount = this.recentCandidatures.length;
+        this.pendingCandidaturesCount = this.recentCandidatures.filter(c => c.statut === 'en_attente').length;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des candidatures:', error);
+        // Garder les données de test en cas d'erreur
+        this.candidaturesCount = this.recentCandidatures.length;
+        this.pendingCandidaturesCount = this.recentCandidatures.filter(c => c.statut === 'en_attente').length;
+      }
+    });
+
+    // Charger les stages actifs (candidatures acceptées)
+    this.stagiaireService.getCandidaturesAcceptees().subscribe({
+      next: (candidatures) => {
+        // Les candidatures acceptées deviennent des stages actifs
+        this.activeStagesCount = candidatures.length;
+        console.log('Stages actifs (candidatures acceptées):', this.activeStagesCount);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des stages:', error);
+        this.activeStagesCount = 0;
+      }
+    });
+
+    // Simulation pour les autres données - à remplacer par de vrais appels API
     this.offresCount = 25; // Exemple
     this.newOffresCount = 3; // Exemple
-    this.pendingCandidaturesCount = this.recentCandidatures.filter(c => c.statut === 'en_attente').length;
   }
 
   private updateNotificationCount(): void {
@@ -139,8 +178,8 @@ export class StagiaireDashboardComponent implements OnInit {
     this.router.navigate(['/stagiaire/profile']);
   }
 
-  navigateToDocuments(): void {
-    this.router.navigate(['/stagiaire/documents']);
+  navigateToStages(): void {
+    this.router.navigate(['/stagiaire/mes-stages']);
   }
 
   goToProfile(): void {
@@ -149,7 +188,10 @@ export class StagiaireDashboardComponent implements OnInit {
 
   // Actions sur les candidatures
   viewCandidature(candidature: Candidature): void {
-    this.router.navigate(['/stagiaire/candidatures', candidature.id]);
+    // Passer les données de la candidature via l'état de navigation
+    this.router.navigate(['/stagiaire/candidatures', candidature.id], {
+      state: { candidature: candidature }
+    });
   }
 
   // Gestion des notifications
@@ -202,7 +244,8 @@ export class StagiaireDashboardComponent implements OnInit {
     }
   }
 
-  formatDate(date: Date): string {
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('fr-FR', {
       day: 'numeric',
       month: 'long',

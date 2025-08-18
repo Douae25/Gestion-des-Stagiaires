@@ -201,18 +201,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
   }
 
   voirToutesLesOffres(): void {
-    // Vérifier si le stagiaire est connecté avant d'accéder aux offres
-    if (!this.isAuthenticated) {
-      this.snackBar.open('Vous devez vous connecter pour consulter toutes les offres', 'Se connecter', {
-        duration: 5000,
-        panelClass: ['warning-snackbar']
-      }).onAction().subscribe(() => {
-        this.router.navigate(['/login'], { queryParams: { returnUrl: '/offres' } });
-      });
-      return;
-    }
-    
-    // Navigation vers la page de toutes les offres
+    // Navigation directe vers la page de toutes les offres, sans vérification d'authentification
     this.router.navigate(['/offres']);
   }
 
@@ -286,8 +275,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
   }
 
   onCtaClick(): void {
-    // Action pour le bouton CTA
-    console.log('CTA clicked');
+    // Redirection directe vers la page des offres
+    this.router.navigate(['/offres']);
   }
 
   onContactClick(): void {

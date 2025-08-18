@@ -169,10 +169,26 @@
 
       <!-- Offres Grid avec design amélioré -->
       <div class="offres-grid" [class.list-view]="viewMode === 'list'">
-        <div *ngFor="let offre of offresFiltrees; trackBy: trackByOffre" class="offre-card" [class.active]="isOffreActive(offre.statut)">
+        <div *ngFor="let offre of offresFiltrees; trackBy: trackByOffre" 
+             class="offre-card" 
+             [class.active]="isOffreActive(offre.statut)"
+             [class]="getOffreStatusClass(offre)">
+          
           <!-- Badge de statut flottant -->
           <div class="status-badge" [class]="getStatusClass(offre.statut)">
             {{ getStatusLabel(offre.statut) }}
+          </div>
+
+          <!-- Badge de temps restant -->
+          <div class="time-badge" [class.urgent]="getTempsRestant(offre).jours <= 1" *ngIf="!isOffreExpiree(offre)">
+            <mat-icon>schedule</mat-icon>
+            {{ formatTempsRestant(offre) }}
+          </div>
+
+          <!-- Badge expiré -->
+          <div class="expired-badge" *ngIf="isOffreExpiree(offre)">
+            <mat-icon>schedule_send</mat-icon>
+            Candidatures fermées
           </div>
 
           <!-- Layout pour mode liste -->
@@ -189,6 +205,10 @@
                   <mat-icon>location_on</mat-icon>
                   {{ offre.localisation }}
                 </span>
+                <span class="offre-publication">
+                  <mat-icon>calendar_today</mat-icon>
+                  Publié le {{ formatDatePublication(offre.date_publication) }}
+                </span>
               </div>
             </div>
 
@@ -202,7 +222,7 @@
               </div>
             </div>
 
-            <!-- Section droite : Dates et période -->
+            <!-- Section droite : Dates et informations candidatures -->
             <div class="offre-dates-section">
               <div class="date-label">Période</div>
               <div class="date-range">
@@ -211,6 +231,18 @@
               <div class="duration-badge">
                 <mat-icon>timer</mat-icon>
                 {{ offre.duree }} mois
+              </div>
+              
+              <!-- Informations candidatures -->
+              <div class="candidatures-info">
+                <div class="candidatures-count">
+                  <mat-icon>group</mat-icon>
+                  {{ formatCandidatures(offre) }}
+                </div>
+                <div class="time-remaining" [class.urgent]="getTempsRestant(offre).jours <= 1">
+                  <mat-icon>schedule</mat-icon>
+                  {{ formatTempsRestant(offre) }}
+                </div>
               </div>
             </div>
           </div>
@@ -229,12 +261,32 @@
                   {{ offre.localisation }}
                 </span>
               </div>
+              
+              <!-- Date de publication -->
+              <div class="publication-info">
+                <mat-icon>calendar_today</mat-icon>
+                <span>Publié le {{ formatDatePublication(offre.date_publication) }}</span>
+              </div>
             </div>
           </div>
 
           <!-- Description avec gradient de texte (mode grille uniquement) -->
           <div *ngIf="viewMode === 'grid'" class="offre-description-wrapper">
             <p class="offre-description">{{ offre.description }}</p>
+          </div>
+
+          <!-- Informations candidatures et délais (mode grille uniquement) -->
+          <div *ngIf="viewMode === 'grid'" class="candidature-timing">
+            <div class="timing-row">
+              <div class="timing-item">
+                <mat-icon>group</mat-icon>
+                <span>{{ formatCandidatures(offre) }}</span>
+              </div>
+              <div class="timing-item" [class.urgent]="getTempsRestant(offre).jours <= 1">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatTempsRestant(offre) }}</span>
+              </div>
+            </div>
           </div>
 
           <!-- Détails de l'offre avec icônes (mode grille uniquement) -->
@@ -262,20 +314,36 @@
 
           <!-- Actions avec design amélioré -->
           <div class="offre-actions">
-            <button mat-raised-button color="primary" class="apply-btn" [disabled]="!isOffreActive(offre.statut)">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="apply-btn" 
+              [disabled]="!canPostuler(offre)"
+              (click)="ouvrirDialogPostuler(offre)"
+              *ngIf="currentUser?.role === 'stagiaire'">
               <mat-icon>send</mat-icon>
-              {{ isOffreActive(offre.statut) ? 'Postuler' : 'Fermée' }}
+              <span *ngIf="canPostuler(offre)">Postuler</span>
+              <span *ngIf="isOffreExpiree(offre)">Expiré</span>
+              <span *ngIf="isCandidaturesCompletes(offre) && !isOffreExpiree(offre)">Complet</span>
+              <span *ngIf="!isOffreActive(offre.statut) && !isOffreExpiree(offre) && !isCandidaturesCompletes(offre)">Fermée</span>
             </button>
-            <button mat-button color="accent" class="info-btn">
+            <button 
+              mat-outlined-button 
+              color="primary" 
+              class="login-btn" 
+              (click)="navigateToLogin()"
+              *ngIf="!currentUser">
+              <mat-icon>login</mat-icon>
+              Se connecter pour postuler
+            </button>
+            <button 
+              mat-stroked-button 
+              color="warn" 
+              class="role-info-btn" 
+              *ngIf="currentUser && currentUser.role !== 'stagiaire'">
               <mat-icon>info</mat-icon>
-              Détails
+              Réservé aux stagiaires
             </button>
-          </div>
-
-          <!-- Indicateur de popularité (mode grille uniquement) -->
-          <div *ngIf="viewMode === 'grid' && isOffreActive(offre.statut)" class="offre-popularity">
-            <mat-icon>trending_up</mat-icon>
-            <span>Populaire</span>
           </div>
         </div>
       </div>

@@ -7,14 +7,89 @@
   --transition: all 0.3s ease;
 }
 
-body {
+// Styles globaux et utilitaires
+* {
+  box-sizing: border-box;
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  padding: 0;
 }
 
-// Global animations
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background-color: var(--background-color);
+  color: var(--stagiaire-text-primary);
+  line-height: var(--stagiaire-line-height-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Styles pour les éléments HTML de base
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--stagiaire-font-weight-bold);
+  line-height: var(--stagiaire-line-height-tight);
+  margin-bottom: var(--stagiaire-space-sm);
+}
+
+p {
+  margin-bottom: var(--stagiaire-space-sm);
+  line-height: var(--stagiaire-line-height-normal);
+}
+
+a {
+  color: var(--stagiaire-primary);
+  text-decoration: none;
+  transition: var(--stagiaire-transition-base);
+  
+  &:hover {
+    color: var(--stagiaire-secondary);
+    text-decoration: underline;
+  }
+}
+
+// Classes utilitaires globales
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.font-normal { font-weight: var(--stagiaire-font-weight-normal); }
+.font-medium { font-weight: var(--stagiaire-font-weight-medium); }
+.font-semibold { font-weight: var(--stagiaire-font-weight-semibold); }
+.font-bold { font-weight: var(--stagiaire-font-weight-bold); }
+.font-extrabold { font-weight: var(--stagiaire-font-weight-extrabold); }
+
+.text-xs { font-size: var(--stagiaire-font-size-xs); }
+.text-sm { font-size: var(--stagiaire-font-size-sm); }
+.text-base { font-size: var(--stagiaire-font-size-base); }
+.text-lg { font-size: var(--stagiaire-font-size-lg); }
+.text-xl { font-size: var(--stagiaire-font-size-xl); }
+.text-2xl { font-size: var(--stagiaire-font-size-2xl); }
+.text-3xl { font-size: var(--stagiaire-font-size-3xl); }
+.text-4xl { font-size: var(--stagiaire-font-size-4xl); }
+
+.text-primary { color: var(--stagiaire-text-primary); }
+.text-secondary { color: var(--stagiaire-text-secondary); }
+.text-light { color: var(--stagiaire-text-light); }
+.text-white { color: var(--stagiaire-text-white); }
+
+// Flexbox utilitaires
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-1 { flex: 1; }
+
+// Gap utilitaires
+.gap-2 { gap: var(--stagiaire-space-sm); }
+.gap-4 { gap: var(--stagiaire-space-lg); }
+
+// Global animations - compatibilité avec l'existant
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -24,7 +99,45 @@ body {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-// Responsive helpers
+// Classes d'animation du design system
+.animate-fadeIn { animation: stagiaire-fadeIn 0.6s ease-out; }
+.animate-fadeInUp { animation: stagiaire-fadeInUp 0.6s ease-out; }
+.animate-pulse { animation: stagiaire-pulse 2s infinite; }
+
+// Scrollbar personnalisé
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--stagiaire-primary);
+  border-radius: 4px;
+  transition: var(--stagiaire-transition-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--stagiaire-secondary);
+}
+
+// Focus styles
+*:focus {
+  outline: 2px solid var(--stagiaire-primary);
+  outline-offset: 2px;
+}
+
+// Selection styles
+::selection {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--stagiaire-text-primary);
+}
+
+// Responsive helpers - compatibilité avec l'existant
 @media (max-width: 768px) {
   .hidden-mobile {
     display: none !important;

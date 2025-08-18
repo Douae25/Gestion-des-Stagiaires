@@ -13,6 +13,10 @@ export interface OffreStage {
   statut: string;     // en_cours, fermee, archivee
   localisation: string;
   competence_requise: string;
+  date_publication: string; // LocalDate du backend
+  duree_candidature: number; // en jours
+  nombre_limite_candidature?: number; // nullable - si null, pas de limite
+  nombre_candidatures_actuelles?: number; // pour afficher le nombre actuel de candidatures
   entreprise?: {
     id: number;
     nom: string;

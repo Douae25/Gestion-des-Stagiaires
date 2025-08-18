@@ -1,0 +1,131 @@
+<div class="postuler-dialog">
+  <h2 mat-dialog-title>
+    <mat-icon>work</mat-icon>
+    Postuler pour "{{ offre?.titre }}"
+  </h2>
+
+  <mat-dialog-content>
+    <div class="offre-info">
+      <div class="offre-header">
+        <h3>{{ offre?.titre }}</h3>
+        <p class="entreprise">{{ offre?.entreprise?.nom }}</p>
+        <p class="location">
+          <mat-icon>location_on</mat-icon>
+          {{ offre?.localisation }}
+        </p>
+        <p class="duration">
+          <mat-icon>schedule</mat-icon>
+          {{ offre?.duree }} mois
+        </p>
+      </div>
+    </div>
+
+    <form [formGroup]="candidatureForm" (ngSubmit)="onSubmit()" class="candidature-form">
+      
+      <!-- Upload CV -->
+      <div class="file-upload-section">
+        <label class="file-upload-label">
+          <mat-icon>description</mat-icon>
+          CV (PDF, Word - Max 5MB)
+        </label>
+        <div class="file-upload-container">
+          <input 
+            type="file" 
+            #cvFileInput
+            (change)="onCvFileSelected($event)"
+            accept=".pdf,.doc,.docx"
+            class="file-input"
+            id="cv-upload">
+          <mat-form-field appearance="outline" class="file-display">
+            <mat-label>Fichier CV</mat-label>
+            <input 
+              matInput 
+              formControlName="cv"
+              readonly
+              placeholder="Aucun fichier sélectionné"
+              [class.mat-form-field-invalid]="candidatureForm.get('cv')?.invalid && candidatureForm.get('cv')?.touched">
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="cvFileInput.click()"
+              [disabled]="loading">
+              <mat-icon>upload_file</mat-icon>
+            </button>
+            <mat-error *ngIf="candidatureForm.get('cv')?.invalid && candidatureForm.get('cv')?.touched">
+              {{ getErrorMessage('cv') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div *ngIf="selectedCvFile" class="file-info">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ selectedCvFile.name }}</span>
+          <small>({{ formatFileSize(selectedCvFile.size) }})</small>
+        </div>
+      </div>
+
+      <!-- Upload Lettre de motivation fichier -->
+      <div class="file-upload-section">
+        <label class="file-upload-label">
+          <mat-icon>attachment</mat-icon>
+          Lettre de motivation (PDF, Word - Max 5MB)
+        </label>
+        <div class="file-upload-container">
+          <input 
+            type="file" 
+            #lettreFileInput
+            (change)="onLettreFileSelected($event)"
+            accept=".pdf,.doc,.docx"
+            class="file-input"
+            id="lettre-upload">
+          <mat-form-field appearance="outline" class="file-display">
+            <mat-label>Fichier lettre de motivation</mat-label>
+            <input 
+              matInput 
+              formControlName="lettre_motivation_file"
+              readonly
+              placeholder="Aucun fichier sélectionné"
+              [class.mat-form-field-invalid]="candidatureForm.get('lettre_motivation_file')?.invalid && candidatureForm.get('lettre_motivation_file')?.touched">
+            <button 
+              mat-icon-button 
+              matSuffix 
+              type="button"
+              (click)="lettreFileInput.click()"
+              [disabled]="loading">
+              <mat-icon>upload_file</mat-icon>
+            </button>
+            <mat-error *ngIf="candidatureForm.get('lettre_motivation_file')?.invalid && candidatureForm.get('lettre_motivation_file')?.touched">
+              {{ getErrorMessage('lettre_motivation_file') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div *ngIf="selectedLettreFile" class="file-info">
+          <mat-icon>check_circle</mat-icon>
+          <span>{{ selectedLettreFile.name }}</span>
+          <small>({{ formatFileSize(selectedLettreFile.size) }})</small>
+        </div>
+      </div>
+
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button 
+      mat-button 
+      type="button"
+      (click)="onCancel()"
+      [disabled]="loading">
+      Annuler
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary"
+      type="button"
+      (click)="onSubmit()"
+      [disabled]="loading || candidatureForm.invalid || !selectedCvFile || !selectedLettreFile">
+      <mat-spinner *ngIf="loading" diameter="20" class="button-spinner"></mat-spinner>
+      <mat-icon *ngIf="!loading">send</mat-icon>
+      {{ loading ? 'Envoi en cours...' : 'Envoyer la candidature' }}
+    </button>
+  </mat-dialog-actions>
+</div>

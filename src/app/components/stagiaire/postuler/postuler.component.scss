@@ -1,0 +1,227 @@
+.postuler-dialog {
+  min-width: 600px;
+  max-width: 800px;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #1976d2;
+    margin-bottom: 0;
+    
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+.offre-info {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  border-left: 4px solid #1976d2;
+
+  .offre-header {
+    h3 {
+      margin: 0 0 8px 0;
+      color: #1976d2;
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+
+    .entreprise {
+      color: #666;
+      font-weight: 500;
+      margin: 0 0 12px 0;
+      font-size: 1.1em;
+    }
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0;
+      color: #555;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #1976d2;
+      }
+    }
+  }
+}
+
+.candidature-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .full-width {
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+}
+
+.file-upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  .file-upload-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #1976d2;
+    }
+  }
+
+  .file-upload-container {
+    position: relative;
+
+    .file-input {
+      display: none;
+    }
+
+    .file-display {
+      width: 100%;
+      
+      input {
+        cursor: pointer;
+      }
+
+      button[matSuffix] {
+        color: #1976d2;
+        
+        &:hover {
+          background-color: rgba(25, 118, 210, 0.1);
+        }
+      }
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #e8f5e8;
+    border-radius: 8px;
+    border: 1px solid #4caf50;
+    color: #2e7d32;
+
+    mat-icon {
+      color: #4caf50;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      font-weight: 500;
+    }
+
+    small {
+      color: #666;
+      margin-left: auto;
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 12px;
+
+  button {
+    min-width: 120px;
+    
+    &[mat-raised-button] {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .button-spinner {
+        margin-right: 8px;
+      }
+    }
+  }
+}
+
+// Animations
+.file-info {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Error states
+.mat-form-field-invalid {
+  .mat-form-field-outline {
+    color: #f44336 !important;
+  }
+}
+
+// Success states
+.file-info {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: #d4edda;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .postuler-dialog {
+    min-width: 90vw;
+    max-width: 90vw;
+  }
+
+  .offre-info {
+    padding: 16px;
+  }
+
+  .candidature-form {
+    gap: 16px;
+  }
+}
+
+// Snackbar styles (global)
+::ng-deep {
+  .success-snackbar {
+    background-color: #4caf50 !important;
+    color: white !important;
+  }
+
+  .error-snackbar {
+    background-color: #f44336 !important;
+    color: white !important;
+  }
+}

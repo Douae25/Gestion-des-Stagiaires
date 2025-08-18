@@ -57,6 +57,14 @@
       </div>
     </div>
     <mat-divider></mat-divider>
+    <button mat-menu-item (click)="navigateToCandidatures()">
+      <mat-icon>assignment</mat-icon>
+      <span>Mes candidatures</span>
+    </button>
+    <button mat-menu-item (click)="navigateToStages()">
+      <mat-icon>school</mat-icon>
+      <span>Mes stages</span>
+    </button>
     <button mat-menu-item (click)="goToProfile()">
       <mat-icon>settings</mat-icon>
       <span>Mon profil</span>
@@ -118,19 +126,20 @@
           </mat-card-content>
         </mat-card>
 
+        <mat-card class="action-card" (click)="navigateToStages()">
+          <mat-card-content>
+            <mat-icon class="action-icon">school</mat-icon>
+            <h4>Mes stages</h4>
+            <p>Gérez vos stages et déposez vos rapports</p>
+            <span class="action-badge" *ngIf="activeStagesCount > 0">{{ activeStagesCount }} actifs</span>
+          </mat-card-content>
+        </mat-card>
+
         <mat-card class="action-card" (click)="navigateToProfile()">
           <mat-card-content>
             <mat-icon class="action-icon">person</mat-icon>
             <h4>Mon profil</h4>
             <p>Mettez à jour vos informations personnelles</p>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card class="action-card" (click)="navigateToDocuments()">
-          <mat-card-content>
-            <mat-icon class="action-icon">description</mat-icon>
-            <h4>Mes documents</h4>
-            <p>Gérez vos CV, lettres de motivation et attestations</p>
           </mat-card-content>
         </mat-card>
       </div>
@@ -151,8 +160,8 @@
           <mat-card-content>
             <div class="application-header">
               <div class="application-title">
-                <h4>{{ candidature.offre?.titre || 'Titre non disponible' }}</h4>
-                <span class="company-name">{{ candidature.offre?.entreprise || 'Entreprise' }}</span>
+                <h4>{{ candidature.offre_info.titre || 'Titre non disponible' }}</h4>
+                <!-- <span class="company-name">{{ candidature.offre_info?.entreprise?.nom || 'Entreprise' }}</span> -->
               </div>
               <div class="application-status">
                 <mat-chip [color]="getStatusColor(candidature.statut)" selected>
@@ -164,7 +173,7 @@
             <div class="application-details">
               <div class="application-info">
                 <mat-icon>calendar_today</mat-icon>
-                <span>Candidature envoyée le {{ formatDate(candidature.dateCandidature) }}</span>
+                <span>Candidature envoyée le {{ formatDate(candidature.date_soumission) }}</span>
               </div>
               
               <div class="application-actions">

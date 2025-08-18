@@ -8,11 +8,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/landing/landing.component').then(m => m.LandingComponent)
   },
 
-  // Route pour toutes les offres (protégée par authentification)
+  // Route pour toutes les offres (accessible à tous)
   {
     path: 'offres',
-    loadComponent: () => import('./components/offres/offres.component').then(m => m.OffresComponent),
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./components/offres/offres.component').then(m => m.OffresComponent)
   },
 
   // Routes d'authentification (accès aux visiteurs non connectés)
@@ -74,9 +73,9 @@ export const routes: Routes = [
         loadComponent: () => import('./components/stagiaire/profile/profile.component').then(m => m.ProfileComponent)
       },
       {
-        path: 'documents',
-        loadComponent: () => import('./components/stagiaire/documents/documents.component').then(m => m.DocumentsComponent)
-      }
+        path: 'mes-stages',
+        loadComponent: () => import('./components/stagiaire/mes-stages/mes-stages.component').then(m => m.MesStagesComponent)
+      },
     ]
   },
 

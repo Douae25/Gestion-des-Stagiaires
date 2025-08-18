@@ -6,10 +6,85 @@
     </button>
     <span class="page-title">Mes candidatures</span>
     <span class="toolbar-spacer"></span>
-    <span class="candidatures-count" *ngIf="candidatures.length > 0">
-      {{ candidatures.length }} candidature{{ candidatures.length > 1 ? 's' : '' }}
+    
+    <!-- Boutons de contrôle -->
+    <button mat-icon-button (click)="toggleFilters()" matTooltip="Filtres et tri">
+      <mat-icon>filter_list</mat-icon>
+    </button>
+    
+    <span class="candidatures-count" *ngIf="candidaturesFiltrees && candidaturesFiltrees.length > 0">
+      {{ candidaturesFiltrees.length }} / {{ candidatures.length }} candidature{{ candidatures.length > 1 ? 's' : '' }}
     </span>
   </mat-toolbar>
+
+  <!-- Panneau de filtres -->
+  <div class="filters-panel" [class.active]="showFilters">
+    <div class="filters-content">
+      <!-- Barre de recherche -->
+      <div class="search-section">
+        <h4>Rechercher</h4>
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher dans les candidatures</mat-label>
+          <input 
+            matInput 
+            [(ngModel)]="searchQuery" 
+            (input)="onSearchChange(searchQuery)"
+            placeholder="Titre, localisation, statut...">
+          <mat-icon matSuffix *ngIf="!searchQuery">search</mat-icon>
+          <button 
+            matSuffix 
+            mat-icon-button 
+            *ngIf="searchQuery" 
+            (click)="clearSearch()"
+            matTooltip="Effacer la recherche">
+            <mat-icon>clear</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <!-- Filtres par statut -->
+      <div class="filter-section">
+        <h4>Filtrer par statut</h4>
+        <div class="filter-chips">
+          <button 
+            *ngFor="let option of statutOptions" 
+            mat-button 
+            [class.active]="selectedStatut === option.value"
+            (click)="changeStatutFilter(option.value)"
+            class="filter-chip">
+            {{ option.label }}
+            <span class="chip-count" *ngIf="option.count > 0">{{ option.count }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Options de tri -->
+      <div class="sort-section">
+        <h4>Trier par</h4>
+        <div class="sort-options">
+          <button 
+            *ngFor="let option of sortOptions" 
+            mat-button 
+            [class.active]="sortBy === option.value"
+            (click)="changeSortBy(option.value)"
+            class="sort-option">
+            {{ option.label }}
+            <mat-icon *ngIf="sortBy === option.value">
+              {{ sortOrder === 'asc' ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+            </mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="filter-actions">
+        <button mat-stroked-button (click)="resetFilters()">
+          <mat-icon>clear</mat-icon>
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Content -->
   <div class="candidatures-content">
@@ -21,12 +96,12 @@
 
     <!-- Candidatures List -->
     <div class="candidatures-list" *ngIf="!loading">
-      <mat-card class="candidature-card" *ngFor="let candidature of candidatures" (click)="viewCandidature(candidature)">
+      <mat-card class="candidature-card" *ngFor="let candidature of candidaturesFiltrees" (click)="viewCandidature(candidature)">
         <mat-card-header>
           <div class="candidature-header">
             <div class="candidature-title">
-              <h3>{{ candidature.offre.titre }}</h3>
-              <span class="entreprise">{{ candidature.offre.entreprise }}</span>
+              <h3>{{ candidature.offre_info.titre || 'Titre non disponible' }}</h3>
+              <!-- <span class="entreprise">{{ candidature.offre_info?.entreprise?.nom || 'Entreprise non spécifiée' }}</span> -->
             </div>
             <div class="candidature-status">
               <mat-chip [color]="getStatusColor(candidature.statut)" selected>
@@ -38,17 +113,107 @@
 
         <mat-card-content>
           <div class="candidature-details">
-            <div class="detail-item">
-              <mat-icon>location_on</mat-icon>
-              <span>{{ candidature.offre.localisation }}</span>
+            <!-- Informations principales -->
+            <div class="main-info">
+              <div class="detail-item">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ candidature.offre_info.localisation || 'Non spécifié' }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ candidature.offre_info.duree }} mois</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>date_range</mat-icon>
+                <span>{{ formatDate(candidature.offre_info.date_debut) }} - {{ formatDate(candidature.offre_info.date_fin) }}</span>
+              </div>
             </div>
-            <div class="detail-item">
-              <mat-icon>work</mat-icon>
-              <span>{{ candidature.offre.type }}</span>
+
+            <!-- Informations de candidature -->
+            <div class="candidature-info">
+              <div class="detail-item">
+                <mat-icon>send</mat-icon>
+                <span>Candidature envoyée le {{ formatDate(candidature.date_soumission) }}</span>
+              </div>
+              <div class="detail-item" *ngIf="candidature.date_reponse">
+                <mat-icon>reply</mat-icon>
+                <span>Réponse reçue le {{ formatDate(candidature.date_reponse) }}</span>
+              </div>
+              <div class="detail-item" *ngIf="candidature.commentaire_rh">
+                <mat-icon>comment</mat-icon>
+                <span class="comment">{{ candidature.commentaire_rh }}</span>
+              </div>
             </div>
-            <div class="detail-item">
-              <mat-icon>calendar_today</mat-icon>
-              <span>Candidature envoyée le {{ formatDate(candidature.dateCandidature) }}</span>
+
+            <!-- Documents soumis -->
+            <div class="documents-info" *ngIf="candidature.cv || candidature.lettre_motivation || candidature.convention_signee">
+              <h4><mat-icon>folder</mat-icon> Documents disponibles</h4>
+              <div class="documents-list">
+                <div class="document-chip" *ngIf="candidature.cv">
+                  <mat-icon>description</mat-icon>
+                  <span>CV</span>
+                </div>
+                <div class="document-chip" *ngIf="candidature.lettre_motivation">
+                  <mat-icon>mail</mat-icon>
+                  <span>Lettre de motivation</span>
+                </div>
+                <div class="document-chip convention-signee" *ngIf="candidature.convention_signee">
+                  <mat-icon>verified</mat-icon>
+                  <span>Convention signée</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Informations encadrant (si accepté) -->
+            <div class="encadrant-info" *ngIf="candidature.statut === 'acceptee' && candidature.encadrant_info">
+              <h4><mat-icon>person</mat-icon> Encadrant assigné</h4>
+              <div class="encadrant-details">
+                <div class="detail-item">
+                  <mat-icon>person_outline</mat-icon>
+                  <span>{{ candidature.encadrant_info.prenom }} {{ candidature.encadrant_info.nom }}</span>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>email</mat-icon>
+                  <span>{{ candidature.encadrant_info.email }}</span>
+                </div>
+                <div class="detail-item" *ngIf="candidature.encadrant_info.numero_telephone">
+                  <mat-icon>phone</mat-icon>
+                  <span>{{ candidature.encadrant_info.numero_telephone }}</span>
+                </div>
+                <div class="detail-item" *ngIf="candidature.encadrant_info.encadrant_info?.departement">
+                  <mat-icon>business</mat-icon>
+                  <span>{{ candidature.encadrant_info.encadrant_info.departement }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progression du processus -->
+            <div class="progress-info">
+              <h4><mat-icon>timeline</mat-icon> Progression</h4>
+              <div class="progress-timeline">
+                <div class="timeline-step completed">
+                  <mat-icon>check_circle</mat-icon>
+                  <span>Candidature envoyée</span>
+                </div>
+                <div class="timeline-step" [class.completed]="candidature.statut !== 'en_attente'" [class.current]="candidature.statut === 'en_attente'">
+                  <mat-icon *ngIf="candidature.statut === 'en_attente'">hourglass_empty</mat-icon>
+                  <mat-icon *ngIf="candidature.statut === 'acceptee'">check_circle</mat-icon>
+                  <mat-icon *ngIf="candidature.statut === 'refusee'">cancel</mat-icon>
+                  <span>Évaluation RH</span>
+                </div>
+                <div class="timeline-step" [class.completed]="candidature.statut === 'acceptee'" *ngIf="candidature.statut === 'acceptee'">
+                  <mat-icon>assignment_ind</mat-icon>
+                  <span>Stage accepté</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Statistiques de temps -->
+            <div class="time-stats" *ngIf="candidature.date_reponse">
+              <div class="stat-item">
+                <mat-icon>timer</mat-icon>
+                <span>Temps de réponse : {{ getResponseTime(candidature.date_soumission, candidature.date_reponse) }}</span>
+              </div>
             </div>
           </div>
         </mat-card-content>
@@ -58,21 +223,120 @@
             <mat-icon>visibility</mat-icon>
             Voir détails
           </button>
+          
+          <!-- Bouton d'annulation pour les candidatures qui peuvent être annulées -->
+          <button 
+            mat-stroked-button 
+            color="warn" 
+            *ngIf="canCancelCandidature(candidature)"
+            (click)="cancelCandidature(candidature, $event)"
+            matTooltip="Annuler cette candidature">
+            <mat-icon>cancel</mat-icon>
+            Annuler
+          </button>
+
+          <!-- Actions spécifiques au statut -->
+          <div class="status-actions">
+            <!-- Candidature acceptée -->
+            <ng-container *ngIf="candidature.statut === 'acceptee'">
+              <button 
+                mat-flat-button 
+                color="primary" 
+                *ngIf="candidature.convention_stage"
+                (click)="downloadDocument(candidature.convention_stage, 'Convention de stage'); $event.stopPropagation()"
+                matTooltip="Télécharger la convention de stage">
+                <mat-icon>download</mat-icon>
+                Convention
+              </button>
+              <button 
+                mat-flat-button 
+                color="primary" 
+                *ngIf="candidature.convention_signee"
+                (click)="downloadConventionSignee(candidature); $event.stopPropagation()"
+                matTooltip="Télécharger la convention signée via l'API">
+                <mat-icon>verified</mat-icon>
+                Convention Signée
+              </button>
+              <button 
+                mat-flat-button 
+                color="accent" 
+                *ngIf="candidature.attestation || candidature.attestation_stage"
+                (click)="downloadDocument((candidature.attestation || candidature.attestation_stage)!, 'Attestation de stage'); $event.stopPropagation()"
+                matTooltip="Télécharger l'attestation de stage">
+                <mat-icon>description</mat-icon>
+                Attestation
+              </button>
+            </ng-container>
+
+            <!-- Candidature en attente -->
+            <ng-container *ngIf="candidature.statut === 'en_attente'">
+              <button 
+                mat-stroked-button 
+                color="primary"
+                (click)="editCandidature(candidature); $event.stopPropagation()"
+                matTooltip="Modifier les documents de candidature">
+                <mat-icon>edit</mat-icon>
+                Modifier
+              </button>
+            </ng-container>
+
+            <!-- Candidature refusée -->
+            <ng-container *ngIf="candidature.statut === 'refusee'">
+              <span class="refusal-info" *ngIf="candidature.commentaire_rh">
+                <mat-icon>info</mat-icon>
+                Voir le motif
+              </span>
+            </ng-container>
+          </div>
+
+          <!-- Badge de progression -->
+          <div class="progress-badge">
+            <mat-chip [color]="getProgressColor(candidature)" selected>
+              <mat-icon>{{ getStatusIcon(candidature.statut) }}</mat-icon>
+              {{ getProgressText(candidature) }}
+            </mat-chip>
+          </div>
         </mat-card-actions>
       </mat-card>
     </div>
 
+    <!-- Error State -->
+    <div class="error-state" *ngIf="!loading && error">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <h3>Erreur de chargement</h3>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadCandidatures()">
+              <mat-icon>refresh</mat-icon>
+              Réessayer
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="!loading && candidatures.length === 0">
+    <div class="empty-state" *ngIf="!loading && !error && candidaturesFiltrees && candidaturesFiltrees.length === 0">
       <mat-card class="empty-card">
         <mat-card-content>
-          <div class="empty-content">
+          <div class="empty-content" *ngIf="candidatures.length === 0">
             <mat-icon class="empty-icon">assignment</mat-icon>
             <h3>Aucune candidature</h3>
             <p>Vous n'avez envoyé aucune candidature pour le moment. Découvrez les offres disponibles et postulez !</p>
             <button mat-raised-button color="primary" (click)="goBack()">
               <mat-icon>search</mat-icon>
               Découvrir les offres
+            </button>
+          </div>
+          <div class="empty-content" *ngIf="candidatures.length > 0">
+            <mat-icon class="empty-icon">filter_list</mat-icon>
+            <h3>Aucun résultat</h3>
+            <p>Aucune candidature ne correspond aux filtres sélectionnés.</p>
+            <button mat-stroked-button (click)="resetFilters()">
+              <mat-icon>clear</mat-icon>
+              Réinitialiser les filtres
             </button>
           </div>
         </mat-card-content>

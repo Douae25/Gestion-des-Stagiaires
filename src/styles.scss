@@ -1,5 +1,8 @@
 @import '~@angular/material/theming';
 
+// Import effets créatifs
+@import './styles/creative-effects.scss';
+
 // Define your theme
 $primary: mat.define-palette(mat.$blue-palette);
 $accent: mat.define-palette(mat.$amber-palette);

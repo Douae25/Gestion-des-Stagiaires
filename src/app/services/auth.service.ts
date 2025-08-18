@@ -106,7 +106,8 @@ export class AuthService {
       const cleanRole = rawRole.startsWith('ROLE_') ? rawRole.substring(5) : rawRole;
       
       return {
-        email: payload.sub || payload.email,
+        id: payload.userId, // Utiliser userId depuis le JWT
+        email: payload.sub, // Le subject contient l'email (username)
         role: cleanRole
       };
     } catch (error) {
@@ -127,6 +128,24 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  // Méthode pour gérer les erreurs 403 liées aux utilisateurs non trouvés
+  handleUserNotFoundError(): void {
+    console.warn('🚨 === GESTION ERREUR UTILISATEUR NON TROUVÉ ===');
+    console.warn('Problème détecté: L\'utilisateur dans le token n\'existe pas en base de données');
+    
+    const currentUser = this.getCurrentUser();
+    const token = this.getToken();
+    
+    console.warn('Informations de débogage:');
+    console.warn('- Utilisateur actuel:', currentUser);
+    console.warn('- Token présent:', !!token);
+    console.warn('- Email dans le token:', currentUser?.email);
+    console.warn('- ID utilisateur:', currentUser?.id);
+    
+    console.warn('🔄 Nettoyage des données d\'authentification et redirection...');
+    this.logout();
+  }
+
   // Vérifier si l'utilisateur est connecté
   isAuthenticated(): boolean {
     const token = this.getToken();
@@ -141,6 +160,22 @@ export class AuthService {
   // Obtenir le token
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
+  }
+
+  // Mettre à jour l'utilisateur actuel et le token
+  updateCurrentUser(user: User, newToken: string): void {
+    console.log('🔄 Mise à jour des informations utilisateur avec nouveau token');
+    
+    // Mettre à jour le token
+    localStorage.setItem(this.TOKEN_KEY, newToken);
+    
+    // Mettre à jour les informations utilisateur
+    localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    
+    // Émettre le nouvel utilisateur
+    this.currentUserSubject.next(user);
+    
+    console.log('✅ Utilisateur et token mis à jour');
   }
 
   // Vérifier le rôle de l'utilisateur
@@ -171,6 +206,7 @@ export class AuthService {
   private handleLoginSuccess(token: string, userInfo: any): void {
     // Créer l'objet utilisateur
     const user: User = {
+      id: userInfo.id,
       email: userInfo.email,
       role: userInfo.role,
       token: token
@@ -220,6 +256,14 @@ export class AuthService {
   // Créer les headers avec le token
   getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
+    
+    if (!token) {
+      console.error('No token available for authentication');
+      return new HttpHeaders({
+        'Content-Type': 'application/json'
+      });
+    }
+    
     return new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`

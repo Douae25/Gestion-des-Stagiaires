@@ -1,0 +1,347 @@
+<div class="mes-stages-container">
+<!-- Container simple et professionnel -->
+<div class="stagiaire-page-container">
+  <!-- Toolbar identique au dashboard -->
+  <mat-toolbar class="stagiaire-toolbar">
+    <button mat-icon-button (click)="goBack()" matTooltip="Retour au tableau de bord">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="title">Mes Stages</span>
+    <span class="flex-1"></span>
+    <button mat-icon-button (click)="loadStages()" matTooltip="Actualiser" [disabled]="loading">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <div class="main-content">
+    <!-- En-tête simple et professionnel -->
+    <div class="page-header">
+      <h1>Mes Stages</h1>
+      <p class="subtitle">Gérez vos stages et suivez votre progression professionnelle</p>
+    </div>
+
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="stagiaire-loading">
+      <div class="spinner"></div>
+      <p>Chargement de vos stages...</p>
+    </div>
+
+    <!-- Gestion d'erreur -->
+    <div *ngIf="error && !loading" class="stagiaire-error">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h3>Erreur de chargement</h3>
+      <p>{{ error }}</p>
+      <button mat-raised-button class="stagiaire-btn error" (click)="loadStages()">
+        <mat-icon>refresh</mat-icon>
+        Réessayer
+      </button>
+    </div>
+
+    <!-- Liste des stages -->
+    <div *ngIf="!loading && !error" class="stages-container">
+      <!-- État vide -->
+      <div *ngIf="stages.length === 0" class="stagiaire-empty">
+        <mat-icon class="empty-icon">assignment_turned_in</mat-icon>
+        <h3>Aucun stage assigné</h3>
+        <p>Vous n'avez actuellement aucun stage assigné. Vos candidatures acceptées apparaîtront ici comme des stages à gérer.</p>
+        <button mat-raised-button class="stagiaire-btn" routerLink="/stagiaire/candidatures">
+          <mat-icon>search</mat-icon>
+          Voir mes candidatures
+        </button>
+      </div>
+
+      <!-- Grille des stages -->
+      <div *ngIf="stages.length > 0" class="stagiaire-grid">
+      <!-- Carte de stage avec design system cohérent -->
+      <mat-card *ngFor="let stage of stages" class="stagiaire-card">
+        <mat-card-header>
+          <div mat-card-avatar class="stage-avatar">
+            <mat-icon>business</mat-icon>
+          </div>
+          <mat-card-title>{{ stage.titre }}</mat-card-title>
+          <mat-card-subtitle>
+            <mat-icon>business</mat-icon>
+            {{ stage.entreprise ? stage.entreprise.nom : 'Entreprise non spécifiée' }}
+          </mat-card-subtitle>
+          <div class="header-actions">
+            <mat-chip class="stagiaire-status-chip" [ngClass]="getStatutColor(stage.statut)">
+              {{ getStatutLabel(stage.statut) }}
+            </mat-chip>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="stage-info">
+            <!-- Informations générales -->
+            <div class="stagiaire-info-section">
+              <h4>
+                <mat-icon>date_range</mat-icon>
+                Période
+              </h4>
+              <p>
+                <mat-icon>event</mat-icon>
+                <strong>Début :</strong> {{ formatDate(stage.date_debut) }}
+              </p>
+              <p>
+                <mat-icon>event_available</mat-icon>
+                <strong>Fin :</strong> {{ formatDate(stage.date_fin) }}
+              </p>
+              <p *ngIf="stage.description" class="description">{{ stage.description }}</p>
+              <p *ngIf="!stage.description" class="description">Aucune description disponible pour ce stage.</p>
+            </div>
+
+            <!-- Informations sur l'encadrant -->
+            <div class="stagiaire-info-section" *ngIf="stage.encadrant">
+              <h4>
+                <mat-icon>person</mat-icon>
+                Encadrant
+              </h4>
+              <p>
+                <mat-icon>badge</mat-icon>
+                <strong>Nom :</strong> {{ stage.encadrant.nom }} {{ stage.encadrant.prenom }}
+              </p>
+              <p *ngIf="stage.encadrant.email">
+                <mat-icon>email</mat-icon>
+                <strong>Email :</strong> {{ stage.encadrant.email }}
+              </p>
+              <p *ngIf="stage.encadrant.telephone">
+                <mat-icon>phone</mat-icon>
+                <strong>Téléphone :</strong> {{ stage.encadrant.telephone }}
+              </p>
+              <p *ngIf="stage.encadrant.poste">
+                <mat-icon>work</mat-icon>
+                <strong>Poste :</strong> {{ stage.encadrant.poste }}
+              </p>
+            </div>
+
+            <!-- Documents et actions -->
+            <mat-accordion class="documents-accordion">
+              <!-- Section Convention -->
+              <mat-expansion-panel class="documents-panel" [expanded]="true">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>description</mat-icon>
+                    Convention de stage
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <mat-chip 
+                      *ngIf="stage.convention_signee" 
+                      class="stagiaire-status-chip accepte">
+                      <mat-icon matChipAvatar>check_circle</mat-icon>
+                      Signée
+                    </mat-chip>
+                    <mat-chip 
+                      *ngIf="stage.convention_deposee && !stage.convention_signee" 
+                      class="stagiaire-status-chip en-cours">
+                      <mat-icon matChipAvatar>upload</mat-icon>
+                      Déposée
+                    </mat-chip>
+                    <mat-chip 
+                      *ngIf="!stage.convention_deposee" 
+                      class="stagiaire-status-chip en-attente">
+                      <mat-icon matChipAvatar>pending</mat-icon>
+                      En attente
+                    </mat-chip>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                
+                <div class="panel-content">
+                  <!-- Information sur le processus -->
+                  <div class="info-text">
+                    <mat-icon>info</mat-icon>
+                    Déposez la convention de stage que l'école vous a fournie. Le RH déposera ensuite la version signée par l'entreprise.
+                  </div>
+                  
+                  <!-- Message de confirmation si la convention est déposée -->
+                  <div *ngIf="stage.convention_deposee" class="success-message">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>Convention déposée avec succès</span>
+                    <small *ngIf="stage.date_depot_convention">
+                      le {{ formatDate(stage.date_depot_convention) }}
+                    </small>
+                  </div>
+                  
+                  <div class="action-buttons">
+                    <!-- Bouton pour déposer la convention (uniquement si pas encore déposée) -->
+                    <input #conventionInput type="file" hidden accept=".pdf" 
+                           (change)="onFileSelected($event, 'convention', stage)">
+                    <button 
+                      *ngIf="!stage.convention_deposee"
+                      mat-raised-button 
+                      class="stagiaire-btn primary"
+                      (click)="onButtonClick(conventionInput)">
+                      <mat-icon>cloud_upload</mat-icon>
+                      Déposer ma convention
+                    </button>
+                    
+                    <!-- Bouton pour voir la convention déposée -->
+                    <button 
+                      *ngIf="stage.convention_deposee"
+                      mat-raised-button 
+                      class="stagiaire-btn accent"
+                      (click)="telechargerConvention(stage)">
+                      <mat-icon>visibility</mat-icon>
+                      Voir ma convention
+                    </button>
+                    
+                    <!-- Bouton pour télécharger la convention signée (si disponible) -->
+                    <button 
+                      *ngIf="stage.convention_signee"
+                      mat-raised-button 
+                      class="stagiaire-btn success"
+                      (click)="telechargerConventionSignee(stage)">
+                      <mat-icon>download</mat-icon>
+                      Télécharger convention signée
+                    </button>
+                  </div>
+                  
+                  <!-- États selon le processus -->
+                  <div *ngIf="!stage.convention_deposee" class="warning-text">
+                    <mat-icon>warning</mat-icon>
+                    Vous devez déposer votre convention de stage.
+                  </div>
+                  
+                  <div *ngIf="stage.convention_deposee && !stage.convention_signee" class="info-text">
+                    <mat-icon>schedule</mat-icon>
+                    Convention déposée{{ stage.date_depot_convention ? ' le ' + formatDate(stage.date_depot_convention) : '' }}. En attente que le RH dépose la version signée par l'entreprise.
+                  </div>
+                  
+                  <div *ngIf="stage.convention_deposee && stage.convention_signee" class="success-text">
+                    <mat-icon>verified</mat-icon>
+                    Convention signée par l'entreprise et disponible ! Votre stage peut commencer.
+                  </div>
+                </div>
+              </mat-expansion-panel>
+
+              <!-- Section Rapports -->
+              <mat-expansion-panel class="documents-panel" [disabled]="!stage.convention_signee">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>assignment</mat-icon>
+                    Rapports de stage
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <mat-chip 
+                      *ngIf="stage.convention_signee"
+                      class="stagiaire-status-chip en-cours">
+                      {{ stage.rapports.length }} rapport(s) déposé(s)
+                    </mat-chip>
+                    <mat-chip 
+                      *ngIf="!stage.convention_signee"
+                      class="stagiaire-status-chip en-attente">
+                      <mat-icon matChipAvatar>lock</mat-icon>
+                      Convention non signée
+                    </mat-chip>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                
+                <div class="panel-content">
+                  <!-- Message d'attente si convention pas signée -->
+                  <div *ngIf="!stage.convention_signee" class="warning-text">
+                    <mat-icon>warning</mat-icon>
+                    Vous devez attendre que le RH signe la convention avant de pouvoir déposer des rapports de stage.
+                  </div>
+                  
+                  <!-- Contenu normal des rapports si convention signée -->
+                  <div *ngIf="stage.convention_signee">
+                    <!-- Liste des rapports existants -->
+                    <div *ngIf="stage.rapports.length > 0" class="rapports-list">
+                      <div *ngFor="let rapport of stage.rapports" class="rapport-item">
+                        <div class="rapport-info">
+                          <h5>{{ rapport.titre }}</h5>
+                          <p class="rapport-meta">
+                            <span class="type">{{ rapport.type }}</span> • 
+                            <span class="date">{{ formatDate(rapport.date_soumission) }}</span>
+                          </p>
+                          <mat-chip 
+                            class="stagiaire-status-chip"
+                            [ngClass]="getStatutRapport(rapport.statut)">
+                            {{ getStatutRapportLabel(rapport.statut) }}
+                          </mat-chip>
+                          
+                          <!-- Commentaires de l'encadrant -->
+                          <div *ngIf="rapport.commentaire_encadrant" class="commentaire">
+                            <h6><mat-icon>comment</mat-icon> Commentaire de l'encadrant:</h6>
+                            <p>{{ rapport.commentaire_encadrant }}</p>
+                          </div>
+                        </div>
+                        
+                        <div class="rapport-actions">
+                          <button 
+                            mat-icon-button 
+                            class="stagiaire-btn accent"
+                            (click)="telechargerRapport(rapport)"
+                            matTooltip="Télécharger le rapport">
+                            <mat-icon>download</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Actions pour déposer un nouveau rapport -->
+                    <div class="action-buttons" *ngIf="isStageEnCours(stage)">
+                      <input #rapportInput type="file" hidden accept=".pdf,.doc,.docx" 
+                             (change)="onFileSelected($event, 'rapport', stage)">
+                      <button 
+                        mat-raised-button 
+                        class="stagiaire-btn accent"
+                        (click)="rapportInput.click()">
+                        <mat-icon>add</mat-icon>
+                        Déposer un nouveau rapport
+                      </button>
+                    </div>
+                    
+                    <!-- Bouton pour rapport final -->
+                    <div class="action-buttons" *ngIf="canDepositRapportFinal(stage)">
+                      <input #rapportFinalInput type="file" hidden accept=".pdf,.doc,.docx" 
+                             (change)="onFileSelected($event, 'rapport', stage)">
+                      <button 
+                        mat-raised-button 
+                        class="stagiaire-btn warning"
+                        (click)="rapportFinalInput.click()">
+                        <mat-icon>assignment_turned_in</mat-icon>
+                        Déposer le rapport final
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+
+              <!-- Section Attestation -->
+              <mat-expansion-panel class="documents-panel" *ngIf="stage.statut === 'termine'">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>verified</mat-icon>
+                    Attestation de stage
+                  </mat-panel-title>
+                  <mat-panel-description>
+                    <mat-chip class="stagiaire-status-chip accepte">
+                      Document de fin de stage
+                    </mat-chip>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+                
+                <div class="panel-content">
+                  <div class="success-text">
+                    <mat-icon>info</mat-icon>
+                    Téléchargez votre attestation de stage officielle.
+                  </div>
+                  <div class="action-buttons">
+                    <button 
+                      mat-raised-button 
+                      class="stagiaire-btn"
+                      (click)="telechargerAttestation(stage)">
+                      <mat-icon>download</mat-icon>
+                      Télécharger l'attestation
+                    </button>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  </div>
+</div>

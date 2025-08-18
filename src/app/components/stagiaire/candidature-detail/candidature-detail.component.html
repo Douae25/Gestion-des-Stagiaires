@@ -1,0 +1,166 @@
+<div class="candidature-detail-container">
+  <!-- He              <h2>{{ candidature.offre_info.titre || 'Titre non disponible' }}</h2>der -->
+  <mat-toolbar color="primary" class="page-toolbar">
+    <button mat-icon-button (click)="goBack()" matTooltip="Retour aux candidatures">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="page-title">Détail de la candidature</span>
+    <span class="toolbar-spacer"></span>
+    <mat-chip 
+      *ngIf="candidature" 
+      [color]="getStatusColor(candidature.statut || '')" 
+      selected>
+      {{ getStatusLabel(candidature.statut || '') }}
+    </mat-chip>
+  </mat-toolbar>
+
+  <!-- Content -->
+  <div class="candidature-detail-content">
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="loading">
+      <mat-progress-spinner mode="indeterminate" diameter="60"></mat-progress-spinner>
+      <p>Chargement des détails...</p>
+    </div>
+
+    <!-- Error State -->
+    <div class="error-state" *ngIf="!loading && error">
+      <mat-card class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <h3>Erreur de chargement</h3>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadCandidatureDetail()">
+              <mat-icon>refresh</mat-icon>
+              Réessayer
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Candidature Details -->
+    <div class="candidature-details" *ngIf="!loading && !error && candidature">
+      <!-- Informations de l'offre -->
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>work</mat-icon>
+            Offre de stage
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="offre-details">
+            <h2>{{ candidature.offre_info.titre || 'Titre non disponible' }}</h2>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ candidature.offre_info.localisation || 'Non spécifié' }}</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ candidature.offre_info.duree || 'Non spécifié' }} mois</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon>event</mat-icon>
+                <span>Du {{ candidature.offre_info.date_debut || 'Non spécifié' }} au {{ candidature.offre_info.date_fin || 'Non spécifié' }}</span>
+              </div>
+            </div>
+            <div class="description" *ngIf="candidature.offre_info.description">
+              <h4>Description</h4>
+              <p>{{ candidature.offre_info.description }}</p>
+            </div>
+            <div class="competences" *ngIf="candidature.offre_info.competence_requise">
+              <h4>Compétences requises</h4>
+              <p>{{ candidature.offre_info.competence_requise }}</p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Informations de la candidature -->
+      <mat-card class="detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>assignment</mat-icon>
+            Ma candidature
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="candidature-info">
+            <div class="info-row">
+              <span class="label">Date de soumission :</span>
+              <span class="value">{{ formatDate(candidature.date_soumission || '') }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Statut :</span>
+              <mat-chip [color]="getStatusColor(candidature.statut || '')" selected>
+                {{ getStatusLabel(candidature.statut || '') }}
+              </mat-chip>
+            </div>
+            <div class="info-row" *ngIf="candidature?.date_reponse">
+              <span class="label">Date de réponse :</span>
+              <span class="value">{{ formatDate(candidature.date_reponse || '') }}</span>
+            </div>
+            <div class="info-row" *ngIf="candidature?.commentaire_rh">
+              <span class="label">Commentaire RH :</span>
+              <span class="value">{{ candidature.commentaire_rh }}</span>
+            </div>
+          </div>
+
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Documents -->
+          <div class="documents-section">
+            <h4>
+              <mat-icon>attach_file</mat-icon>
+              Documents soumis
+            </h4>
+            <div class="documents-list">
+              <div class="document-item" *ngIf="candidature.cv">
+                <mat-icon>description</mat-icon>
+                <span>CV</span>
+                <button mat-stroked-button (click)="downloadCV()">
+                  <mat-icon>download</mat-icon>
+                  Télécharger
+                </button>
+              </div>
+              <div class="document-item" *ngIf="candidature.lettre_motivation">
+                <mat-icon>mail</mat-icon>
+                <span>Lettre de motivation</span>
+                <button mat-stroked-button (click)="downloadLettreMotivation()">
+                  <mat-icon>download</mat-icon>
+                  Télécharger
+                </button>
+              </div>
+              <div class="document-item" *ngIf="candidature.attestation">
+                <mat-icon>verified</mat-icon>
+                <span>Attestation</span>
+                <button mat-stroked-button>
+                  <mat-icon>download</mat-icon>
+                  Télécharger
+                </button>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <!-- Actions -->
+        <mat-card-actions class="card-actions">
+          <button mat-stroked-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+            Retour à la liste
+          </button>
+          <button 
+            mat-raised-button 
+            color="warn" 
+            *ngIf="candidature && candidature.statut === 'en_attente'"
+            (click)="retirerCandidature()">
+            <mat-icon>cancel</mat-icon>
+            Retirer la candidature
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

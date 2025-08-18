@@ -1,6 +1,8 @@
 .offres-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  overflow-x: hidden; // Empêcher le débordement horizontal
+  word-wrap: break-word; // Gestion globale des mots longs
 }
 
 // Header moderne avec arrière-plan
@@ -564,6 +566,8 @@
         // Section gauche : Titre et métadonnées
         .offre-header-section {
           flex: 0 0 300px;
+          min-width: 0; // Important pour permettre la troncature
+          max-width: 300px;
           
           .offre-title {
             font-size: 1.3rem;
@@ -576,6 +580,9 @@
             line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
           }
 
           .offre-meta {
@@ -592,12 +599,17 @@
               background: rgba(102, 126, 234, 0.08);
               padding: 0.25rem 0.75rem;
               border-radius: 15px;
+              max-width: 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
 
               mat-icon {
                 font-size: 0.9rem;
                 width: 0.9rem;
                 height: 0.9rem;
                 color: #667eea;
+                flex-shrink: 0;
               }
             }
           }
@@ -607,6 +619,8 @@
         .offre-content-section {
           flex: 1;
           padding: 0 1rem;
+          min-width: 0; // Important pour permettre la troncature
+          overflow: hidden;
 
           .offre-description {
             color: #666;
@@ -618,6 +632,9 @@
             line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
           }
 
           .offre-competences-inline {
@@ -633,6 +650,11 @@
               font-size: 0.7rem;
               font-weight: 500;
               box-shadow: 0 2px 8px rgba(102, 126, 234, 0.25);
+              max-width: 120px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              display: inline-block;
             }
           }
         }
@@ -732,17 +754,19 @@
       .status-badge {
         position: absolute;
         top: 0.75rem;
-        left: 0.75rem;
+        right: 0.75rem;
         padding: 0.375rem 0.75rem;
         border-radius: 15px;
         font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        z-index: 2;
-        max-width: 200px;
+        z-index: 3;
+        max-width: 220px;
         text-align: center;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &.status-active {
           background: linear-gradient(135deg, #4caf50, #8bc34a);
@@ -761,6 +785,13 @@
           color: white;
           box-shadow: 0 2px 8px rgba(158, 158, 158, 0.3);
         }
+      }
+
+      // En mode liste, repositionner le badge de statut à gauche
+      .status-badge {
+        top: 0.75rem;
+        left: 0.75rem;
+        right: auto;
       }
     }
   }
@@ -799,7 +830,7 @@
     // Badge de statut flottant
     .status-badge {
       position: absolute;
-      top: 1rem;
+      top: 3.5rem;
       right: 1rem;
       padding: 0.5rem 1rem;
       border-radius: 20px;
@@ -807,7 +838,11 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      z-index: 2;
+      z-index: 3;
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
 
       &.status-active {
         background: linear-gradient(135deg, #4caf50, #8bc34a);
@@ -1333,6 +1368,10 @@
       right: 0.75rem;
       padding: 0.375rem 0.75rem;
       font-size: 0.7rem;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .offre-header {
@@ -1375,6 +1414,285 @@
         }
       }
     }
+  }
+}
+
+// Styles pour les nouvelles fonctionnalités
+
+// Badge de temps restant
+.time-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: linear-gradient(135deg, #4CAF50, #45a049);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 5;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 0.875rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+
+  &.urgent {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+    animation: pulse 2s infinite;
+  }
+}
+
+// Badge expiré
+.expired-badge {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: linear-gradient(135deg, #f44336, #d32f2f);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 5;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 0.875rem;
+    width: 0.875rem;
+    height: 0.875rem;
+    flex-shrink: 0;
+  }
+}
+
+// Classes de statut pour les cartes
+.offre-card {
+  &.status-expired {
+    opacity: 0.6;
+    filter: grayscale(0.3);
+  }
+
+  &.status-full {
+    border-left: 4px solid #ff9800;
+  }
+
+  &.status-urgent {
+    border-left: 4px solid #f44336;
+    box-shadow: 0 4px 20px rgba(244, 67, 54, 0.15);
+  }
+
+  &.status-warning {
+    border-left: 4px solid #ff9800;
+  }
+
+  &.status-active {
+    border-left: 4px solid #4CAF50;
+  }
+}
+
+// Date de publication
+.publication-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+// Informations candidatures et timing
+.candidature-timing {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: rgba(0,0,0,0.02);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0,0,0,0.05);
+
+  .timing-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .timing-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #666;
+
+    &.urgent {
+      color: #f44336;
+      font-weight: 500;
+    }
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+}
+
+// Informations candidatures pour mode liste
+.candidatures-info {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  .candidatures-count,
+  .time-remaining {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #666;
+
+    mat-icon {
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .time-remaining.urgent {
+    color: #f44336;
+    font-weight: 500;
+  }
+}
+
+// Date de publication dans les métadonnées
+.offre-meta {
+  .offre-publication {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #666;
+
+    mat-icon {
+      font-size: 0.875rem;
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+}
+
+// Animation pulse pour les éléments urgents
+@keyframes pulse {
+  0% {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(255, 152, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+}
+
+// Responsive pour les nouvelles fonctionnalités
+@media (max-width: 768px) {
+  .time-badge,
+  .expired-badge {
+    position: static;
+    margin-bottom: 0.5rem;
+    align-self: flex-start;
+    max-width: 100%;
+  }
+
+  .candidature-timing {
+    .timing-row {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+
+  .candidatures-info {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  // Améliorer la gestion du texte sur mobile
+  .offres-list {
+    .list-item {
+      .offre-main {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+
+        .offre-header-section {
+          flex: none;
+          max-width: 100%;
+        }
+
+        .offre-content-section {
+          flex: none;
+          padding: 0;
+        }
+
+        .offre-dates-section {
+          flex: none;
+        }
+      }
+
+      .offre-actions {
+        margin-left: 0;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+  }
+
+  // Gestion des textes longs sur mobile
+  .offre-title {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .offre-description {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .competence-tag {
+    max-width: 100px !important;
+  }
+
+  .offre-meta span {
+    max-width: 150px !important;
+    flex: 1;
+    min-width: 0;
   }
 }
 
