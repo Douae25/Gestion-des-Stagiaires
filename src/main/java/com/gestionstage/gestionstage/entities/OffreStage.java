@@ -31,6 +31,10 @@ private Utilisateur rh;
     private String localisation;
     private String competence_requise;
 
+    private LocalDate date_publication;
+    private Integer duree_candidature; // en jours, peut être null
+    private Integer nombre_limite_candidature; // peut être null
+
     public enum StatutOffre {
         en_cours, fermee, archivee
     }

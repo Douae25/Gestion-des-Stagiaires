@@ -24,7 +24,6 @@ public class OffreStageController {
     }
 
     @GetMapping("/actives")
-    @PreAuthorize("hasAnyRole('stagiaire', 'rh', 'encadrant', 'admin')")
     public List<OffreStageDTO> getActives() {
         return offreStageService.getActives();
     }

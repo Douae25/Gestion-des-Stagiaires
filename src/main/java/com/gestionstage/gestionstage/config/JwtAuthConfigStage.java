@@ -29,7 +29,7 @@ public class JwtAuthConfigStage {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/offres/actives").permitAll()
+                        .requestMatchers("/auth/**", "/offres/actives", "/utilisateurs").permitAll()
                         
                         // Stagiaire
                         .requestMatchers("/api/candidatures").hasAnyRole("STAGIAIRE", "RH")

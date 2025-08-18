@@ -4,6 +4,7 @@ package com.gestionstage.gestionstage.services;
 import com.gestionstage.gestionstage.dtos.EncadrantDTO;
 import com.gestionstage.gestionstage.dtos.StagiaireDTO;
 import com.gestionstage.gestionstage.dtos.UtilisateurCompletDTO;
+import com.gestionstage.gestionstage.dtos.UtilisateurUpdateResponse;
 import com.gestionstage.gestionstage.entities.Encadrant;
 import com.gestionstage.gestionstage.entities.Stagiaire;
 import com.gestionstage.gestionstage.entities.Utilisateur;
@@ -30,13 +31,28 @@ public class UtilisateurService {
     private EncadrantRepository encadrantRepository;
 
     @Autowired
-private BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     public List<UtilisateurCompletDTO> getAllUtilisateurs() {
         return utilisateurRepository.findAll()
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    public UtilisateurCompletDTO getUtilisateurById(Integer id) {
+        Utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+        return toDTO(utilisateur);
+    }
+
+    public UtilisateurCompletDTO getUtilisateurByEmail(String email) {
+        Utilisateur utilisateur = utilisateurRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
+        return toDTO(utilisateur);
     }
 
        private boolean isValidEmail(String email) {
@@ -124,17 +140,27 @@ public UtilisateurCompletDTO changerStatut(Integer id, String statut) {
 
 
 @Transactional
-public UtilisateurCompletDTO updateUtilisateur(Integer id, UtilisateurCompletDTO dto) {
+public UtilisateurUpdateResponse updateUtilisateur(Integer id, UtilisateurCompletDTO dto) {
     Utilisateur utilisateur = utilisateurRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable"));
 
+    // Sauvegarder l'ancien email pour comparaison
+    String ancienEmail = utilisateur.getEmail();
+    String ancienMotDePasse = utilisateur.getMot_de_passe();
+    
     Utilisateur.TypeUtilisateur type = Utilisateur.TypeUtilisateur.valueOf(dto.getType());
 
     // Mise à jour des données de base
     utilisateur.setNom(dto.getNom());
     utilisateur.setPrenom(dto.getPrenom());
     utilisateur.setEmail(dto.getEmail());
-    utilisateur.setMot_de_passe(passwordEncoder.encode(dto.getMot_de_passe()));
+    
+    // Seulement encoder le mot de passe s'il a changé
+    if (dto.getMot_de_passe() != null && !dto.getMot_de_passe().isEmpty() 
+        && !dto.getMot_de_passe().equals(ancienMotDePasse)) {
+        utilisateur.setMot_de_passe(passwordEncoder.encode(dto.getMot_de_passe()));
+    }
+    
     utilisateur.setNumero_telephone(dto.getNumero_telephone());
     utilisateur.setType(type); // Si on autorise la modification du type
 
@@ -143,15 +169,16 @@ public UtilisateurCompletDTO updateUtilisateur(Integer id, UtilisateurCompletDTO
     // Mettre à jour les infos selon le type
     switch (type) {
         case stagiaire:
-            // Mettre à jour les infos du stagiaire
+            // Mettre à jour les infos du stagiaire si elles sont fournies
             Stagiaire stagiaire = stagiaireRepository.findByUtilisateurIdUtilisateur(id)
                     .orElseThrow(() -> new IllegalArgumentException("Stagiaire introuvable"));
-            if (dto.getStagiaire_info() == null)
-                throw new IllegalArgumentException("Les informations du stagiaire sont requises");
-
-            stagiaire.setNiveau_etude(dto.getStagiaire_info().getNiveau_etude());
-            stagiaire.setEtablissement(dto.getStagiaire_info().getEtablissement());
-            stagiaireRepository.save(stagiaire);
+            
+            // Ne mettre à jour les infos du stagiaire que si elles sont fournies
+            if (dto.getStagiaire_info() != null) {
+                stagiaire.setNiveau_etude(dto.getStagiaire_info().getNiveau_etude());
+                stagiaire.setEtablissement(dto.getStagiaire_info().getEtablissement());
+                stagiaireRepository.save(stagiaire);
+            }
             break;
 
         case encadrant:
@@ -171,7 +198,21 @@ public UtilisateurCompletDTO updateUtilisateur(Integer id, UtilisateurCompletDTO
             break;
     }
 
-    return toDTO(utilisateur);
+    UtilisateurCompletDTO utilisateurDTO = toDTO(utilisateur);
+    
+    // Vérifier si l'email a changé
+    if (!ancienEmail.equals(dto.getEmail())) {
+        System.out.println("UtilisateurService: Email modifié de '" + ancienEmail + "' vers '" + dto.getEmail() + "'");
+        // Générer un nouveau token avec le nouvel email et le rôle de l'utilisateur
+        String role = "role_" + utilisateur.getType().name();
+        String nouveauToken = jwtService.generateToken(dto.getEmail(), role, id);
+        System.out.println("UtilisateurService: Nouveau token généré pour email: " + dto.getEmail());
+        return new UtilisateurUpdateResponse(utilisateurDTO, nouveauToken);
+    }
+    
+    System.out.println("UtilisateurService: Email non modifié, pas de nouveau token");
+    // Si l'email n'a pas changé, retourner sans nouveau token
+    return new UtilisateurUpdateResponse(utilisateurDTO);
 }
 
 

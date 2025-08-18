@@ -14,11 +14,12 @@ public class JwtService {
     private final String secretKey = "your-secret-key-should-be-at-least-256-bits-long-256-bits-long-256-bits-long";
     private final long expiration = 1000 * 60 * 60 * 24; // 24 heures
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, Integer userId) {
         // Utiliser le rôle tel quel (en minuscules)
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("userId", userId)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
@@ -41,14 +42,24 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody()
                 .get("role", String.class);
-        // Utiliser le rôle tel quel (en minuscules)
-        return role.toLowerCase();
+        // Return null if role is null, otherwise convert to lowercase
+        return role != null ? role.toLowerCase() : null;
+    }
+
+    public Integer extractUserId(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", Integer.class);
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser()
+            Jwts.parserBuilder()
                     .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                    .build()
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {

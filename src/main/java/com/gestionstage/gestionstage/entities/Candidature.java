@@ -16,7 +16,7 @@ public class Candidature {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "id_stagiaire")
+    @JoinColumn(name = "id_stagiaire", referencedColumnName = "id_stagiaire")
     private Stagiaire stagiaire;
 
     @ManyToOne
@@ -27,6 +27,8 @@ public class Candidature {
     private Statut statut = Statut.en_attente;
 
     private LocalDate date_soumission;
+    
+    private LocalDate date_acceptation;
 
     @Lob
     private byte[] cv;
@@ -36,6 +38,9 @@ public class Candidature {
 
     @Lob
     private byte[] convention_stage;
+
+    @Lob
+    private byte[] convention_signee;
 
     @Lob
     private byte[] attestation;

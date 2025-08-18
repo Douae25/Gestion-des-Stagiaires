@@ -22,43 +22,45 @@ public class OffreStageService {
     private UtilisateurRepository utilisateurRepository;
 
     public List<OffreStageDTO> getAll() {
-        return offreStageRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    List<OffreStage> offres = offreStageRepository.findAll();
+    offres.forEach(this::updateStatutIfNeeded);
+    return offres.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public List<OffreStageDTO> getActives() {
-        return offreStageRepository.findByStatut(OffreStage.StatutOffre.en_cours)
-                .stream()
+        List<OffreStage> offres = offreStageRepository.findByStatut(OffreStage.StatutOffre.en_cours);
+        offres.forEach(this::updateStatutIfNeeded);
+        // Filtrer les offres encore actives
+        return offres.stream()
+                .filter(this::isStillActive)
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
-public OffreStageDTO create(OffreStageDTO dto) {
-    // 1. Récupération de l'utilisateur
-    Utilisateur rh = utilisateurRepository.findById(dto.getId_rh())
-            .orElseThrow(() -> new IllegalArgumentException("RH avec ID " + dto.getId_rh() + " non trouvé"));
-
-    // 2. Vérification du type
-    if (rh.getType() != Utilisateur.TypeUtilisateur.rh) {
-        throw new IllegalArgumentException("L'utilisateur avec ID " + dto.getId_rh() + " n'est pas de type RH");
+    public OffreStageDTO create(OffreStageDTO dto) {
+        Utilisateur rh = utilisateurRepository.findById(dto.getId_rh())
+                .orElseThrow(() -> new IllegalArgumentException("RH avec ID " + dto.getId_rh() + " non trouvé"));
+        if (rh.getType() != Utilisateur.TypeUtilisateur.rh) {
+            throw new IllegalArgumentException("L'utilisateur avec ID " + dto.getId_rh() + " n'est pas de type RH");
+        }
+        OffreStage offre = new OffreStage();
+        offre.setTitre(dto.getTitre());
+        offre.setDescription(dto.getDescription());
+        offre.setDate_debut(dto.getDate_debut());
+        offre.setDate_fin(dto.getDate_fin());
+        offre.setDuree(dto.getDuree());
+        offre.setStatut(OffreStage.StatutOffre.en_cours);
+        offre.setLocalisation(dto.getLocalisation());
+        offre.setCompetence_requise(dto.getCompetence_requise());
+        offre.setRh(rh);
+        offre.setDate_publication(java.time.LocalDate.now());
+        offre.setDuree_candidature(dto.getDuree_candidature());
+        offre.setNombre_limite_candidature(dto.getNombre_limite_candidature());
+        OffreStage saved = offreStageRepository.save(offre);
+        dto.setId(saved.getId());
+        dto.setDate_publication(saved.getDate_publication());
+        return dto;
     }
-
-    // 3. Création de l'offre
-    OffreStage offre = new OffreStage();
-    offre.setTitre(dto.getTitre());
-    offre.setDescription(dto.getDescription());
-    offre.setDate_debut(dto.getDate_debut());
-    offre.setDate_fin(dto.getDate_fin());
-    offre.setDuree(dto.getDuree());
-    offre.setStatut(OffreStage.StatutOffre.valueOf(dto.getStatut()));
-    offre.setLocalisation(dto.getLocalisation());
-    offre.setCompetence_requise(dto.getCompetence_requise());
-    offre.setRh(rh);
-
-    OffreStage saved = offreStageRepository.save(offre);
-    dto.setId(saved.getId());
-
-    return dto;
-}
 
 
 public OffreStageDTO getById(Integer id) {
@@ -67,22 +69,26 @@ public OffreStageDTO getById(Integer id) {
     return toDTO(offre);
 }
 
-public OffreStageDTO update(Integer id, OffreStageDTO dto) {
-    OffreStage offre = offreStageRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Offre introuvable"));
-
-    offre.setTitre(dto.getTitre());
-    offre.setDescription(dto.getDescription());
-    offre.setDate_debut(dto.getDate_debut());
-    offre.setDate_fin(dto.getDate_fin());
-    offre.setDuree(dto.getDuree());
-    offre.setStatut(OffreStage.StatutOffre.valueOf(dto.getStatut()));
-    offre.setLocalisation(dto.getLocalisation());
-    offre.setCompetence_requise(dto.getCompetence_requise());
-
-    OffreStage updated = offreStageRepository.save(offre);
-    return toDTO(updated);
-}
+    public OffreStageDTO update(Integer id, OffreStageDTO dto) {
+        OffreStage offre = offreStageRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Offre introuvable"));
+        offre.setTitre(dto.getTitre());
+        offre.setDescription(dto.getDescription());
+        offre.setDate_debut(dto.getDate_debut());
+        offre.setDate_fin(dto.getDate_fin());
+        offre.setDuree(dto.getDuree());
+        offre.setStatut(OffreStage.StatutOffre.valueOf(dto.getStatut()));
+        offre.setLocalisation(dto.getLocalisation());
+        offre.setCompetence_requise(dto.getCompetence_requise());
+        // Mise à jour des nouveaux champs
+        if (dto.getDate_publication() != null) {
+            offre.setDate_publication(dto.getDate_publication());
+        }
+        offre.setDuree_candidature(dto.getDuree_candidature());
+        offre.setNombre_limite_candidature(dto.getNombre_limite_candidature());
+        OffreStage updated = offreStageRepository.save(offre);
+        return toDTO(updated);
+    }
 
 public void changerStatutOffre(Integer id, String statut) {
     OffreStage offre = offreStageRepository.findById(id)
@@ -110,6 +116,52 @@ public void changerStatutOffre(Integer id, String statut) {
         dto.setStatut(offre.getStatut().name());
         dto.setLocalisation(offre.getLocalisation());
         dto.setCompetence_requise(offre.getCompetence_requise());
+        dto.setDate_publication(offre.getDate_publication());
+        dto.setDuree_candidature(offre.getDuree_candidature());
+        dto.setNombre_limite_candidature(offre.getNombre_limite_candidature());
         return dto;
+    }
+
+    // Vérifie et met à jour le statut de l'offre si besoin
+    private void updateStatutIfNeeded(OffreStage offre) {
+        if (offre.getStatut() == OffreStage.StatutOffre.en_cours) {
+            boolean shouldClose = false;
+            // Vérifier la durée de candidature
+            if (offre.getDate_publication() != null && offre.getDuree_candidature() != null) {
+                java.time.LocalDate finCandidature = offre.getDate_publication().plusDays(offre.getDuree_candidature());
+                if (java.time.LocalDate.now().isAfter(finCandidature)) {
+                    shouldClose = true;
+                }
+            }
+            // Vérifier le nombre limite de candidatures
+            if (offre.getNombre_limite_candidature() != null && getNombreCandidatures(offre.getId()) >= offre.getNombre_limite_candidature()) {
+                shouldClose = true;
+            }
+            if (shouldClose) {
+                offre.setStatut(OffreStage.StatutOffre.fermee);
+                offreStageRepository.save(offre);
+            }
+        }
+    }
+
+    // Vérifie si l'offre est encore active
+    private boolean isStillActive(OffreStage offre) {
+        boolean active = true;
+        if (offre.getDate_publication() != null && offre.getDuree_candidature() != null) {
+            java.time.LocalDate finCandidature = offre.getDate_publication().plusDays(offre.getDuree_candidature());
+            if (java.time.LocalDate.now().isAfter(finCandidature)) {
+                active = false;
+            }
+        }
+        if (offre.getNombre_limite_candidature() != null && getNombreCandidatures(offre.getId()) >= offre.getNombre_limite_candidature()) {
+            active = false;
+        }
+        return active;
+    }
+
+    // À adapter selon votre logique métier pour compter les candidatures
+    private int getNombreCandidatures(Integer offreId) {
+        // TODO: Implémenter la récupération du nombre de candidatures pour une offre
+        return 0;
     }
 }

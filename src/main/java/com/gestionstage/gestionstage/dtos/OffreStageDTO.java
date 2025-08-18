@@ -16,4 +16,8 @@ public class OffreStageDTO {
     private String statut; // en_cours, fermee, archivee
     private String localisation;
     private String competence_requise;
+
+    private LocalDate date_publication;
+    private Integer duree_candidature; // en jours, peut être null
+    private Integer nombre_limite_candidature; // peut être null
 }

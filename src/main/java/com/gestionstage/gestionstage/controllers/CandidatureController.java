@@ -3,6 +3,7 @@ package com.gestionstage.gestionstage.controllers;
 import com.gestionstage.gestionstage.dtos.CandidatureDTO;
 import com.gestionstage.gestionstage.services.CandidatureService;
 import com.gestionstage.gestionstage.dtos.AffectationEncadrantRequest;
+import com.gestionstage.gestionstage.services.JwtService;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,12 +23,23 @@ public class CandidatureController {
 
     @Autowired
     private CandidatureService candidatureService;
+    
+    @Autowired
+    private JwtService jwtService;
+
+    private Integer extractUserIdFromToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return jwtService.extractUserId(token);
+        }
+        throw new IllegalArgumentException("Token JWT invalide");
+    }
 
     @PostMapping(consumes = "multipart/form-data")
     @PreAuthorize("hasRole('stagiaire')")
     @ResponseStatus(HttpStatus.CREATED)
     public CandidatureDTO create(
-            @RequestParam("id_stagiaire") Integer idStagiaire,
+            @RequestParam("id_utilisateur") Integer idUtilisateur,
             @RequestParam("id_offre") Integer idOffre,
             @RequestParam("statut") String statut,
             @RequestParam("date_soumission") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateSoumission,
@@ -41,7 +53,7 @@ public class CandidatureController {
         if (cv.isEmpty()) throw new IllegalArgumentException("CV obligatoire.");
 
         CandidatureDTO dto = new CandidatureDTO();
-        dto.setId_stagiaire(idStagiaire);
+        dto.setId_utilisateur(idUtilisateur);  // Utiliser l'ID utilisateur
         dto.setId_offre(idOffre);
         dto.setStatut(statut);
         dto.setDate_soumission(dateSoumission);
@@ -50,7 +62,7 @@ public class CandidatureController {
         dto.setConvention_stage(conventionStage != null && !conventionStage.isEmpty() ? conventionStage.getBytes() : null);
         dto.setAttestation(attestation != null && !attestation.isEmpty() ? attestation.getBytes() : null);
 
-        return candidatureService.create(dto);
+        return candidatureService.createByUtilisateur(dto);
     }
 
     @PostMapping(value = "/conventions", consumes = "multipart/form-data")
@@ -77,6 +89,55 @@ public class CandidatureController {
     @PreAuthorize("hasAnyRole('rh', 'admin')")
     public List<CandidatureDTO> getAllCandidatures() {
         return candidatureService.getAll();
+    }
+
+    @GetMapping("/acceptees")
+    @PreAuthorize("hasAnyRole('stagiaire','rh', 'encadrant', 'admin')")
+    public List<CandidatureDTO> getCandidaturesAcceptees() {
+        return candidatureService.getCandidaturesAcceptees();
+    }
+
+    @GetMapping("/mes-candidatures-acceptees")
+    @PreAuthorize("hasRole('stagiaire')")
+    public List<CandidatureDTO> getMesCandidaturesAcceptees(@RequestHeader("Authorization") String authHeader) {
+        Integer idUtilisateur = extractUserIdFromToken(authHeader);
+        return candidatureService.getCandidaturesAccepteesByUtilisateur(idUtilisateur);
+    }
+
+    @GetMapping("/utilisateur/{idUtilisateur}")
+    @PreAuthorize("hasAnyRole('stagiaire', 'rh', 'encadrant', 'admin')")
+    public List<CandidatureDTO> getCandidaturesByUtilisateur(@PathVariable Integer idUtilisateur) {
+        return candidatureService.getCandidaturesByUtilisateur(idUtilisateur);
+    }
+
+        @PutMapping("/{id}/documents")
+    @PreAuthorize("hasRole('stagiaire')")
+    public ResponseEntity<String> updateCandidatureDocuments(
+            @PathVariable Integer id,
+            @RequestParam("cv") MultipartFile cv,
+            @RequestParam("lettre_motivation") MultipartFile lettreMotivation,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            Integer idUtilisateur = extractUserIdFromToken(authHeader);
+            candidatureService.updateCandidatureDocuments(id, idUtilisateur, cv.getBytes(), lettreMotivation.getBytes());
+            return ResponseEntity.ok("Documents mis à jour avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('stagiaire')")
+    public ResponseEntity<String> deleteCandidature(
+            @PathVariable Integer id,
+            @RequestHeader("Authorization") String authHeader) {
+        try {
+            Integer idUtilisateur = extractUserIdFromToken(authHeader);
+            candidatureService.deleteCandidature(id, idUtilisateur);
+            return ResponseEntity.ok("Candidature supprimée avec succès");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}/accepter")

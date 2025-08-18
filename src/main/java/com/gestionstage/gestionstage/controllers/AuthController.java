@@ -1,7 +1,8 @@
 package com.gestionstage.gestionstage.controllers;
 
 import com.gestionstage.gestionstage.services.JwtService;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gestionstage.gestionstage.entities.Utilisateur;
+import com.gestionstage.gestionstage.repositories.UtilisateurRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -45,8 +49,12 @@ public class AuthController {
                     .map(GrantedAuthority::getAuthority)
                     .orElseThrow(() -> new RuntimeException("Rôle non trouvé"));
 
-            // Générer le token JWT avec le rôle
-            String token = jwtService.generateToken(request.getEmail(), role);
+            // Récupérer l'utilisateur pour obtenir son ID
+            Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+            // Générer le token JWT avec le rôle et l'ID utilisateur
+            String token = jwtService.generateToken(request.getEmail(), role, utilisateur.getIdUtilisateur());
             // Retourner le token au client
             return ResponseEntity.ok(new JwtResponse(token));
 

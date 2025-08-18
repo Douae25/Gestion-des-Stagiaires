@@ -21,9 +21,20 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("CustomUserDetailsService: Recherche utilisateur avec email: " + username);
+        
         Utilisateur utilisateur = utilisateurRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
+                .orElseThrow(() -> {
+                    System.out.println("CustomUserDetailsService: Aucun utilisateur trouvé avec l'email: " + username);
+                    // Affichons tous les emails en base pour debug
+                    utilisateurRepository.findAll().forEach(u -> 
+                        System.out.println("Email en base: " + u.getEmail())
+                    );
+                    return new UsernameNotFoundException("Utilisateur non trouvé");
+                });
 
+        System.out.println("CustomUserDetailsService: Utilisateur trouvé - Email: " + utilisateur.getEmail() + ", Type: " + utilisateur.getType());
+        
         return User.withUsername(utilisateur.getEmail())
                 .password(utilisateur.getMot_de_passe())
                 .roles(utilisateur.getType().name())
