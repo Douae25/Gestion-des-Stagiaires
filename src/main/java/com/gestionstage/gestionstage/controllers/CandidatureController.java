@@ -97,11 +97,22 @@ public class CandidatureController {
         return candidatureService.getCandidaturesAcceptees();
     }
 
+    @Autowired
+    private com.gestionstage.gestionstage.services.RapportService rapportService;
+
     @GetMapping("/mes-candidatures-acceptees")
     @PreAuthorize("hasRole('stagiaire')")
-    public List<CandidatureDTO> getMesCandidaturesAcceptees(@RequestHeader("Authorization") String authHeader) {
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsDTO> getMesCandidaturesAcceptees(@RequestHeader("Authorization") String authHeader) {
         Integer idUtilisateur = extractUserIdFromToken(authHeader);
-        return candidatureService.getCandidaturesAccepteesByUtilisateur(idUtilisateur);
+        List<CandidatureDTO> candidatures = candidatureService.getCandidaturesAccepteesByUtilisateur(idUtilisateur);
+        List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsDTO> result = new java.util.ArrayList<>();
+        for (CandidatureDTO c : candidatures) {
+            com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsDTO();
+            dto.setCandidature(c);
+            dto.setRapports(rapportService.getRapportsParCandidature(c.getId()));
+            result.add(dto);
+        }
+        return result;
     }
 
     @GetMapping("/utilisateur/{idUtilisateur}")
