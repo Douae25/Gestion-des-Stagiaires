@@ -269,16 +269,7 @@
             </ng-container>
 
             <!-- Candidature en attente -->
-            <ng-container *ngIf="candidature.statut === 'en_attente'">
-              <button 
-                mat-stroked-button 
-                color="primary"
-                (click)="editCandidature(candidature); $event.stopPropagation()"
-                matTooltip="Modifier les documents de candidature">
-                <mat-icon>edit</mat-icon>
-                Modifier
-              </button>
-            </ng-container>
+            <!-- Bouton Modifier supprimé -->
 
             <!-- Candidature refusée -->
             <ng-container *ngIf="candidature.statut === 'refusee'">

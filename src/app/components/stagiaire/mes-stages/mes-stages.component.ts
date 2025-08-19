@@ -13,7 +13,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../../services/auth.service';
-import { StagiaireService, Stage, Rapport, StagesResponse } from '../../../services/stagiaire.service';
+import { StagiaireService, Stage, StagesResponse } from '../../../services/stagiaire.service';
+import { Rapport } from '../../../models/offre-stage';
 import { RapportDialogComponent, RapportDialogData, RapportDialogResult } from './rapport-dialog.component';
 
 @Component({
@@ -41,6 +42,7 @@ export class MesStagesComponent implements OnInit {
   stages: Stage[] = [];
   loading = false;
   error: string | null = null;
+  commentairesCount: { [rapportId: number]: number } = {};
 
   constructor(
     private authService: AuthService,
@@ -72,6 +74,14 @@ export class MesStagesComponent implements OnInit {
         this.stages = response.stages || [];
         this.loading = false;
         console.log('Stages assignés:', this.stages);
+        // Charger le nombre de commentaires pour chaque rapport
+        this.stages.forEach(stage => {
+          if (stage.rapports && stage.rapports.length > 0) {
+            stage.rapports.forEach(rapport => {
+              this.getCommentairesCount(rapport);
+            });
+          }
+        });
       },
       error: (error) => {
         console.error('Erreur lors du chargement des stages:', error);
@@ -121,7 +131,9 @@ export class MesStagesComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
+    if (!dateString) return '';
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return '';
     return new Intl.DateTimeFormat('fr-FR', {
       day: 'numeric',
       month: 'long',
@@ -214,7 +226,7 @@ export class MesStagesComponent implements OnInit {
   }
 
   deposerRapport(stage: Stage, file: File, type: 'hebdomadaire' | 'mensuel' | 'final', titre: string): void {
-    this.stagiaireService.deposerRapport(stage.id, file, type, titre).subscribe({
+  this.stagiaireService.deposerRapport(stage.candidature_id, file, titre).subscribe({
       next: (rapport) => {
         this.snackBar.open('Rapport déposé avec succès', 'Fermer', {
           duration: 3000,
@@ -263,7 +275,7 @@ export class MesStagesComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${rapport.nom_fichier || rapport.titre}.pdf`;
+        link.download = `${rapport.titre}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
         
@@ -362,5 +374,34 @@ export class MesStagesComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/stagiaire/dashboard']);
+  }
+
+  // Récupérer le nombre de commentaires pour un rapport
+  getCommentairesCount(rapport: Rapport): void {
+    this.stagiaireService.getCommentairesRapport(rapport.id).subscribe({
+      next: (commentaires: any[]) => {
+        // Le backend renvoie la liste des commentaires, on compte leur nombre
+        rapport.nbCommentaires = Array.isArray(commentaires) ? commentaires.length : 0;
+      },
+      error: (_err: any) => {
+        rapport.nbCommentaires = 0;
+      }
+    });
+  }
+
+  // Méthode pour afficher les commentaires d'un rapport
+  voirCommentaires(rapport: Rapport): void {
+    // Ici, vous pouvez ouvrir un dialog ou une section pour afficher les commentaires
+    // Exemple simple : ouvrir un dialog (à implémenter)
+    this.stagiaireService.getCommentairesRapport(rapport.id).subscribe({
+      next: (commentaires: any[]) => {
+        // Afficher les commentaires dans un dialog ou une section
+        // Par exemple, console.log(commentaires);
+        alert(`Commentaires pour le rapport :\n\n${commentaires.map(c => c.texte).join('\n---\n')}`);
+      },
+      error: (error) => {
+        alert('Erreur lors de la récupération des commentaires');
+      }
+    });
   }
 }

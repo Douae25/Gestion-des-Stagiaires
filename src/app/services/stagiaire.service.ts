@@ -1,4 +1,7 @@
+
 import { Injectable } from '@angular/core';
+
+// Interface pour un rapport de stage
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, switchMap, tap } from 'rxjs/operators';
@@ -20,6 +23,19 @@ export interface StagiaireProfile {
 
     
   };
+}
+// Interface pour un rapport de stage
+export interface Rapport {
+  id: number;
+  titre: string;
+  document: string;
+  nbCommentaires?: number;
+  idCandidature: number;
+  type?: string;
+  date_soumission?: string;
+  statut?: string;
+  commentaire_encadrant?: string;
+  nom_fichier?: string;
 }
 
 // Interface spécifique pour les updates de profil
@@ -200,22 +216,7 @@ export interface Stage {
   rapports: Rapport[];
 }
 
-export interface Rapport {
-  id: number;
-  stage_id: number;
-  type: 'hebdomadaire' | 'mensuel' | 'final';
-  titre: string;
-  contenu?: string; // Base64 ou URL du fichier
-  date_soumission: string;
-  date_limite?: string;
-  statut: 'en_attente' | 'valide' | 'refuse' | 'a_corriger';
-  commentaire_encadrant?: string;
-  note?: number;
-  
-  // Métadonnées du fichier
-  nom_fichier?: string;
-  taille_fichier?: number;
-}
+
 
 export interface StagesResponse {
   stages: Stage[];
@@ -226,8 +227,14 @@ export interface StagesResponse {
   providedIn: 'root'
 })
 export class StagiaireService {
+  // Récupérer les commentaires d'un rapport
+  getCommentairesRapport(idRapport: number) {
+  const token = this.authService.getToken();
+  const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  return this.http.get<any[]>(`/api/commentaires/rapport/${idRapport}`, { headers });
+  }
   private readonly API_URL = '/api';
-  private candidaturesCache: Candidature[] | null = null;
+  private candidaturesCache: Array<{ candidature: Candidature, rapports: Rapport[] }> | null = null;
 
   constructor(
     private http: HttpClient,
@@ -675,18 +682,17 @@ export class StagiaireService {
     this.clearCandidaturesCache();
     
     return this.getCandidaturesAcceptees().pipe(
-      map(candidatures => {
-        console.log('✅ Mes candidatures acceptées reçues:', candidatures);
-        console.log('📊 Nombre de candidatures:', candidatures.length);
-        
-        // Transformer les candidatures acceptées en stages
-        const stages: Stage[] = candidatures.map(candidature => 
-          this.transformCandidatureToStage(candidature)
-        );
-        
+      map(items => {
+        console.log('✅ Mes candidatures acceptées reçues:', items);
+        console.log('📊 Nombre de candidatures:', items.length);
+        // items est un tableau d'objets {candidature, rapports}
+        const stages: Stage[] = items.map(item => {
+          const stage = this.transformCandidatureToStage(item.candidature);
+          stage.rapports = item.rapports || [];
+          return stage;
+        });
         console.log('🏫 Stages finaux:', stages);
-        
-        return { 
+        return {
           stages,
           total: stages.length
         };
@@ -780,7 +786,11 @@ export class StagiaireService {
   }
 
   // Récupérer les candidatures acceptées (qui deviennent des stages)
-  getCandidaturesAcceptees(): Observable<Candidature[]> {
+
+
+
+  // Correction du typage pour la structure backend
+  getCandidaturesAcceptees(): Observable<Array<{ candidature: Candidature, rapports: Rapport[] }>> {
     // Si on a déjà les données en cache, les retourner
     if (this.candidaturesCache) {
       console.log('📦 Utilisation du cache pour les candidatures acceptées');
@@ -794,31 +804,13 @@ export class StagiaireService {
 
     console.log('🎯 Récupération des candidatures acceptées pour l\'utilisateur:', currentUser.id);
     
-    return this.http.get<Candidature[]>(`${this.API_URL}/candidatures/mes-candidatures-acceptees`, {
+    return this.http.get<Array<{ candidature: Candidature, rapports: Rapport[] }>>(`${this.API_URL}/candidatures/mes-candidatures-acceptees`, {
       headers: this.getHeaders()
     }).pipe(
-      tap(candidatures => {
-        console.log('✅ Candidatures acceptées récupérées:', candidatures);
-        
+      tap(items => {
+        console.log('✅ Candidatures acceptées récupérées:', items);
         // Stocker en cache
-        this.candidaturesCache = candidatures;
-        
-        // Debug: afficher tous les champs de chaque candidature
-        candidatures.forEach((candidature, index) => {
-          console.log(`🔍 Candidature ${index + 1} (ID: ${candidature.id}):`);
-          console.log('📊 Tous les champs:', Object.keys(candidature));
-          console.log('📄 convention_stage:', !!candidature.convention_stage);
-          console.log('📝 convention_signee:', !!candidature.convention_signee);
-          console.log('📋 attestation:', !!candidature.attestation);
-          console.log('🏆 attestation_stage:', !!candidature.attestation_stage);
-          
-          // Afficher tous les champs qui contiennent "convention" ou "attestation"
-          Object.keys(candidature).forEach(key => {
-            if (key.toLowerCase().includes('convention') || key.toLowerCase().includes('attestation')) {
-              console.log(`🔑 ${key}:`, !!(candidature as any)[key]);
-            }
-          });
-        });
+        this.candidaturesCache = items;
       }),
       catchError(error => {
         console.error('❌ Erreur lors de la récupération des candidatures acceptées:', error);
@@ -904,17 +896,32 @@ export class StagiaireService {
   }
 
   // Déposer un rapport de stage
-  deposerRapport(stageId: number, rapportFile: File, type: 'hebdomadaire' | 'mensuel' | 'final', titre: string): Observable<Rapport> {
+  deposerRapport(idCandidature: number, rapportFile: File, titre: string): Observable<any> {
     const formData = new FormData();
-    formData.append('rapport', rapportFile);
-    formData.append('type', type);
+    formData.append('document', rapportFile);
     formData.append('titre', titre);
+    formData.append('idCandidature', idCandidature.toString());
 
-    return this.http.post<Rapport>(`${this.API_URL}/stages/${stageId}/rapports`, formData, {
-      headers: this.getHeaders()
-    }).pipe(
-      tap(rapport => {
-        console.log('✅ Rapport déposé avec succès:', rapport);
+    // Log du contenu du FormData
+    console.log('FormData envoyé au backend:');
+    for (let pair of formData.entries()) {
+      if (pair[1] instanceof File) {
+        console.log(pair[0], ':', pair[1].name, pair[1].type, pair[1].size + ' bytes');
+      } else {
+        console.log(pair[0], ':', pair[1]);
+      }
+    }
+
+    // Récupérer le token et créer le header Authorization uniquement
+    const token = this.authService.getToken();
+    let httpHeaders = new HttpHeaders();
+    if (token) {
+      httpHeaders = httpHeaders.set('Authorization', `Bearer ${token}`);
+    }
+
+    return this.http.post(`${this.API_URL}/rapports`, formData, { headers: httpHeaders }).pipe(
+      tap(response => {
+        console.log('✅ Rapport déposé avec succès:', response);
       }),
       catchError(error => {
         console.error('❌ Erreur lors du dépôt du rapport:', error);
@@ -990,19 +997,17 @@ export class StagiaireService {
   // Télécharger la convention depuis les données de candidature déjà récupérées
   telechargerConventionCandidature(candidatureId: number): Observable<Blob> {
     return this.getCandidaturesAcceptees().pipe(
-      map(candidatures => {
-        const candidature = candidatures.find(c => c.id === candidatureId);
+      map(items => {
+        const item = items.find(item => item.candidature.id === candidatureId);
+        const candidature = item?.candidature;
         if (!candidature) {
           throw new Error('Candidature non trouvée');
         }
-        
         // Priorité à la convention signée, sinon convention normale
         let conventionData = candidature.convention_signee || candidature.convention_stage;
-        
         if (!conventionData) {
           throw new Error('Convention non disponible');
         }
-        
         console.log('📄 Convention trouvée dans les données candidature');
         return this.convertBase64ToBlob(conventionData);
       }),
@@ -1061,22 +1066,20 @@ export class StagiaireService {
   // Télécharger la convention signée par l'entreprise (depuis les données de candidature)
   telechargerConventionSignee(candidatureId: number): Observable<Blob> {
     return this.getCandidaturesAcceptees().pipe(
-      map(candidatures => {
-        const candidature = candidatures.find(c => c.id === candidatureId);
+      map(items => {
+        const item = items.find(item => item.candidature.id === candidatureId);
+        const candidature = item?.candidature;
         if (!candidature) {
           throw new Error('Candidature non trouvée');
         }
-        
         // Chercher le champ qui contient la convention signée
         const conventionSigneeData = candidature.convention_signee || 
                                    candidature.convention_signee_rh || 
                                    candidature.attestation || 
                                    candidature.attestation_stage;
-        
         if (!conventionSigneeData) {
           throw new Error('Convention signée non disponible');
         }
-        
         console.log('📄 Convention signée trouvée dans les données candidature');
         return this.convertBase64ToBlob(conventionSigneeData);
       }),

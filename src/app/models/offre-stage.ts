@@ -1,3 +1,9 @@
+export interface Rapport {
+  id: number;
+  titre: string;
+  document: string;
+  nbCommentaires?: number;
+}
 export interface Tag {
   libelle: string;
   color: string;
