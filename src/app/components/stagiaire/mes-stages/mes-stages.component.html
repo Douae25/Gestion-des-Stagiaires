@@ -307,12 +307,14 @@
                         Déposer le rapport final
                       </button>
                     </div>
+
+                    <!-- Section Attestation de stage déplacée hors du panneau Rapports -->
                   </div>
                 </div>
               </mat-expansion-panel>
 
-              <!-- Section Attestation -->
-              <mat-expansion-panel class="documents-panel" *ngIf="stage.statut === 'termine'">
+              <!-- Section Attestation de stage indépendante -->
+              <mat-expansion-panel class="documents-panel" *ngIf="stage.attestation_stage">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     <mat-icon>verified</mat-icon>
@@ -320,20 +322,19 @@
                   </mat-panel-title>
                   <mat-panel-description>
                     <mat-chip class="stagiaire-status-chip accepte">
-                      Document de fin de stage
+                      Document officiel disponible
                     </mat-chip>
                   </mat-panel-description>
                 </mat-expansion-panel-header>
-                
                 <div class="panel-content">
                   <div class="success-text">
                     <mat-icon>info</mat-icon>
-                    Téléchargez votre attestation de stage officielle.
+                    Votre attestation officielle de stage est disponible.
                   </div>
                   <div class="action-buttons">
                     <button 
                       mat-raised-button 
-                      class="stagiaire-btn"
+                      class="stagiaire-btn success"
                       (click)="telechargerAttestation(stage)">
                       <mat-icon>download</mat-icon>
                       Télécharger l'attestation

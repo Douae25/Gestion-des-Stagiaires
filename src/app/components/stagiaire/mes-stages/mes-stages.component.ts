@@ -275,28 +275,32 @@ export class MesStagesComponent implements OnInit {
   }
 
   telechargerAttestation(stage: Stage): void {
-    this.stagiaireService.telechargerAttestation(stage.id).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `Attestation_Stage_${stage.titre}.pdf`;
-        link.click();
-        window.URL.revokeObjectURL(url);
-        
-        this.snackBar.open('Attestation téléchargée', 'Fermer', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      },
-      error: (error) => {
-        console.error('Erreur lors du téléchargement:', error);
-        this.snackBar.open('Erreur lors du téléchargement de l\'attestation', 'Fermer', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
+    if (stage.attestation_stage) {
+      // On suppose que stage.attestation_stage contient le base64 (sans header)
+      const base64 = stage.attestation_stage;
+      const byteCharacters = atob(base64);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
-    });
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Attestation_Stage_${stage.titre}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      this.snackBar.open('Attestation téléchargée', 'Fermer', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    } else {
+      this.snackBar.open('Aucune attestation disponible', 'Fermer', {
+        duration: 4000,
+        panelClass: ['error-snackbar']
+      });
+    }
   }
 
   telechargerRapport(rapport: Rapport): void {
