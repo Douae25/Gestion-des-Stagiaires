@@ -245,38 +245,36 @@
                   <!-- Contenu normal des rapports si convention signée -->
                   <div *ngIf="stage.convention_signee">
                     <!-- Debug type de stage.rapports -->
-                    <div style="color:#c00; font-size:13px; margin-bottom:8px;">
-                      <strong>Type de stage.rapports:</strong> {{ stage.rapports.constructor.name || 'inconnu' }}
-                      <span *ngIf="!stage.rapports || !stage.rapports.length">(Aucun rapport ou structure incorrecte)</span>
-                    </div>
+                    <!-- ...existing code... -->
                     <!-- Liste des rapports existants -->
                     <div *ngIf="stage.rapports && stage.rapports.length > 0" class="rapports-list">
                       <div *ngFor="let rapport of stage.rapports" class="rapport-item" style="border: 1px solid #e0e0e0; border-radius: 8px; margin-bottom: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between;">
                         <div class="rapport-info" style="flex:1;">
                           <mat-icon style="margin-right:8px; color:#1976d2;">description</mat-icon>
                           <span style="font-weight:600;">{{ rapport.titre || 'Titre non renseigné' }}</span>
-                          <pre style="background:#f5f5f5; color:#333; font-size:12px; padding:8px; border-radius:4px; margin-top:8px;">{{ rapport | json }}</pre>
+                          <!-- ...existing code... -->
                         </div>
-                        <div class="rapport-actions" style="display:flex; gap:8px; background:#ffe0e0; padding:8px; border-radius:6px; border:2px solid #c00;">
+                        <div class="rapport-actions" style="display:flex; flex-direction:row; flex-wrap:wrap; gap:18px; background:#f8fafd; padding:12px; border-radius:8px; border:1px solid #e0e0e0; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.04); max-width:500px;">
                           <button 
                             mat-raised-button 
                             color="primary"
-                            class="stagiaire-btn accent"
-                            style="background:#fff; color:#c00; font-weight:bold; border:2px solid #c00;"
+                            class="stagiaire-btn"
+                            style="background:linear-gradient(90deg,#1976d2 60%,#2196f3 100%); color:#fff; font-weight:600; border:none; box-shadow:0 2px 8px rgba(25,118,210,0.15); padding:10px 22px; border-radius:6px; font-size:15px; letter-spacing:0.5px; min-width:180px; max-width:220px; height:48px; display:flex; align-items:center; justify-content:center; transition:background 0.2s;"
                             (click)="telechargerRapport(rapport)"
-                            matTooltip="Télécharger le rapport">
-                            <mat-icon>download</mat-icon>
-                            Télécharger
+                            matTooltip="Télécharger le rapport"
+                            *ngIf="rapport.id">
+                            <mat-icon style="margin-right:8px; vertical-align:middle;">download</mat-icon>
+                            <span style="vertical-align:middle;">Télécharger le rapport</span>
                           </button>
                           <button 
                             mat-raised-button 
                             color="accent"
                             class="stagiaire-btn"
-                            style="background:#fff; color:#c00; font-weight:bold; border:2px solid #c00;"
+                            style="background:#fff; color:#1976d2; font-weight:600; border:2px solid #1976d2; box-shadow:0 2px 8px rgba(25,118,210,0.08); padding:10px 22px; border-radius:6px; font-size:15px; letter-spacing:0.5px; min-width:220px; max-width:100%; height:auto; display:flex; align-items:center; justify-content:center; white-space:normal; transition:border 0.2s;"
                             (click)="voirCommentaires(rapport)"
                             matTooltip="Voir les commentaires">
-                            <mat-icon>comment</mat-icon>
-                            Commentaires ({{ rapport.nbCommentaires ?? 0 }})
+                            <mat-icon style="margin-right:8px; vertical-align:middle;">comment</mat-icon>
+                            <span style="vertical-align:middle; white-space:normal;">Voir les commentaires ({{ rapport.nbCommentaires ?? 0 }})</span>
                           </button>
                         </div>
                       </div>

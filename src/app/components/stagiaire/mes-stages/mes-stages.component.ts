@@ -16,6 +16,7 @@ import { AuthService, User } from '../../../services/auth.service';
 import { StagiaireService, Stage, StagesResponse } from '../../../services/stagiaire.service';
 import { Rapport } from '../../../models/offre-stage';
 import { RapportDialogComponent, RapportDialogData, RapportDialogResult } from './rapport-dialog.component';
+import { CommentairesDialogComponent } from './commentaires-dialog.component';
 
 @Component({
   selector: 'app-mes-stages',
@@ -34,10 +35,39 @@ import { RapportDialogComponent, RapportDialogData, RapportDialogResult } from '
     MatExpansionModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatTooltipModule
+  MatTooltipModule
   ]
 })
 export class MesStagesComponent implements OnInit {
+  voirCommentaires(rapport: Rapport): void {
+    // Cherche le stage parent pour récupérer l'encadrant
+    const stageParent = this.stages.find(stage => stage.rapports.some(r => r.id === rapport.id));
+    const rapportAvecEncadrant = { ...rapport };
+    if (stageParent && stageParent.encadrant) {
+      rapportAvecEncadrant.encadrant = stageParent.encadrant;
+    }
+    this.stagiaireService.getCommentairesRapport(rapport.id).subscribe({
+      next: (commentaires: any[]) => {
+        this.dialog.open(CommentairesDialogComponent, {
+          width: '500px',
+          data: {
+            commentaires,
+            rapport: rapportAvecEncadrant
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la récupération des commentaires:', error);
+        this.dialog.open(CommentairesDialogComponent, {
+          width: '500px',
+          data: {
+            commentaires: [],
+            rapport: rapportAvecEncadrant
+          }
+        });
+      }
+    });
+  }
   currentUser: User | null = null;
   stages: Stage[] = [];
   loading = false;
@@ -270,28 +300,62 @@ export class MesStagesComponent implements OnInit {
   }
 
   telechargerRapport(rapport: Rapport): void {
-    this.stagiaireService.telechargerRapport(rapport.id).subscribe({
-      next: (blob) => {
+    // Si le rapport contient le document en base64, on le télécharge directement
+    if (rapport.document && rapport.document.length > 100) {
+      try {
+        let base64 = rapport.document;
+        // Nettoyer le préfixe si présent
+        if (base64.includes(',')) {
+          base64 = base64.split(',')[1];
+        }
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${rapport.titre}.pdf`;
+        link.download = `${rapport.titre || 'rapport'}.pdf`;
         link.click();
         window.URL.revokeObjectURL(url);
-        
         this.snackBar.open('Rapport téléchargé', 'Fermer', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-      },
-      error: (error) => {
-        console.error('Erreur lors du téléchargement:', error);
+      } catch (error) {
+        console.error('Erreur lors du décodage du rapport:', error);
         this.snackBar.open('Erreur lors du téléchargement du rapport', 'Fermer', {
           duration: 5000,
           panelClass: ['error-snackbar']
         });
       }
-    });
+    } else {
+      // Sinon, fallback sur l'API existante
+      this.stagiaireService.telechargerRapport(rapport.id).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${rapport.titre}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.snackBar.open('Rapport téléchargé', 'Fermer', {
+            duration: 3000,
+            panelClass: ['success-snackbar']
+          });
+        },
+        error: (error) => {
+          console.error('Erreur lors du téléchargement:', error);
+          this.snackBar.open('Erreur lors du téléchargement du rapport', 'Fermer', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      });
+    }
   }
 
   // Nouvelles méthodes pour la gestion des conventions
@@ -389,19 +453,5 @@ export class MesStagesComponent implements OnInit {
     });
   }
 
-  // Méthode pour afficher les commentaires d'un rapport
-  voirCommentaires(rapport: Rapport): void {
-    // Ici, vous pouvez ouvrir un dialog ou une section pour afficher les commentaires
-    // Exemple simple : ouvrir un dialog (à implémenter)
-    this.stagiaireService.getCommentairesRapport(rapport.id).subscribe({
-      next: (commentaires: any[]) => {
-        // Afficher les commentaires dans un dialog ou une section
-        // Par exemple, console.log(commentaires);
-        alert(`Commentaires pour le rapport :\n\n${commentaires.map(c => c.texte).join('\n---\n')}`);
-      },
-      error: (error) => {
-        alert('Erreur lors de la récupération des commentaires');
-      }
-    });
-  }
+  // ...existing code...
 }

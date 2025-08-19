@@ -3,6 +3,14 @@ export interface Rapport {
   titre: string;
   document: string;
   nbCommentaires?: number;
+  encadrant?: {
+    id: number;
+    nom: string;
+    prenom: string;
+    email: string;
+    telephone?: string;
+    poste?: string;
+  };
 }
 export interface Tag {
   libelle: string;
