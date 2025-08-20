@@ -1,0 +1,390 @@
+
+<div class="add-offer-header">
+	<button class="add-offer-btn" (click)="openAddModal()">
+		<span class="material-icons">add_circle</span>
+		Ajouter une offre
+	</button>
+</div>
+
+<div class="offres-header">
+	<button class="switch-btn" [class.active]="mode === 'mes'" (click)="switchMode('mes')">
+		<span class="material-icons">person</span> Mes Offres
+	</button>
+	<button class="switch-btn" [class.active]="mode === 'toutes'" (click)="switchMode('toutes')">
+		<span class="material-icons">public</span> Toutes les Offres
+	</button>
+</div>
+
+<!-- Filtre par statut -->
+<div class="status-filter-header">
+	<div class="filter-label">
+		<span class="material-icons">filter_list</span>
+		<span>Filtrer par statut :</span>
+	</div>
+	<div class="status-filter-buttons">
+		<button class="status-filter-btn" [class.active]="statusFilter === 'tous'" (click)="switchStatusFilter('tous')">
+			<span class="material-icons">view_list</span>
+			<span>Toutes</span>
+			<span class="count-badge">{{ getOffreCountByStatus('tous') }}</span>
+		</button>
+		<button class="status-filter-btn" [class.active]="statusFilter === 'en_cours'" (click)="switchStatusFilter('en_cours')">
+			<span class="material-icons">play_circle</span>
+			<span>En cours</span>
+			<span class="count-badge">{{ getOffreCountByStatus('en_cours') }}</span>
+		</button>
+		<button class="status-filter-btn" [class.active]="statusFilter === 'archivee'" (click)="switchStatusFilter('archivee')">
+			<span class="material-icons">archive</span>
+			<span>Archivées</span>
+			<span class="count-badge">{{ getOffreCountByStatus('archivee') }}</span>
+		</button>
+	</div>
+</div>
+
+<div *ngIf="loading" class="loading">
+	<span class="material-icons spin">autorenew</span> Chargement...
+</div>
+<div *ngIf="error" class="error">
+	<span class="material-icons">error_outline</span> {{ error }}
+</div>
+
+
+<div class="offres-list">
+	<div *ngFor="let offre of filteredOffres" class="offre-card">
+		<div class="offre-header">
+			<div>
+				<h3>
+					<span class="material-icons">work_outline</span>
+					{{ offre.titre }}
+				</h3>
+				<div class="created-by">
+					<span class="material-icons">person</span>
+					<span>Crée par :</span>
+					<span [ngClass]="canShowAction(offre) ? 'moi' : 'rh-label'">{{ getRhLabel(offre) }}</span>
+				</div>
+			</div>
+			<span class="statut" [ngClass]="offre.statut">
+				<span class="material-icons statut-icon">
+					{{ offre.statut === 'en_cours' ? 'play_circle' : (offre.statut === 'archivee' ? 'archive' : 'block') }}
+				</span>
+				{{ offre.statut }}
+			</span>
+		</div>
+		<div class="offre-details">
+			<div class="description-row">
+				{{ offre.description }}
+			</div>
+			
+			<div class="detail-row periode-row">
+				<span class="material-icons detail-icon">date_range</span>
+				<span>Période de stage :</span>
+				<span class="periode">
+					du {{ offre.date_debut | date:'dd/MM/yyyy' }} au {{ offre.date_fin | date:'dd/MM/yyyy' }}
+				</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">hourglass_bottom</span>
+				<span>Durée :</span>
+				<span class="duree">{{ calculateDurationInMonths(offre.date_debut, offre.date_fin) }} mois</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">location_on</span>
+				<span>Localisation :</span>
+				<span>{{ offre.localisation }}</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">school</span>
+				<span>Compétence requise :</span>
+				<span>{{ offre.competence_requise }}</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">calendar_today</span>
+				<span>Publié le :</span>
+				<span>{{ offre.date_publication | date:'dd/MM/yyyy' }}</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">timer</span>
+				<span>Durée candidature :</span>
+				<span>{{ offre.duree_candidature }} jours</span>
+			</div>
+			
+			<div class="detail-row">
+				<span class="material-icons detail-icon">group</span>
+				<span>Nombre limite candidature :</span>
+				<span class="limite">{{ offre.nombre_limite_candidature === null ? 'illimité' : offre.nombre_limite_candidature }}</span>
+			</div>
+		</div>
+			<div class="offre-actions" *ngIf="canShowAction(offre)">
+				<button class="action-btn" [ngClass]="getActionLabel(offre) === 'Activer' ? 'btn-green' : 'btn-red'" (click)="changeStatut(offre)">
+					<span class="material-icons">
+						{{ getActionLabel(offre) === 'Archiver' ? 'archive' : 'play_circle' }}
+					</span>
+					{{ getActionLabel(offre) }}
+				</button>
+				<button class="action-btn btn-edit" (click)="openEditModal(offre)">
+					<span class="material-icons">edit</span>
+					Modifier
+				</button>
+			</div>
+	</div>
+</div>
+
+<!-- Modal d'édition d'offre -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span class="material-icons">edit</span>
+        Modifier l'offre
+      </h2>
+      <button class="close-btn" (click)="closeEditModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="updateOffre()" #editForm="ngForm">
+        <div class="form-group">
+          <label for="titre">
+            <span class="material-icons">work_outline</span>
+            Titre du stage
+          </label>
+          <input type="text" id="titre" name="titre" [(ngModel)]="editingOffre.titre" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">
+            <span class="material-icons">description</span>
+            Description
+          </label>
+          <textarea id="description" name="description" [(ngModel)]="editingOffre.description" rows="4" required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="date_debut">
+              <span class="material-icons">event</span>
+              Date début
+            </label>
+            <input type="date" id="date_debut" name="date_debut" [(ngModel)]="editingOffre.date_debut" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="date_fin">
+              <span class="material-icons">event_available</span>
+              Date fin
+            </label>
+            <input type="date" id="date_fin" name="date_fin" [(ngModel)]="editingOffre.date_fin" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>
+              <span class="material-icons">location_on</span>
+              Localisation
+            </label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="edit_localisation" value="sur site" [(ngModel)]="editingOffre.localisation" required>
+                <span class="radio-custom"></span>
+                <span class="radio-text">Sur site</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="edit_localisation" value="à distance" [(ngModel)]="editingOffre.localisation" required>
+                <span class="radio-custom"></span>
+                <span class="radio-text">À distance</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="edit_localisation" value="hybride" [(ngModel)]="editingOffre.localisation" required>
+                <span class="radio-custom"></span>
+                <span class="radio-text">Hybride</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="duree_candidature">
+              <span class="material-icons">timer</span>
+              Durée candidature (jours)
+            </label>
+            <input type="number" id="duree_candidature" name="duree_candidature" [(ngModel)]="editingOffre.duree_candidature" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="material-icons">school</span>
+            Compétences requises
+          </label>
+          <div class="competences-input">
+            <input type="text" 
+                   placeholder="Tapez une compétence et appuyez sur Entrée" 
+                   [(ngModel)]="editCompetenceInput"
+                   (keydown.enter)="addEditCompetence($event)"
+                   name="edit_competence_input">
+            <button type="button" class="add-competence-btn" (click)="addEditCompetenceButton()">
+              <span class="material-icons">add</span>
+            </button>
+          </div>
+          <div class="competences-tags" *ngIf="editingOffre.competencesList && editingOffre.competencesList.length > 0">
+            <div class="competence-tag" *ngFor="let competence of editingOffre.competencesList; let i = index">
+              <span>{{ competence }}</span>
+              <button type="button" class="remove-competence" (click)="removeEditCompetence(i)">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="nombre_limite_candidature">
+            <span class="material-icons">group</span>
+            Nombre limite candidature (optionnel)
+          </label>
+          <input type="number" id="nombre_limite_candidature" name="nombre_limite_candidature" [(ngModel)]="editingOffre.nombre_limite_candidature" min="1">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" (click)="closeEditModal()">
+            <span class="material-icons">cancel</span>
+            Annuler
+          </button>
+          <button type="submit" class="save-btn" [disabled]="!editForm.valid || loading">
+            <span class="material-icons">save</span>
+            {{ loading ? 'Sauvegarde...' : 'Sauvegarder' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'ajout d'offre -->
+<div class="modal-overlay" *ngIf="showAddModal" (click)="closeAddModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span class="material-icons">add_circle</span>
+        Ajouter une nouvelle offre
+      </h2>
+      <button class="close-btn" (click)="closeAddModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form (ngSubmit)="addOffre()" #addForm="ngForm">
+        <div class="form-group">
+          <label for="new_titre">
+            <span class="material-icons">work_outline</span>
+            Titre du stage
+          </label>
+          <input type="text" id="new_titre" name="new_titre" [(ngModel)]="newOffre.titre" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="new_description">
+            <span class="material-icons">description</span>
+            Description
+          </label>
+          <textarea id="new_description" name="new_description" [(ngModel)]="newOffre.description" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="new_date_debut">
+            <span class="material-icons">event</span>
+            Date début
+          </label>
+          <input type="date" id="new_date_debut" name="new_date_debut" [(ngModel)]="newOffre.date_debut" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="new_date_fin">
+            <span class="material-icons">event_available</span>
+            Date fin
+          </label>
+          <input type="date" id="new_date_fin" name="new_date_fin" [(ngModel)]="newOffre.date_fin" required>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <span class="material-icons">location_on</span>
+            Localisation
+          </label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="new_localisation" value="sur site" [(ngModel)]="newOffre.localisation" required>
+              <span class="radio-custom"></span>
+              <span class="radio-text">Sur site</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="new_localisation" value="à distance" [(ngModel)]="newOffre.localisation" required>
+              <span class="radio-custom"></span>
+              <span class="radio-text">À distance</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="new_localisation" value="hybride" [(ngModel)]="newOffre.localisation" required>
+              <span class="radio-custom"></span>
+              <span class="radio-text">Hybride</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <span class="material-icons">school</span>
+            Compétences requises
+          </label>
+          <div class="competences-input">
+            <input type="text" 
+                   placeholder="Tapez une compétence et appuyez sur Entrée" 
+                   [(ngModel)]="newCompetenceInput"
+                   (keydown.enter)="addCompetence($event)"
+                   name="competence_input">
+            <button type="button" class="add-competence-btn" (click)="addCompetenceButton()">
+              <span class="material-icons">add</span>
+            </button>
+          </div>
+          <div class="competences-tags" *ngIf="newOffre.competencesList && newOffre.competencesList.length > 0">
+            <div class="competence-tag" *ngFor="let competence of newOffre.competencesList; let i = index">
+              <span>{{ competence }}</span>
+              <button type="button" class="remove-competence" (click)="removeCompetence(i)">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="new_duree_candidature">
+            <span class="material-icons">timer</span>
+            Durée candidature (jours)
+          </label>
+          <input type="number" id="new_duree_candidature" name="new_duree_candidature" [(ngModel)]="newOffre.duree_candidature" min="1" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="new_nombre_limite_candidature">
+            <span class="material-icons">group</span>
+            Nombre limite candidature (optionnel)
+          </label>
+          <input type="number" id="new_nombre_limite_candidature" name="new_nombre_limite_candidature" [(ngModel)]="newOffre.nombre_limite_candidature" min="1">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="cancel-btn" (click)="closeAddModal()">
+            <span class="material-icons">cancel</span>
+            Annuler
+          </button>
+          <button type="submit" class="save-btn" [disabled]="!addForm.valid || loading">
+            <span class="material-icons">add</span>
+            {{ loading ? 'Création...' : 'Créer l\'offre' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

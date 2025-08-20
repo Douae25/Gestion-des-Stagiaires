@@ -1,4 +1,5 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { RhModule } from './components/rh/rh.module';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app.component';
 import { LandingComponent } from './components/landing/landing.component';
@@ -28,7 +29,8 @@ export const appConfig: ApplicationConfig = {
       MatIconModule,
       MatFormFieldModule,
       MatInputModule,
-      MatChipsModule
+      MatChipsModule,
+      RhModule
     ),
     OffreStageService,
     provideRouter([])

@@ -84,15 +84,38 @@ export const routes: Routes = [
     path: 'rh',
     canActivate: [RoleGuard],
     data: { role: 'rh' },
+    loadComponent: () => import('./components/rh/rh-main.component').then(m => m.RhMainComponent),
     children: [
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
+   {
+  path: 'dashboard',
+  loadComponent: () =>
+    import('./components/rh/dashboard/rh-dashboard.component')
+      .then(m => m.RhDashboardComponent)
+},
       {
-        path: 'dashboard',
-        loadComponent: () => import('./components/rh/dashboard/rh-dashboard.component').then(m => m.RhDashboardComponent)
+        path: 'offres',
+        loadComponent: () => import('./components/rh/offres/rh-offres.component').then(m => m.RhOffresComponent)
+      },
+      {
+        path: 'candidatures',
+        loadComponent: () => import('./components/rh/candidatures/rh-candidatures.component').then(m => m.RhCandidaturesComponent)
+      },
+      {
+        path: 'stages',
+        loadComponent: () => import('./components/rh/stages/rh-stages.component').then(m => m.RhStagesComponent)
+      },
+      {
+        path: 'historique',
+        loadComponent: () => import('./components/rh/historique/rh-historique.component').then(m => m.RhHistoriqueComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/rh/profile/rh-profile.component').then(m => m.RhProfileComponent)
       }
     ]
   },

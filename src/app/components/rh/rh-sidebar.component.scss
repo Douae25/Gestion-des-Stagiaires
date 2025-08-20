@@ -1,0 +1,105 @@
+
+
+.rh-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(135deg, #e3eafe 0%, #f5f7fa 100%);
+  color: #3a3fbc;
+  box-shadow: 2px 0 16px rgba(58,63,188,0.08);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+
+.sidebar-header {
+  padding: 24px 0 10px 0;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #6a82fb;
+  letter-spacing: 1px;
+  background: none;
+}
+.rh-logo {
+  background: linear-gradient(90deg, #6a82fb 0%, #b06ab3 100%);
+  color: #fff;
+  padding: 7px 20px;
+  border-radius: 14px;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(106,130,251,0.10);
+}
+
+
+
+.sidebar-menu {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+  align-items: center;
+}
+.sidebar-menu li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  width: 85%;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border-radius: 8px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  color: #3a3fbc;
+  background: none;
+  justify-content: flex-start;
+}
+.sidebar-menu li.active, .sidebar-menu li:hover {
+  background: linear-gradient(90deg, #b06ab3 0%, #6a82fb 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(106,130,251,0.10);
+}
+.sidebar-menu li i {
+  font-size: 1.15rem;
+  margin-right: 6px;
+}
+
+
+
+.sidebar-footer {
+  padding: 12px 0 18px 0;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+.logout-btn {
+  background: linear-gradient(90deg, #b06ab3 0%, #6a82fb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 0;
+  width: 85%;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(106,130,251,0.10);
+  transition: background 0.18s, color 0.18s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.logout-btn i {
+  font-size: 1.1rem;
+  margin-right: 2px;
+}
+.logout-btn:hover {
+  background: linear-gradient(90deg, #6a82fb 0%, #b06ab3 100%);
+  color: #fff;
+}

@@ -215,10 +215,15 @@ export class AuthService {
     // Stocker le token et les informations utilisateur
     localStorage.setItem(this.TOKEN_KEY, token);
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
-    
+
     // Mettre à jour les observables
     this.currentUserSubject.next(user);
     this.isAuthenticatedSubject.next(true);
+
+    // Redirection automatique pour RH
+    if (userInfo.role && userInfo.role.toLowerCase() === 'rh') {
+      this.router.navigate(['/rh']);
+    }
   }
 
   // Gérer l'erreur de connexion
@@ -286,6 +291,39 @@ export class AuthService {
       subscriber.next(isValid);
       subscriber.complete();
     });
+  }
+
+  // Récupérer le profil complet de l'utilisateur
+  getUserProfile(): Observable<User> {
+    const currentUser = this.getCurrentUser();
+    if (!currentUser || !currentUser.id) {
+      return throwError(() => new Error('Utilisateur non connecté'));
+    }
+
+    // Appel API pour récupérer les informations complètes de l'utilisateur
+    const url = `/api/utilisateur/${currentUser.id}`;
+    return this.http.get<any>(url, { headers: this.getAuthHeaders() })
+      .pipe(
+        map(response => {
+          // Mapper la réponse vers l'interface User
+          const userWithProfile: User = {
+            ...currentUser,
+            nom: response.nom || currentUser.nom,
+            prenom: response.prenom || currentUser.prenom
+          };
+          
+          // Mettre à jour les informations stockées
+          localStorage.setItem(this.USER_KEY, JSON.stringify(userWithProfile));
+          this.currentUserSubject.next(userWithProfile);
+          
+          console.log('✅ Profil utilisateur mis à jour:', userWithProfile);
+          return userWithProfile;
+        }),
+        catchError(error => {
+          console.error('Erreur lors de la récupération du profil:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   // Récupération de mot de passe - À implémenter si votre backend le supporte

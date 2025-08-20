@@ -4,14 +4,16 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
 import { OffreStage } from '../models/offre-stage';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class OffreStageService {
   private apiUrl = '/api/offres/actives';
+  private apiBase = '/api/offres';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue lors de la communication avec le serveur';
@@ -29,10 +31,25 @@ export class OffreStageService {
   }
 
   private getHeaders(): HttpHeaders {
-    return new HttpHeaders({
+    const token = this.authService.getToken();
+    let headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Accept': 'application/json'
     });
+    
+    console.log('🔍 Construction des headers:');
+    console.log('  - Token récupéré:', token ? '✅ Présent' : '❌ Absent');
+    console.log('  - Token value:', token);
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+      console.log('  - Header Authorization ajouté:', `Bearer ${token.substring(0, 20)}...`);
+    } else {
+      console.warn('  - ⚠️ Aucun token disponible pour l\'authentification');
+    }
+    
+    console.log('  - Headers finaux:', headers);
+    return headers;
   }
 
   /**
@@ -53,13 +70,84 @@ export class OffreStageService {
   /**
    * Récupère toutes les offres de stage
    */
-  getAllOffres(): Observable<OffreStage[]> {
-    return this.http.get<OffreStage[]>(`${this.apiUrl}`, {
+  getAllOffres(): Observable<any[]> {
+    return this.http.get<any[]>(`/api/offres`, {
       headers: this.getHeaders()
     }).pipe(
       catchError(this.handleError)
     );
   }
+
+  /**
+   * Récupère les offres créées par un RH
+   */
+  getOffresByRh(idRh: number): Observable<any[]> {
+    return this.http.get<any[]>(`/api/offres/rh/${idRh}`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Change le statut d'une offre (archive/active)
+   * @param id id de l'offre
+   * @param value 'archivee' ou 'en_cours'
+   */
+  changeStatut(id: number, value: string): Observable<string> {
+    return this.http.patch(`/api/offres/${id}/statut?value=${value}`, {}, {
+      headers: this.getHeaders(),
+      responseType: 'text'
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Met à jour une offre
+   * @param id id de l'offre
+   * @param offreData données de l'offre à mettre à jour
+   */
+  updateOffre(id: number, offreData: any): Observable<any> {
+    return this.http.put<any>(`/api/offres/${id}`, offreData, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Crée une nouvelle offre
+   * @param offreData données de l'offre à créer
+   */
+  createOffre(offreData: any): Observable<any> {
+    const headers = this.getHeaders();
+    
+    // Logs pour déboguer
+    console.log('🚀 Création d\'offre - Données envoyées:', offreData);
+    console.log('🔑 Headers utilisés:', headers);
+    console.log('📍 URL d\'endpoint:', '/api/offres');
+    console.log('👤 Token actuel:', this.authService.getToken());
+    console.log('🔍 Utilisateur actuel:', this.authService.getCurrentUser());
+    
+    return this.http.post<any>(`/api/offres`, offreData, {
+      headers: headers
+    }).pipe(
+      catchError((error) => {
+        console.error('❌ Erreur lors de la création d\'offre:', error);
+        console.error('📋 Détails de l\'erreur:', {
+          status: error.status,
+          statusText: error.statusText,
+          url: error.url,
+          message: error.message,
+          error: error.error
+        });
+        return this.handleError(error);
+      })
+    );
+  }
+
+  // ...
 
   /**
    * Récupère les offres par statut

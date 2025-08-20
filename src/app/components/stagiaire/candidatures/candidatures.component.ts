@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -522,5 +523,47 @@ export class CandidaturesComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/stagiaire/dashboard']);
+  }
+
+
+    // Télécharger l'attestation de stage via l'API
+  downloadAttestation(candidature: Candidature): void {
+    this.snackBar.open('Téléchargement de l\'attestation en cours...', '', {
+      duration: 2000,
+      panelClass: ['info-snackbar']
+    });
+
+    this.stagiaireService.telechargerAttestation(candidature.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Attestation_stage_${candidature.offre_info.titre.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+
+        this.snackBar.open('Attestation téléchargée avec succès', 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors du téléchargement de l\'attestation:', error);
+        let errorMessage = 'Erreur lors du téléchargement de l\'attestation';
+        if (error.message && error.message.includes('Attestation non disponible')) {
+          errorMessage = 'Attestation non encore disponible';
+        } else if (error.status === 404) {
+          errorMessage = 'Attestation non trouvée';
+        } else if (error.status === 403) {
+          errorMessage = 'Accès non autorisé à ce document';
+        }
+        this.snackBar.open(errorMessage, 'Fermer', {
+          duration: 4000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 }

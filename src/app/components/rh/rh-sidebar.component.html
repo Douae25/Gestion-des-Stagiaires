@@ -1,0 +1,17 @@
+
+<nav class="rh-sidebar">
+  <div class="sidebar-header">
+    <span class="rh-logo">Espace RH</span>
+  </div>
+  <ul class="sidebar-menu">
+  <li routerLink="dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">dashboard</i>Dashboard</li>
+  <li routerLink="offres" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">work_outline</i>Offres de stage</li>
+  <li routerLink="candidatures" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">assignment_ind</i>Candidatures</li>
+  <li routerLink="stages" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">school</i>Stages en cours</li>
+  <li routerLink="historique" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">history</i>Historique</li>
+  <li routerLink="profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">person</i>Profile</li>
+  </ul>
+  <div class="sidebar-footer">
+    <button class="logout-btn" (click)="onLogout()"><i class="material-icons">logout</i>Déconnexion</button>
+  </div>
+</nav>

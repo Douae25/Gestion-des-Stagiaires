@@ -261,8 +261,8 @@
                 mat-flat-button 
                 color="accent" 
                 *ngIf="candidature.attestation || candidature.attestation_stage"
-                (click)="downloadDocument((candidature.attestation || candidature.attestation_stage)!, 'Attestation de stage'); $event.stopPropagation()"
-                matTooltip="Télécharger l'attestation de stage">
+                (click)="downloadAttestation(candidature); $event.stopPropagation()"
+                matTooltip="Télécharger l'attestation de stage via l'API">
                 <mat-icon>description</mat-icon>
                 Attestation
               </button>

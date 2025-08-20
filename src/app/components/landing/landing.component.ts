@@ -289,7 +289,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
     if (this.currentUser) {
       switch (this.currentUser.role) {
         case 'stagiaire':
-          this.router.navigate(['/stagiaire/dashboard']);
+          this.router.navigate(['/stagiaire']);
           break;
         case 'rh':
           this.router.navigate(['/rh/dashboard']);

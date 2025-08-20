@@ -945,14 +945,24 @@ export class StagiaireService {
     );
   }
 
-  // Télécharger l'attestation de stage
-  telechargerAttestation(stageId: number): Observable<Blob> {
-    return this.http.get(`${this.API_URL}/stages/${stageId}/attestation`, {
-      headers: this.getHeaders(),
-      responseType: 'blob'
-    }).pipe(
+  // Télécharger l'attestation de stage via /candidatures/utilisateur/{idUtilisateur}/{candidatureId}
+  // Télécharger l'attestation de stage depuis les candidatures (base64)
+  telechargerAttestation(candidatureId: number): Observable<Blob> {
+    return this.getCandidatures().pipe(
+      map(candidatures => {
+        const candidature = candidatures.find(c => c.id === candidatureId);
+        if (!candidature) {
+          throw new Error('Candidature non trouvée');
+        }
+        const attestationData = candidature.attestation || candidature.attestation_stage;
+        if (!attestationData) {
+          throw new Error('Attestation non disponible');
+        }
+        // Conversion base64 en blob
+        return this.convertBase64ToBlob(attestationData);
+      }),
       tap(() => {
-        console.log('✅ Attestation téléchargée');
+        console.log('✅ Attestation téléchargée depuis les données candidature');
       }),
       catchError(error => {
         console.error('❌ Erreur lors du téléchargement de l\'attestation:', error);
