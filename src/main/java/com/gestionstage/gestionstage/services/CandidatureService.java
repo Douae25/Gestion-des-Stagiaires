@@ -350,9 +350,11 @@ public void deposerConventionSigneeParRH(Integer idCandidature, byte[] fichierCo
     candidature.setConvention_signee(fichierConventionSignee);
     candidatureRepository.save(candidature);
 
-    // Envoie l'email au RH pour demander de déposer l'attestation
-    Integer idStagiaire = candidature.getStagiaire().getId();
-    notifierAttestationPourRH(idStagiaire);
+    // Envoie un email au stagiaire pour l'informer que la convention signée a été déposée et que le stage commence
+    String emailStagiaire = candidature.getStagiaire().getUtilisateur().getEmail();
+    String sujet = "Convention signée déposée - Début du stage";
+    String contenu = "<p>Votre convention de stage signée a été déposée. Votre stage commence officiellement. Bonne chance !</p>";
+    emailService.envoyerEmailHtml(emailStagiaire, sujet, contenu);
 }
 
 

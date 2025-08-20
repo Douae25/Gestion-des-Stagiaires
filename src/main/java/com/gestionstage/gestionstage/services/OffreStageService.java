@@ -1,3 +1,4 @@
+
 package com.gestionstage.gestionstage.services;
 
 
@@ -119,6 +120,18 @@ public void changerStatutOffre(Integer id, String statut) {
         dto.setDate_publication(offre.getDate_publication());
         dto.setDuree_candidature(offre.getDuree_candidature());
         dto.setNombre_limite_candidature(offre.getNombre_limite_candidature());
+        // Ajout des infos RH
+        if (offre.getRh() != null) {
+            com.gestionstage.gestionstage.dtos.UtilisateurCompletDTO rhDto = new com.gestionstage.gestionstage.dtos.UtilisateurCompletDTO();
+            rhDto.setId_utilisateur(offre.getRh().getIdUtilisateur());
+            rhDto.setNom(offre.getRh().getNom());
+            rhDto.setPrenom(offre.getRh().getPrenom());
+            rhDto.setEmail(offre.getRh().getEmail());
+            rhDto.setNumero_telephone(offre.getRh().getNumero_telephone());
+            rhDto.setType(offre.getRh().getType().name());
+            rhDto.setStatut(offre.getRh().getStatut().name());
+            dto.setRh_info(rhDto);
+        }
         return dto;
     }
 
@@ -163,5 +176,14 @@ public void changerStatutOffre(Integer id, String statut) {
     private int getNombreCandidatures(Integer offreId) {
         // TODO: Implémenter la récupération du nombre de candidatures pour une offre
         return 0;
+    }
+
+
+    public List<OffreStageDTO> getOffresByRh(Integer idRh) {
+        List<OffreStage> offres = offreStageRepository.findAll().stream()
+            .filter(o -> o.getRh() != null && o.getRh().getIdUtilisateur().equals(idRh))
+            .collect(Collectors.toList());
+        offres.forEach(this::updateStatutIfNeeded);
+        return offres.stream().map(this::toDTO).collect(Collectors.toList());
     }
 }

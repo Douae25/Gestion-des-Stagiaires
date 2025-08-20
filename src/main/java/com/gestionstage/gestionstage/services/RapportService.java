@@ -37,7 +37,7 @@ public class RapportService {
         dto.setId(rapport.getId());
 
         // 🔔 Si le titre est "rapport final", notifier l'encadrant
-        if (dto.getTitre() != null && dto.getTitre().trim().equalsIgnoreCase("rapport final")) {
+        if (dto.getTitre() != null && dto.getTitre().trim().equalsIgnoreCase("Rapport final de stage")) {
             candidatureService.notifierEvaluationParEncadrant(dto.getIdCandidature());
         }
 

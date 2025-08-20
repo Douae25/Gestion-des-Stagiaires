@@ -1,3 +1,4 @@
+
 package com.gestionstage.gestionstage.controllers;
 
 import com.gestionstage.gestionstage.dtos.OffreStageDTO;
@@ -56,5 +57,11 @@ public class OffreStageController {
         offreStageService.changerStatutOffre(id, value);
         return ResponseEntity.ok("Statut mis à jour");
     }
+    
+        @GetMapping("/rh/{idRh}")
+        @PreAuthorize("hasAnyRole('rh', 'admin')")
+        public List<OffreStageDTO> getOffresByRh(@PathVariable Integer idRh) {
+            return offreStageService.getOffresByRh(idRh);
+        }
 
 }

@@ -20,4 +20,7 @@ public class OffreStageDTO {
     private LocalDate date_publication;
     private Integer duree_candidature; // en jours, peut être null
     private Integer nombre_limite_candidature; // peut être null
+
+    // Ajout des infos RH
+    private UtilisateurCompletDTO rh_info;
 }

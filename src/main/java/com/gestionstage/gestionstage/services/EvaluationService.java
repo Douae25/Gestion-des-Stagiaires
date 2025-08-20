@@ -62,11 +62,8 @@ public class EvaluationService {
     evaluation = evaluationRepository.save(evaluation);
     dto.setId(evaluation.getId());
 
-    //  Récupérer la candidature pour envoyer l'email à RH
-    Candidature candidature = candidatureRepository.findByStagiaireId(dto.getId_stagiaire())
-        .orElseThrow(() -> new IllegalArgumentException("Candidature non trouvée pour le stagiaire."));
-
-    candidatureService.notifierAttestationPourRH(candidature.getId());
+    // Notifier le RH pour déposer l'attestation après l'évaluation
+    candidatureService.notifierAttestationPourRH(dto.getId_stagiaire());
 
     return dto;
 }
