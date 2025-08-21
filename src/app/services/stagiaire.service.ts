@@ -1,4 +1,3 @@
-
 import { Injectable } from '@angular/core';
 
 // Interface pour un rapport de stage
@@ -404,6 +403,116 @@ export class StagiaireService {
     return this.http.get<Candidature[]>(
       `${this.API_URL}/candidatures/utilisateur/${currentUser.id}?page=${page}&limit=${limit}`,
       { headers: this.getHeaders() }
+    );
+  }
+
+  // Récupérer les candidatures pour une offre spécifique (pour RH)
+  getCandidaturesByOffre(idOffre: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/candidatures/offre/${idOffre}`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(candidatures => {
+        console.log('✅ Candidatures pour offre récupérées:', candidatures);
+      }),
+      catchError(error => {
+        console.error('❌ Erreur lors de la récupération des candidatures par offre:', error);
+        throw error;
+      })
+    );
+  }
+
+  // Accepter une candidature (pour RH)
+  accepterCandidature(candidatureId: number): Observable<any> {
+    return this.http.patch(`${this.API_URL}/candidatures/${candidatureId}/accepter`, {}, {
+      headers: this.getHeaders(),
+      observe: 'response' // Observer la réponse complète pour diagnostiquer
+    }).pipe(
+      map(response => {
+        console.log('✅ Réponse complète du serveur:', response);
+        console.log('Status:', response.status);
+        console.log('Body:', response.body);
+        
+        // Considérer les status 200, 201, 204 comme succès
+        if (response.status >= 200 && response.status < 300) {
+          return response.body || { success: true, message: 'Candidature acceptée avec succès' };
+        }
+        
+        return response.body;
+      }),
+      tap(result => {
+        console.log('✅ Candidature acceptée:', result);
+      }),
+      catchError(error => {
+        console.error('❌ Détails de l\'erreur:', error);
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('Error body:', error.error);
+        
+        // Si le status est 200-299 mais traité comme erreur, c'est probablement un succès
+        if (error.status >= 200 && error.status < 300) {
+          console.log('✅ Status de succès détecté malgré l\'erreur apparente');
+          return of({ success: true, message: 'Candidature acceptée avec succès' });
+        }
+        
+        // Pour les autres cas, propager l'erreur
+        throw error;
+      })
+    );
+  }
+
+  // Récupérer la liste des encadrants
+  getEncadrants(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/encadrants`, {
+      headers: this.getHeaders()
+    }).pipe(
+      tap(encadrants => {
+        console.log('✅ Encadrants récupérés:', encadrants);
+      }),
+      catchError(error => {
+        console.error('❌ Erreur lors de la récupération des encadrants:', error);
+        throw error;
+      })
+    );
+  }
+
+  // Affecter un encadrant à une candidature
+  affecterEncadrant(candidatureId: number, encadrantId: number): Observable<any> {
+    return this.http.patch(`${this.API_URL}/candidatures/${candidatureId}/affecter-encadrant`, 
+      { id_encadrant: encadrantId }, 
+      {
+        headers: this.getHeaders(),
+        observe: 'response'
+      }
+    ).pipe(
+      // Considérer 200/204 comme succès même si le body est vide
+      tap(response => {
+        console.log('✅ Encadrant affecté:', response);
+      }),
+      // Si le backend retourne une erreur mais le status est 200/204, considérer comme succès
+      catchError(error => {
+        if (error.status === 200 || error.status === 204) {
+          console.log('✅ Encadrant affecté (status 200/204, body vide)');
+          return of({ success: true });
+        }
+        console.error('❌ Erreur lors de l\'affectation de l\'encadrant:', error);
+        throw error;
+      }),
+      // Retourner un objet succès si le status est OK
+      map(response => {
+        // Si c'est un objet succès artificiel
+        if (response && typeof response === 'object' && 'success' in response) {
+          return response;
+        }
+        // Si c'est une vraie HttpResponse
+        if (response && typeof response === 'object' && 'status' in response) {
+          const status = (response as any).status;
+          if (status === 200 || status === 204) {
+            return { success: true };
+          }
+          return (response as any).body;
+        }
+        return response;
+      })
     );
   }
 
@@ -1101,5 +1210,14 @@ export class StagiaireService {
         throw error;
       })
     );
+  }
+
+  // Déposer la convention de stage signée (PATCH, clé 'file')
+  deposerConventionSignee(candidatureId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.patch(`/api/candidatures/${candidatureId}/convention-signee`, formData, {
+      headers: this.getHeaders().delete('Content-Type')
+    });
   }
 }

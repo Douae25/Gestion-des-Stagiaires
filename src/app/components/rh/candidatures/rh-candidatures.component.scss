@@ -1,7 +1,1116 @@
-h2 {
-  color: #263238;
-  margin-bottom: 16px;
+// Variables de style
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-white: #ffffff;
+$neutral-light: #f8fafc;
+$neutral-medium: #e2e8f0;
+$neutral-dark: #1e293b;
+
+// Shadows
+$shadow-sm: 0 2px 8px rgba(30, 58, 138, 0.08);
+$shadow-md: 0 4px 16px rgba(30, 58, 138, 0.12);
+$shadow-lg: 0 8px 32px rgba(30, 58, 138, 0.16);
+
+// Gradients
+$gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+$gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+
+.candidatures-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
 }
-p {
-  color: #37474f;
+
+// ========== HEADER SECTION ==========
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px 20px;
+  background: $gradient-primary;
+  border-radius: 20px;
+  color: white;
+  box-shadow: $shadow-lg;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+    font-weight: 700;
+
+    .material-icons {
+      font-size: 2.2rem;
+    }
+  }
+
+  .page-description {
+    margin: 0;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+  }
+}
+
+// ========== SORT CONTROLS ==========
+.sort-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(30, 58, 138, 0.1);
+
+  .sort-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $primary-blue;
+    font-weight: 600;
+
+    .material-icons {
+      color: $accent-purple;
+    }
+  }
+
+  .sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: $gradient-accent;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: $shadow-sm;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// ========== LOADING & ERROR STATES ==========
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 12px;
+  margin: 20px 0;
+  font-weight: 600;
+}
+
+.loading {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  color: $primary-blue;
+
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+}
+
+.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+  color: $danger-red;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// ========== OFFRES LIST ==========
+.offres-list {
+  display: grid;
+  gap: 20px;
+}
+
+.offre-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: $shadow-md;
+  border: 1px solid rgba(30, 58, 138, 0.05);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+    border-color: rgba(30, 58, 138, 0.1);
+  }
+}
+
+// ========== OFFRE HEADER ==========
+.offre-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid $neutral-light;
+
+  .offre-title {
+    flex: 1;
+
+    h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 8px 0;
+      color: $primary-blue;
+      font-size: 1.4rem;
+      font-weight: 700;
+
+      .material-icons {
+        color: $accent-purple;
+        font-size: 1.6rem;
+      }
+    }
+
+    .offre-date {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: $neutral-dark;
+      font-size: 0.9rem;
+      opacity: 0.8;
+
+      .material-icons {
+        font-size: 1rem;
+        color: $warning-orange;
+      }
+    }
+  }
+}
+
+// ========== OFFRE DETAILS ==========
+.offre-details {
+  margin-bottom: 20px;
+
+  .description {
+    background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(226, 232, 240, 0.4) 100%);
+    padding: 16px;
+    border-radius: 10px;
+    color: $neutral-dark;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    border-left: 4px solid $accent-purple;
+  }
+
+  .details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 12px;
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(248, 250, 252, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(30, 58, 138, 0.05);
+
+      .material-icons {
+        color: $secondary-blue;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .label {
+        font-weight: 600;
+        color: $primary-blue;
+        min-width: 80px;
+        flex-shrink: 0;
+      }
+
+      .value {
+        color: $neutral-dark;
+        flex: 1;
+      }
+    }
+
+    // Style spécial pour les compétences
+    .competences-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .competences-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        width: 100%;
+
+        .competence-tag {
+          display: inline-flex;
+          align-items: center;
+          padding: 6px 12px;
+          background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+          color: $accent-purple;
+          border: 1px solid rgba(139, 92, 246, 0.2);
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          transition: all 0.3s ease;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%);
+          }
+        }
+      }
+    }
+  }
+}
+
+// ========== ACTIONS ==========
+.offre-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid $neutral-light;
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 0.95rem;
+
+    &.primary {
+      background: $gradient-primary;
+      color: white;
+      box-shadow: $shadow-sm;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+    }
+
+    .material-icons {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// ========== EMPTY STATE ==========
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 2px dashed rgba(30, 58, 138, 0.2);
+
+  .material-icons {
+    font-size: 4rem;
+    color: $accent-purple;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    color: $primary-blue;
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+  }
+
+  p {
+    color: $neutral-dark;
+    margin: 0;
+    opacity: 0.8;
+  }
+}
+
+// ========== RESPONSIVE DESIGN ==========
+@media (max-width: 768px) {
+  .candidatures-container {
+    padding: 15px;
+  }
+
+  .page-header {
+    padding: 20px 15px;
+
+    h1 {
+      font-size: 1.6rem;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  .sort-controls {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+
+    .sort-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .offre-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .offre-actions {
+    justify-content: center;
+
+    .action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// ========== MODAL STYLES ==========
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: $shadow-lg;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &.candidatures-modal {
+    width: 95%;
+    max-width: 1200px;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: $gradient-primary;
+  color: white;
+  border-radius: 16px 16px 0 0;
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+
+    .material-icons {
+      font-size: 1.6rem;
+    }
+  }
+
+  .close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .material-icons {
+      font-size: 1.4rem;
+    }
+  }
+}
+
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+// ========== MODAL LOADING & ERROR ==========
+.modal-loading, .modal-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.modal-loading {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  color: $primary-blue;
+}
+
+.modal-error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+  color: $danger-red;
+}
+
+// ========== CANDIDATURES TABLE ==========
+.candidatures-table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.candidatures-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  thead {
+    background: $gradient-primary;
+    color: white;
+
+    th {
+      padding: 16px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+
+      .material-icons {
+        margin-right: 6px;
+        vertical-align: middle;
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid $neutral-light;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.05);
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 16px 12px;
+      vertical-align: middle;
+      border: none;
+    }
+  }
+}
+
+// ========== TABLE CELL STYLES ==========
+.stagiaire-info {
+  .stagiaire-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .material-icons {
+      color: $accent-purple;
+      font-size: 2rem;
+    }
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      strong {
+        color: $primary-blue;
+        font-weight: 600;
+      }
+
+      .stagiaire-level {
+        font-size: 0.8rem;
+        color: $neutral-dark;
+        opacity: 0.7;
+        font-style: italic;
+      }
+    }
+  }
+}
+
+.contact-email {
+  .email-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $primary-blue;
+    font-weight: 500;
+
+    .material-icons {
+      font-size: 1.1rem;
+      color: $secondary-blue;
+    }
+  }
+}
+
+.contact-phone {
+  .phone-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $neutral-dark;
+    font-weight: 500;
+
+    .material-icons {
+      font-size: 1.1rem;
+      color: $secondary-blue;
+    }
+  }
+}
+
+.documents {
+  .documents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .document-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .material-icons {
+        font-size: 1rem;
+        color: $warning-orange;
+      }
+
+      .document-link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: $primary-blue;
+        background: none;
+        border: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+
+        &:hover {
+          color: white;
+          background: $primary-blue;
+          transform: translateY(-1px);
+        }
+
+        .material-icons {
+          font-size: 0.9rem;
+          color: inherit;
+        }
+      }
+    }
+
+    .no-documents {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: $neutral-dark;
+      font-style: italic;
+      opacity: 0.7;
+
+      .material-icons {
+        font-size: 1rem;
+        color: $danger-red;
+      }
+    }
+  }
+}
+
+.date-candidature {
+  .date-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $neutral-dark;
+    font-weight: 500;
+
+    .material-icons {
+      color: $warning-orange;
+      font-size: 1.1rem;
+    }
+  }
+}
+
+.actions {
+  .accept-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: $gradient-primary;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: $shadow-md;
+    }
+
+    &:disabled {
+      background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .material-icons {
+      font-size: 1rem;
+    }
+  }
+
+  .status-accepted {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+    .material-icons {
+      font-size: 1rem;
+    }
+  }
+
+  .status-refused {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+
+    .material-icons {
+      font-size: 1rem;
+    }
+  }
+}
+
+// ========== EMPTY STATE DANS MODAL ==========
+.empty-candidatures {
+  text-align: center;
+  padding: 60px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  border: 2px dashed rgba(30, 58, 138, 0.2);
+
+  .material-icons {
+    font-size: 4rem;
+    color: $accent-purple;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    color: $primary-blue;
+    margin: 0 0 8px 0;
+    font-size: 1.3rem;
+  }
+
+  p {
+    color: $neutral-dark;
+    margin: 0;
+    opacity: 0.8;
+  }
+}
+
+// ========== RESPONSIVE MODAL ==========
+@media (max-width: 768px) {
+  .modal-content.candidatures-modal {
+    width: 95%;
+    margin: 10px;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 16px 20px;
+
+    h2 {
+      font-size: 1.2rem;
+      flex-direction: column;
+      gap: 6px;
+      text-align: center;
+    }
+  }
+
+  .modal-body {
+    padding: 16px;
+  }
+
+  .candidatures-table {
+    font-size: 0.8rem;
+
+    thead th {
+      padding: 12px 8px;
+      font-size: 0.8rem;
+    }
+
+    tbody td {
+      padding: 12px 8px;
+    }
+  }
+
+  .stagiaire-info .stagiaire-name {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .contact-info .contact-details {
+    gap: 4px;
+  }
+
+  .accept-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}
+
+// ========== MODAL D'AFFECTATION D'ENCADRANT ==========
+.encadrant-modal {
+  max-width: 600px;
+  width: 95%;
+
+  .modal-header {
+    background: $gradient-primary;
+    color: white;
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
+    
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 600;
+      
+      .material-icons {
+        font-size: 1.6rem;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 30px;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .candidature-info {
+    margin-bottom: 30px;
+    
+    h3 {
+      color: $primary-blue;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      &:before {
+        content: '👤';
+        font-size: 1.2rem;
+      }
+    }
+    
+    .info-card {
+      background: $neutral-light;
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid $secondary-blue;
+      
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+        
+        .label {
+          font-weight: 600;
+          color: $neutral-dark;
+          min-width: 80px;
+        }
+        
+        .value {
+          color: $primary-blue;
+          font-weight: 500;
+          text-align: right;
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .form-section {
+    h3 {
+      color: $primary-blue;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      &:before {
+        content: '🎯';
+        font-size: 1.2rem;
+      }
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      
+      label {
+        display: block;
+        font-weight: 600;
+        color: $neutral-dark;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        
+        .required {
+          color: $danger-red;
+          margin-left: 4px;
+        }
+      }
+      
+      .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid $neutral-medium;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+        
+        &:focus {
+          outline: none;
+          border-color: $secondary-blue;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        &.error {
+          border-color: $danger-red;
+          box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+      }
+      
+      .encadrants-count {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: $primary-blue;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        
+        &:before {
+          content: '📊';
+          font-size: 1rem;
+        }
+      }
+    }
+  }
+
+  .error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: $danger-red;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 4px solid $danger-red;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+    
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+
+  .loading-message {
+    background: rgba(59, 130, 246, 0.1);
+    color: $secondary-blue;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border-left: 4px solid $secondary-blue;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    font-weight: 500;
+    
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+
+  .modal-footer {
+    padding: 20px 30px;
+    border-top: 1px solid $neutral-medium;
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    background: $neutral-light;
+    border-radius: 0 0 16px 16px;
+    
+    .btn-secondary {
+      background: white;
+      color: $neutral-dark;
+      border: 2px solid $neutral-medium;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      &:hover {
+        background: $neutral-light;
+        border-color: $neutral-dark;
+        transform: translateY(-2px);
+      }
+      
+      .material-icons {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .btn-primary {
+      background: $gradient-primary;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: $shadow-sm;
+      
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+      
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+      
+      .material-icons {
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
+
+// Responsive pour le modal d'encadrant
+@media (max-width: 768px) {
+  .encadrant-modal {
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .candidature-info .info-card .info-row {
+      flex-direction: column;
+      gap: 5px;
+      
+      .value {
+        text-align: left;
+      }
+    }
+    
+    .modal-footer {
+      padding: 15px 20px;
+      flex-direction: column;
+      
+      .btn-secondary, .btn-primary {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  }
 }

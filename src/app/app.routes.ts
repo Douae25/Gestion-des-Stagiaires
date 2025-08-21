@@ -106,6 +106,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/rh/candidatures/rh-candidatures.component').then(m => m.RhCandidaturesComponent)
       },
       {
+        path: 'documents',
+        loadComponent: () => import('./components/rh/documents/rh-documents.component').then(m => m.RhDocumentsComponent)
+      },
+      {
         path: 'stages',
         loadComponent: () => import('./components/rh/stages/rh-stages.component').then(m => m.RhStagesComponent)
       },

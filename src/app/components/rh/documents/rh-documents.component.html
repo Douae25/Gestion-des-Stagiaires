@@ -1,0 +1,309 @@
+<div class="documents-container">
+  <!-- En-tête de la page -->
+  <div class="page-header">
+    <h1>
+      <span class="material-icons">folder_open</span>
+      Gestion des Documents de Stage
+    </h1>
+    <p>Gérez les conventions de stage à signer et les attestations de fin de stage</p>
+  </div>
+
+  <!-- Boutons de navigation -->
+  <div class="navigation-section">
+    <button 
+      class="nav-btn" 
+      [class.active]="activeTab === 'conventions'"
+      (click)="setActiveTab('conventions')">
+      <span class="material-icons">description</span>
+      <div class="btn-content">
+        <span class="btn-title">Conventions de Stage</span>
+        <span class="btn-count">{{ conventionsCount }}</span>
+      </div>
+    </button>
+
+    <button 
+      class="nav-btn" 
+      [class.active]="activeTab === 'attestations'"
+      (click)="setActiveTab('attestations')">
+      <span class="material-icons">verified</span>
+      <div class="btn-content">
+        <span class="btn-title">Attestations de Stage</span>
+        <span class="btn-count">{{ attestationsCount }}</span>
+      </div>
+    </button>
+  </div>
+
+  <!-- Section Conventions de Stage -->
+  <div class="content-section" *ngIf="activeTab === 'conventions'">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons">description</span>
+        Conventions de Stage à Signer
+      </h2>
+      <p>Conventions déposées par les stagiaires en attente de signature</p>
+    </div>
+
+    <div class="table-container">
+      <table class="documents-table" *ngIf="conventions.length > 0">
+        <thead>
+          <tr>
+            <th>
+              <span class="material-icons">person</span>
+              Stagiaire
+            </th>
+            <th>
+              <span class="material-icons">email</span>
+              Email
+            </th>
+            <th>
+              <span class="material-icons">work</span>
+              Titre de Stage
+            </th>
+            <th>
+              <span class="material-icons">supervisor_account</span>
+              Encadrant
+            </th>
+            <th>
+              <span class="material-icons">description</span>
+              Convention Déposée
+            </th>
+            <th>
+              <span class="material-icons">upload</span>
+              Convention Signée
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let convention of conventions" class="table-row">
+            <!-- Stagiaire -->
+            <td class="stagiaire-cell">
+              <div class="stagiaire-info">
+                <span class="material-icons">account_circle</span>
+                <div>
+                  <strong>{{ convention.nom_stagiaire }} {{ convention.prenom_stagiaire }}</strong>
+                  <!-- ...autres infos stagiaire... -->
+                </div>
+              </div>
+            </td>
+
+            <!-- Email -->
+            <td class="email-cell">
+              <div class="email-info">
+                <span class="material-icons">email</span>
+                {{ convention.email_stagiaire }}
+              </div>
+            </td>
+
+            <!-- Titre de stage -->
+            <td class="stage-cell">
+              <div class="stage-info">
+                <strong>{{ convention.titre_stage }}</strong>
+                <div class="stage-details">
+                  Du {{ convention.date_debut | date:'dd/MM/yyyy' }} 
+                  au {{ convention.date_fin | date:'dd/MM/yyyy' }}
+                </div>
+              </div>
+            </td>
+
+            <!-- Encadrant -->
+            <td class="encadrant-cell">
+              <div class="encadrant-info" *ngIf="convention.encadrant">
+                <span class="material-icons">supervisor_account</span>
+                <div>
+                  <strong>{{ convention.encadrant.nom }} {{ convention.encadrant.prenom }}</strong>
+                  <div class="encadrant-details">{{ convention.encadrant.departement }}</div>
+                </div>
+              </div>
+              <div class="no-encadrant" *ngIf="!convention.encadrant">
+                <span class="material-icons">error_outline</span>
+                Aucun encadrant assigné
+              </div>
+            </td>
+
+            <!-- Convention déposée -->
+            <td class="convention-cell">
+              <button class="download-btn" (click)="telechargerConvention(convention)">
+                <span class="material-icons">download</span>
+                Télécharger
+              </button>
+            </td>
+
+            <!-- Upload convention signée -->
+            <td class="upload-cell">
+              <div class="upload-section">
+                <input 
+                  type="file" 
+                  #conventionFile
+                  accept=".pdf"
+                  (change)="onConventionFileSelected($event, convention)"
+                  style="display: none">
+                
+                <button 
+                  class="upload-btn"
+                  (click)="conventionFile.click()"
+                  [disabled]="convention.uploading">
+                  <span class="material-icons">upload_file</span>
+                  {{ convention.uploading ? 'Envoi...' : 'Déposer Convention Signée' }}
+                </button>
+
+                <div class="upload-status" *ngIf="convention.convention_signee">
+                  <span class="material-icons success">check_circle</span>
+                  {{ convention.message_success || 'Convention signée déposée' }}
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- État vide pour conventions -->
+      <div *ngIf="conventions.length === 0" class="empty-state">
+        <span class="material-icons">description</span>
+        <h3>Aucune convention en attente</h3>
+        <p>Aucune convention de stage n'est en attente de signature.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section Attestations de Stage -->
+  <div class="content-section" *ngIf="activeTab === 'attestations'">
+    <div class="section-header">
+      <h2>
+        <span class="material-icons">verified</span>
+        Attestations de Stage à Délivrer
+      </h2>
+      <p>Stages terminés nécessitant la délivrance d'une attestation</p>
+    </div>
+
+    <div class="table-container">
+      <table class="documents-table" *ngIf="attestations.length > 0">
+        <thead>
+          <tr>
+            <th>
+              <span class="material-icons">person</span>
+              Stagiaire
+            </th>
+            <th>
+              <span class="material-icons">email</span>
+              Email
+            </th>
+            <th>
+              <span class="material-icons">assignment</span>
+              Rapport Final
+            </th>
+            <th>
+              <span class="material-icons">supervisor_account</span>
+              Encadrant
+            </th>
+            <th>
+              <span class="material-icons">star</span>
+              Évaluation
+            </th>
+            <th>
+              <span class="material-icons">verified</span>
+              Attestation
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let attestation of attestations" class="table-row">
+            <!-- Stagiaire -->
+            <td class="stagiaire-cell">
+              <div class="stagiaire-info">
+                <span class="material-icons">account_circle</span>
+                <div>
+                  <strong>{{ attestation.nom_stagiaire }} {{ attestation.prenom_stagiaire }}</strong>
+                  <!-- ...autres infos stagiaire... -->
+                </div>
+              </div>
+            </td>
+
+            <!-- Email -->
+            <td class="email-cell">
+              <div class="email-info">
+                <span class="material-icons">email</span>
+                {{ attestation.email_stagiaire }}
+              </div>
+            </td>
+
+            <!-- Rapport final -->
+            <td class="rapport-cell">
+              <div class="rapport-info" *ngIf="attestation.rapport_final">
+                <button class="download-btn" (click)="telechargerRapport(attestation)">
+                  <span class="material-icons">download</span>
+                  Télécharger
+                </button>
+                <div class="rapport-details">
+                  Soumis le {{ attestation.date_soumission_rapport | date:'dd/MM/yyyy' }}
+                </div>
+              </div>
+              <div class="no-rapport" *ngIf="!attestation.rapport_final">
+                <span class="material-icons">error_outline</span>
+                Rapport non soumis
+              </div>
+            </td>
+
+            <!-- Encadrant -->
+            <td class="encadrant-cell">
+              <div class="encadrant-info" *ngIf="attestation.encadrant">
+                <span class="material-icons">supervisor_account</span>
+                <div>
+                  <strong>{{ attestation.encadrant.nom }} {{ attestation.encadrant.prenom }}</strong>
+                  <div class="encadrant-details">{{ attestation.encadrant.departement }}</div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Évaluation -->
+            <td class="evaluation-cell">
+              <div class="evaluation-section">
+                <div class="note-display">
+                  <label></label>
+                  <span *ngIf="attestation.note !== undefined">
+                    <ng-container *ngFor="let star of [1,2,3,4,5]">
+                      <span class="material-icons" [ngClass]="{'star-filled': attestation.note >= star, 'star-empty': attestation.note < star}">
+                        {{ attestation.note >= star ? 'star' : 'star_border' }}
+                      </span>
+                    </ng-container>
+                  </span>
+                  <span *ngIf="attestation.note === undefined">-</span>
+                </div>
+                <div class="commentaire-display">
+                  <label></label>
+                  <span>{{ attestation.commentaire || '-' }}</span>
+                </div>
+              </div>
+            </td>
+
+            <!-- Attestation -->
+            <td class="attestation-cell">
+              <div class="attestation-section">
+                <button 
+                  class="generate-btn"
+                  (click)="genererAttestation(attestation)"
+                  [disabled]="!attestation.note || attestation.generating">
+                  <span class="material-icons">verified</span>
+                  <span class="btn-label">
+                    {{ attestation.generating ? 'Génération...' : 'Envoyer Attestation' }}
+                  </span>
+                </button>
+
+                <div class="attestation-status" *ngIf="attestation.attestation_envoyee">
+                  <span class="material-icons success">check_circle</span>
+                  Attestation envoyée
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- État vide pour attestations -->
+      <div *ngIf="attestations.length === 0" class="empty-state">
+        <span class="material-icons">verified</span>
+        <h3>Aucune attestation à délivrer</h3>
+        <p>Aucun stage terminé ne nécessite la délivrance d'une attestation.</p>
+      </div>
+    </div>
+  </div>
+</div>

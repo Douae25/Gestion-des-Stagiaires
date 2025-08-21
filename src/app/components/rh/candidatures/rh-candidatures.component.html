@@ -1,2 +1,359 @@
-<h2>Candidatures RH</h2>
-<p>Gestion des candidatures reçues.</p>
+<div class="candidatures-container">
+  <!-- Titre principal -->
+  <div class="page-header">
+    <h1>
+      <span class="material-icons">assignment</span>
+      Gestion des Candidatures
+    </h1>
+    <p class="page-description">Offres de stage nécessitant un traitement des candidatures</p>
+  </div>
+
+  <!-- Contrôles de tri -->
+  <div class="sort-controls">
+    <div class="sort-info">
+      <span class="material-icons">info</span>
+      <span>{{ offresTraitement.length }} offre(s) à traiter</span>
+    </div>
+    <button class="sort-btn" (click)="toggleSort()" title="{{ getSortText() }}">
+      <span class="material-icons">{{ getSortIcon() }}</span>
+      <span>{{ getSortText() }}</span>
+    </button>
+  </div>
+
+  <!-- États de chargement -->
+  <div *ngIf="loading" class="loading">
+    <span class="material-icons spin">autorenew</span> 
+    Chargement des offres...
+  </div>
+
+  <div *ngIf="error" class="error">
+    <span class="material-icons">error_outline</span> 
+    {{ error }}
+  </div>
+
+  <!-- Liste des offres -->
+  <div class="offres-list" *ngIf="!loading && !error">
+    <div *ngFor="let offre of offresTraitement" class="offre-card">
+      <div class="offre-header">
+        <div class="offre-title">
+          <h3>
+            <span class="material-icons">work_outline</span>
+            {{ offre.titre }}
+          </h3>
+          <span class="offre-date">
+            <span class="material-icons">calendar_today</span>
+            Publié le {{ offre.date_publication | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="offre-details">
+        <div class="description">
+          {{ offre.description }}
+        </div>
+        
+        <div class="details-grid">
+          <div class="detail-item">
+            <span class="material-icons">date_range</span>
+            <span class="label">Période :</span>
+            <span class="value">
+              du {{ offre.date_debut | date:'dd/MM/yyyy' }} au {{ offre.date_fin | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+
+          <div class="detail-item">
+            <span class="material-icons">hourglass_bottom</span>
+            <span class="label">Durée :</span>
+            <span class="value">{{ calculateDurationInMonths(offre.date_debut, offre.date_fin) }} mois</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="material-icons">location_on</span>
+            <span class="label">Localisation :</span>
+            <span class="value">{{ offre.localisation }}</span>
+          </div>
+
+          <div class="detail-item competences-item">
+            <span class="material-icons">school</span>
+            <span class="label">Compétences :</span>
+            <div class="competences-list">
+              <span *ngFor="let competence of getCompetencesList(offre.competence_requise)" 
+                    class="competence-tag">
+                {{ competence }}
+              </span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <span class="material-icons">timer</span>
+            <span class="label">Durée candidature :</span>
+            <span class="value">{{ offre.duree_candidature }} jours</span>
+          </div>
+
+          <div class="detail-item">
+            <span class="material-icons">group</span>
+            <span class="label">Limite candidatures :</span>
+            <span class="value">{{ offre.nombre_limite_candidature || 'Illimité' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="offre-actions">
+        <button class="action-btn primary" (click)="afficherCandidatures(offre)">
+          <span class="material-icons">visibility</span>
+          Afficher les candidatures
+        </button>
+      </div>
+    </div>
+
+    <!-- Message si aucune offre -->
+    <div *ngIf="offresTraitement.length === 0" class="empty-state">
+      <span class="material-icons">inbox</span>
+      <h3>Aucune offre à traiter</h3>
+      <p>Il n'y a actuellement aucune offre nécessitant un traitement des candidatures.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Modal des candidatures -->
+<div class="modal-overlay" *ngIf="showCandidaturesModal" (click)="closeCandidaturesModal()">
+  <div class="modal-content candidatures-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span class="material-icons">assignment</span>
+        Candidatures pour "{{ selectedOffre?.titre }}"
+      </h2>
+      <button class="close-btn" (click)="closeCandidaturesModal()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <!-- États de chargement pour le modal -->
+      <div *ngIf="candidaturesLoading" class="modal-loading">
+        <span class="material-icons spin">autorenew</span> 
+        Chargement des candidatures...
+      </div>
+
+      <div *ngIf="candidaturesError" class="modal-error">
+        <span class="material-icons">error_outline</span> 
+        {{ candidaturesError }}
+      </div>
+
+      <!-- Tableau des candidatures -->
+      <div *ngIf="!candidaturesLoading && !candidaturesError" class="candidatures-table-container">
+        <div *ngIf="candidatures.length === 0" class="empty-candidatures">
+          <span class="material-icons">inbox</span>
+          <h3>Aucune candidature</h3>
+          <p>Cette offre n'a reçu aucune candidature pour le moment.</p>
+        </div>
+
+        <table *ngIf="candidatures.length > 0" class="candidatures-table">
+          <thead>
+            <tr>
+              <th>
+                <span class="material-icons">person</span>
+                Nom et Prénom
+              </th>
+              <th>
+                <span class="material-icons">email</span>
+                Email
+              </th>
+              <th>
+                <span class="material-icons">phone</span>
+                Téléphone
+              </th>
+              <th>
+                <span class="material-icons">calendar_today</span>
+                Date candidature
+              </th>
+              <th>
+                <span class="material-icons">description</span>
+                CV & Lettre de motivation
+              </th>
+              <th>
+                <span class="material-icons">settings</span>
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let candidature of candidatures" class="candidature-row">
+              <td class="stagiaire-info">
+                <div class="stagiaire-name">
+                  <span class="material-icons">account_circle</span>
+                  <div>
+                    <strong>{{ candidature.stagiaire_info?.nom }} {{ candidature.stagiaire_info?.prenom }}</strong>
+                    <span class="stagiaire-level" *ngIf="candidature.stagiaire_info?.type">
+                      {{ candidature.stagiaire_info?.type | titlecase }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+              <td class="contact-email">
+                <div class="email-info">
+                  <span class="material-icons">email</span>
+                  {{ candidature.stagiaire_info?.email }}
+                </div>
+              </td>
+              <td class="contact-phone">
+                <div class="phone-info">
+                  <span class="material-icons">phone</span>
+                  {{ candidature.stagiaire_info?.numero_telephone || 'Non fourni' }}
+                </div>
+              </td>
+              <td class="date-candidature">
+                <div class="date-info">
+                  <span class="material-icons">event</span>
+                  {{ candidature.date_soumission | date:'dd/MM/yyyy' }}
+                </div>
+              </td>
+              <td class="documents">
+                <div class="documents-list">
+                  <div class="document-item" *ngIf="candidature.cv">
+                    <span class="material-icons">description</span>
+                    <button class="document-link" (click)="downloadCV(candidature)">
+                      <span class="material-icons">download</span>
+                      Télécharger CV
+                    </button>
+                  </div>
+                  <div class="document-item" *ngIf="candidature.lettre_motivation">
+                    <span class="material-icons">assignment</span>
+                    <button class="document-link" (click)="downloadLettreMotivation(candidature)">
+                      <span class="material-icons">download</span>
+                      Télécharger Lettre
+                    </button>
+                  </div>
+                  <div class="no-documents" *ngIf="!candidature.cv && !candidature.lettre_motivation">
+                    <span class="material-icons">error_outline</span>
+                    Aucun document
+                  </div>
+                </div>
+              </td>
+              <td class="actions">
+                <button 
+                  *ngIf="candidature.statut === 'en_attente'"
+                  class="accept-btn" 
+                  (click)="accepterCandidature(candidature)"
+                  title="Accepter cette candidature">
+                  <span class="material-icons">check</span>
+                  Accepter
+                </button>
+                <div 
+                  *ngIf="candidature.statut === 'acceptee'"
+                  class="status-accepted">
+                  <span class="material-icons">check_circle</span>
+                  Candidature acceptée
+                </div>
+                <div 
+                  *ngIf="candidature.statut === 'refusee'"
+                  class="status-refused">
+                  <span class="material-icons">cancel</span>
+                  Candidature refusée
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal d'affectation d'encadrant -->
+<div *ngIf="showEncadrantModal" class="modal-overlay" (click)="fermerModalEncadrant()">
+  <div class="modal-content encadrant-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>
+        <span class="material-icons">person_add</span>
+        Affecter un Encadrant
+      </h2>
+      <button class="close-btn" (click)="fermerModalEncadrant()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div *ngIf="selectedCandidature" class="candidature-info">
+        <h3>Candidature sélectionnée</h3>
+        <div class="info-card">
+          <div class="info-row">
+            <span class="label">Stagiaire:</span>
+            <span class="value">{{ selectedCandidature.stagiaire_info?.prenom }} {{ selectedCandidature.stagiaire_info?.nom }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Email:</span>
+            <span class="value">{{ selectedCandidature.stagiaire_info?.email }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Offre:</span>
+            <span class="value">{{ selectedCandidature.offre_info?.titre }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Sélection de l'encadrant</h3>
+        
+        <!-- Filtre par département -->
+        <div class="form-group">
+          <label for="departement">Département (optionnel)</label>
+          <select 
+            id="departement" 
+            [(ngModel)]="selectedDepartement" 
+            (change)="onDepartementChange()"
+            class="form-control">
+            <option value="">Tous les départements</option>
+            <option *ngFor="let dept of departements" [value]="dept.nom">
+              {{ dept.nom }} ({{ dept.count }} encadrant{{ dept.count > 1 ? 's' : '' }})
+            </option>
+          </select>
+        </div>
+
+        <!-- Sélection de l'encadrant -->
+        <div class="form-group">
+          <label for="encadrant">Encadrant <span class="required">*</span></label>
+          <select 
+            id="encadrant" 
+            [(ngModel)]="selectedEncadrant" 
+            class="form-control"
+            [class.error]="encadrantError && !selectedEncadrant">
+            <option value="">Sélectionner un encadrant</option>
+            <option *ngFor="let encadrant of filteredEncadrants" [value]="encadrant.id">
+              {{ encadrant.prenom }} {{ encadrant.nom }}
+            </option>
+          </select>
+          <div class="encadrants-count" *ngIf="filteredEncadrants.length > 0">
+            {{ filteredEncadrants.length }} encadrant{{ filteredEncadrants.length > 1 ? 's' : '' }} disponible{{ filteredEncadrants.length > 1 ? 's' : '' }}
+          </div>
+        </div>
+
+        <!-- Message d'erreur -->
+        <div *ngIf="encadrantError" class="error-message">
+          <span class="material-icons">error_outline</span>
+          {{ encadrantError }}
+        </div>
+
+        <!-- État de chargement -->
+        <div *ngIf="encadrantsLoading" class="loading-message">
+          <span class="material-icons spin">autorenew</span>
+          Chargement des encadrants...
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="fermerModalEncadrant()">
+        <span class="material-icons">cancel</span>
+        Annuler
+      </button>
+      <button 
+        class="btn-primary" 
+        (click)="affecterEncadrant()"
+        [disabled]="!selectedEncadrant || encadrantsLoading">
+        <span class="material-icons">check</span>
+        Affecter l'Encadrant
+      </button>
+    </div>
+  </div>
+</div>

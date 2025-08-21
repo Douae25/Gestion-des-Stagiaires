@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -147,13 +148,47 @@ export class OffreStageService {
     );
   }
 
-  // ...
+  /**
+   * Récupère les candidatures acceptées dont la convention n'est pas signée pour un RH
+   */
+  getConventionsNonSignees(idRh: number): Observable<any[]> {
+    return this.http.get<any[]>(`/api/candidatures/rh/${idRh}/acceptees-convention-non-signee`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   /**
    * Récupère les offres par statut
    */
   getOffresByStatut(statut: string): Observable<OffreStage[]> {
     return this.http.get<OffreStage[]>(`${this.apiUrl}?statut=${statut}`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Récupère les offres d'un RH pour traitement des candidatures
+   */
+  getOffresForTraitement(idRh: number): Observable<any[]> {
+    return this.http.get<any[]>(`/api/offres/rh/${idRh}/pour-traitement`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+
+// ...existing code up to getOffresForTraitement...
+  /**
+   * Récupère les candidatures finalisées pour la gestion des attestations de stage d'un RH
+   */
+  getAttestationsFinaliseesRh(idRh: number): Observable<any[]> {
+    return this.http.get<any[]>(`/api/candidatures/finalisees/rh/${idRh}`, {
       headers: this.getHeaders()
     }).pipe(
       catchError(this.handleError)
