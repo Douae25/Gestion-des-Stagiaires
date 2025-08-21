@@ -55,7 +55,7 @@ public class EvaluationService {
     Evaluation evaluation = new Evaluation();
     evaluation.setNote((float) note);
     evaluation.setCommentaire(dto.getCommentaire());
-    evaluation.setDate_evaluation(dto.getDate_evaluation());
+    evaluation.setDate_evaluation(dto.getDateEvaluation());
     evaluation.setStagiaire(stagiaire);
     evaluation.setEncadrant(encadrant);
 

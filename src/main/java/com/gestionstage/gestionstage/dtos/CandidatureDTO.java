@@ -26,6 +26,9 @@ public class CandidatureDTO {
     // Informations de l'offre
     private OffreStageDTO offre_info;
 
+    // Informations du stagiaire qui a fait la candidature
+    private UtilisateurCompletDTO stagiaire_info;
+
     // Informations de l'encadrant assigné
     private UtilisateurCompletDTO encadrant_info;
 

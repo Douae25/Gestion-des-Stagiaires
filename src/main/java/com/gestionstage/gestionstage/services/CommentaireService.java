@@ -35,7 +35,7 @@ public class CommentaireService {
     }
 
     public List<CommentaireDTO> getCommentairesParRapport(Integer idRapport) {
-        return commentaireRepository.findByRapportId(idRapport).stream().map(c -> {
+    return commentaireRepository.findByRapport_Id(idRapport).stream().map(c -> {
             CommentaireDTO dto = new CommentaireDTO();
             dto.setId(c.getId());
             dto.setContenu(c.getContenu());

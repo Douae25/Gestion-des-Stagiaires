@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/candidatures")
 public class CandidatureController {
 
+
     @Autowired
     private CandidatureService candidatureService;
     
@@ -121,6 +122,12 @@ public class CandidatureController {
         return candidatureService.getCandidaturesByUtilisateur(idUtilisateur);
     }
 
+    @GetMapping("/offre/{idOffre}")
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
+    public List<CandidatureDTO> getCandidaturesByOffre(@PathVariable Integer idOffre) {
+        return candidatureService.getCandidaturesByOffre(idOffre);
+    }
+
         @PutMapping("/{id}/documents")
     @PreAuthorize("hasRole('stagiaire')")
     public ResponseEntity<String> updateCandidatureDocuments(
@@ -183,10 +190,42 @@ public class CandidatureController {
 
         try {
             candidatureService.deposerConventionSigneeParRH(id, fichierConvention.getBytes());
-            return ResponseEntity.ok("Convention signée déposée. Notification envoyée au RH pour l'attestation.");
+            return ResponseEntity.ok("Convention signée déposée. ");
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Erreur lors du traitement du fichier.");
         }
+    }
+
+    @GetMapping("/rh/{idRh}/acceptees-convention-non-signee")
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
+    public List<CandidatureDTO> getCandidaturesAccepteesAvecConventionNonSigneeByRh(@PathVariable Integer idRh) {
+        return candidatureService.getCandidaturesAccepteesAvecConventionNonSigneeByRh(idRh);
+    }
+
+    @GetMapping("/finalisees")
+    @PreAuthorize("hasAnyRole('rh', 'admin', 'encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsEtEvaluationDTO> getCandidaturesFinalisees() {
+        return candidatureService.getCandidaturesFinalisees();
+    }
+
+    @GetMapping("/finalisees/rh/{idRh}")
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportsEtEvaluationDTO> getCandidaturesFinaliseesByRh(@PathVariable Integer idRh) {
+        return candidatureService.getCandidaturesFinaliseesByRh(idRh);
+    }
+
+       @GetMapping("/en-cours")
+    @PreAuthorize("hasAnyRole('rh', 'admin', 'encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesEnCours() {
+        return candidatureService.getCandidaturesEnCours();
+    }
+
+
+        @GetMapping("/en-cours/mes")
+    @PreAuthorize("hasRole('rh')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getMesCandidaturesEnCours(@RequestHeader("Authorization") String authHeader) {
+    Integer idUtilisateur = extractUserIdFromToken(authHeader);
+    return candidatureService.getCandidaturesEnCoursByUtilisateur(idUtilisateur);
     }
 }

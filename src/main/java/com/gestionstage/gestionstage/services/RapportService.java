@@ -49,6 +49,7 @@ public class RapportService {
             RapportDTO dto = new RapportDTO();
             dto.setId(r.getId());
             dto.setTitre(r.getTitre());
+            dto.setDateDepot(r.getDateDepot());
             dto.setDocument(r.getDocument());
             dto.setIdCandidature(r.getCandidature().getId());
             return dto;

@@ -14,14 +14,14 @@ public class Evaluation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
+@ManyToOne
+@JoinColumn(name = "id_stagiaire", referencedColumnName = "id_stagiaire")
+private Stagiaire stagiaire;
 
-    @ManyToOne
-    @JoinColumn(name = "id_stagiaire")
-    private Stagiaire stagiaire;
-
-    @ManyToOne
-    @JoinColumn(name = "id_encadrant_fk")
-    private Encadrant encadrant;
+@ManyToOne
+@JoinColumn(name = "id_encadrant_fk", referencedColumnName = "id")
+private Encadrant encadrant;
 
     private Float note;
     private String commentaire;

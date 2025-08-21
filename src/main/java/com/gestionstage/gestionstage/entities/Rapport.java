@@ -18,6 +18,9 @@ public class Rapport {
     @Lob
     private byte[] document;
 
+    private java.time.LocalDate dateDepot;
+
+
     @ManyToOne
     @JoinColumn(name = "id_candidature")
     private Candidature candidature;

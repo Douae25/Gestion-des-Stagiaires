@@ -58,10 +58,14 @@ public class OffreStageController {
         return ResponseEntity.ok("Statut mis à jour");
     }
     
-        @GetMapping("/rh/{idRh}")
-        @PreAuthorize("hasAnyRole('rh', 'admin')")
-        public List<OffreStageDTO> getOffresByRh(@PathVariable Integer idRh) {
-            return offreStageService.getOffresByRh(idRh);
-        }
+    @GetMapping("/rh/{idRh}")
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
+    public List<OffreStageDTO> getOffresByRh(@PathVariable Integer idRh) {
+        return offreStageService.getOffresByRh(idRh);
+    }
 
-}
+    @GetMapping("/rh/{idRh}/pour-traitement")
+    @PreAuthorize("hasAnyRole('rh', 'admin')")
+    public List<OffreStageDTO> getOffresPourTraitement(@PathVariable Integer idRh) {
+        return offreStageService.getOffresPourTraitement(idRh);
+    }}

@@ -1,4 +1,3 @@
-
 package com.gestionstage.gestionstage.services;
 
 
@@ -21,6 +20,9 @@ public class OffreStageService {
 
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+
+    @Autowired
+    private com.gestionstage.gestionstage.repositories.CandidatureRepository candidatureRepository;
 
     public List<OffreStageDTO> getAll() {
     List<OffreStage> offres = offreStageRepository.findAll();
@@ -105,7 +107,7 @@ public void changerStatutOffre(Integer id, String statut) {
 }
 
 
-    private OffreStageDTO toDTO(OffreStage offre) {
+    public OffreStageDTO toDTO(OffreStage offre) {
         OffreStageDTO dto = new OffreStageDTO();
         dto.setId(offre.getId());
         dto.setId_rh(offre.getRh() != null ? offre.getRh().getIdUtilisateur() : null);
@@ -174,8 +176,9 @@ public void changerStatutOffre(Integer id, String statut) {
 
     // À adapter selon votre logique métier pour compter les candidatures
     private int getNombreCandidatures(Integer offreId) {
-        // TODO: Implémenter la récupération du nombre de candidatures pour une offre
-        return 0;
+        return (int) candidatureRepository.findAll().stream()
+                .filter(c -> c.getOffre() != null && c.getOffre().getId().equals(offreId))
+                .count();
     }
 
 
@@ -185,5 +188,34 @@ public void changerStatutOffre(Integer id, String statut) {
             .collect(Collectors.toList());
         offres.forEach(this::updateStatutIfNeeded);
         return offres.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public List<OffreStageDTO> getOffresPourTraitement(Integer idRh) {
+        List<OffreStage> offres = offreStageRepository.findAll().stream()
+            .filter(o -> o.getRh() != null && o.getRh().getIdUtilisateur().equals(idRh))
+            .filter(o -> o.getStatut() == OffreStage.StatutOffre.en_cours)
+            .filter(this::shouldBeClosed)
+            .collect(Collectors.toList());
+        return offres.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    // Vérifie si l'offre devrait être fermée selon les critères
+    private boolean shouldBeClosed(OffreStage offre) {
+        boolean shouldClose = false;
+        
+        // Vérifier la durée de candidature
+        if (offre.getDate_publication() != null && offre.getDuree_candidature() != null) {
+            java.time.LocalDate finCandidature = offre.getDate_publication().plusDays(offre.getDuree_candidature());
+            if (java.time.LocalDate.now().isAfter(finCandidature)) {
+                shouldClose = true;
+            }
+        }
+        
+        // Vérifier le nombre limite de candidatures
+        if (offre.getNombre_limite_candidature() != null && getNombreCandidatures(offre.getId()) >= offre.getNombre_limite_candidature()) {
+            shouldClose = true;
+        }
+        
+        return shouldClose;
     }
 }
