@@ -19,6 +19,81 @@ import java.util.stream.Collectors;
 
 @Service
 public class CandidatureService {
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesTerminees() {
+        List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> result = new java.util.ArrayList<>();
+        List<Candidature> candidatures = candidatureRepository.findAll();
+        for (Candidature c : candidatures) {
+            if (!c.getStatut().name().equalsIgnoreCase("acceptee")) continue;
+            if (c.getAttestation() == null) continue;
+            com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO();
+            dto.setCandidature(toDTO(c));
+            dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
+            // Mapping stagiaire
+            if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {
+                com.gestionstage.gestionstage.dtos.StagiaireDTO stagiaireDTO = new com.gestionstage.gestionstage.dtos.StagiaireDTO();
+                stagiaireDTO.setId(c.getStagiaire().getId_stagiaire());
+                stagiaireDTO.setNom(c.getStagiaire().getUtilisateur().getNom());
+                stagiaireDTO.setPrenom(c.getStagiaire().getUtilisateur().getPrenom());
+                stagiaireDTO.setEmail(c.getStagiaire().getUtilisateur().getEmail());
+                dto.setStagiaire(stagiaireDTO);
+            }
+            // Mapping encadrant
+            if (c.getEncadrant() != null && c.getEncadrant().getUtilisateur() != null) {
+                com.gestionstage.gestionstage.dtos.EncadrantDTO encadrantDTO = new com.gestionstage.gestionstage.dtos.EncadrantDTO();
+                encadrantDTO.setId(c.getEncadrant().getId());
+                encadrantDTO.setNom(c.getEncadrant().getUtilisateur().getNom());
+                encadrantDTO.setPrenom(c.getEncadrant().getUtilisateur().getPrenom());
+                encadrantDTO.setEmail(c.getEncadrant().getUtilisateur().getEmail());
+                dto.setEncadrant(encadrantDTO);
+            }
+            // Mapping RH
+            if (c.getOffre() != null && c.getOffre().getRh() != null) {
+                com.gestionstage.gestionstage.dtos.UtilisateurDTO rhDTO = new com.gestionstage.gestionstage.dtos.UtilisateurDTO();
+                rhDTO.setId(c.getOffre().getRh().getIdUtilisateur());
+                rhDTO.setNom(c.getOffre().getRh().getNom());
+                rhDTO.setPrenom(c.getOffre().getRh().getPrenom());
+                rhDTO.setEmail(c.getOffre().getRh().getEmail());
+                rhDTO.setRole("rh");
+                dto.setRh(rhDTO);
+            }
+            dto.setRapports(rapportRepository.findByCandidatureId(c.getId()).stream().map(r -> {
+                com.gestionstage.gestionstage.dtos.RapportDTO rapportDTO = new com.gestionstage.gestionstage.dtos.RapportDTO();
+                rapportDTO.setId(r.getId());
+                rapportDTO.setTitre(r.getTitre());
+                rapportDTO.setDateDepot(r.getDateDepot());
+                rapportDTO.setDocument(r.getDocument());
+                rapportDTO.setIdCandidature(r.getCandidature().getId());
+                return rapportDTO;
+            }).collect(java.util.stream.Collectors.toList()));
+            dto.setCommentaires(commentaireRepository.findByRapport_Candidature_Id(c.getId()).stream().map(com -> {
+                com.gestionstage.gestionstage.dtos.CommentaireDTO commentaireDTO = new com.gestionstage.gestionstage.dtos.CommentaireDTO();
+                commentaireDTO.setId(com.getId());
+                commentaireDTO.setContenu(com.getContenu());
+                commentaireDTO.setIdRapport(com.getRapport() != null ? com.getRapport().getId() : null);
+                return commentaireDTO;
+            }).collect(java.util.stream.Collectors.toList()));
+            com.gestionstage.gestionstage.entities.Evaluation evaluation = null;
+            if (c.getStagiaire() != null && c.getEncadrant() != null) {
+                java.util.Optional<com.gestionstage.gestionstage.entities.Evaluation> evalOpt = evaluationRepository.findByStagiaireIdAndEncadrantId(
+                    c.getStagiaire().getId_stagiaire(),
+                    c.getEncadrant().getId()
+                );
+                if (evalOpt.isPresent()) {
+                    evaluation = evalOpt.get();
+                    com.gestionstage.gestionstage.dtos.EvaluationDTO evalDTO = new com.gestionstage.gestionstage.dtos.EvaluationDTO();
+                    evalDTO.setId(evaluation.getId());
+                    evalDTO.setNote(evaluation.getNote());
+                    evalDTO.setCommentaire(evaluation.getCommentaire());
+                    evalDTO.setDateEvaluation(evaluation.getDate_evaluation());
+                    evalDTO.setId_stagiaire(evaluation.getStagiaire() != null ? evaluation.getStagiaire().getId_stagiaire() : null);
+                    evalDTO.setId_encadrant(evaluation.getEncadrant() != null ? evaluation.getEncadrant().getId() : null);
+                    dto.setEvaluation(evalDTO);
+                }
+            }
+            result.add(dto);
+        }
+        return result;
+    }
    
 
     @Autowired

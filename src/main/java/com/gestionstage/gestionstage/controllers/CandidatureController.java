@@ -20,6 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/candidatures")
 public class CandidatureController {
+    @GetMapping("/terminees")
+    @PreAuthorize("hasAnyRole('rh', 'admin', 'encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesTerminees() {
+        return candidatureService.getCandidaturesTerminees();
+    }
 
 
     @Autowired
