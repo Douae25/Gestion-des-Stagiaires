@@ -873,13 +873,8 @@ public void deposerConventionSigneeParRH(Integer idCandidature, byte[] fichierCo
             dto.setCommentaires(commentaireRepository.findByRapport_Candidature_Id(c.getId()).stream().map(com -> {
                 com.gestionstage.gestionstage.dtos.CommentaireDTO commentaireDTO = new com.gestionstage.gestionstage.dtos.CommentaireDTO();
                 commentaireDTO.setId(com.getId());
-
-                    // Correction : le commentaire n'a pas de getCandidature(), il faut passer par le rapport
-                    if (com.getRapport() != null && com.getRapport().getCandidature() != null) {
-                        commentaireDTO.setIdCandidature(com.getRapport().getCandidature().getId());
-                    } else {
-                        commentaireDTO.setIdCandidature(null);
-                    }
+                commentaireDTO.setContenu(com.getContenu());
+                commentaireDTO.setIdRapport(com.getRapport() != null ? com.getRapport().getId() : null);
                 return commentaireDTO;
             }).collect(java.util.stream.Collectors.toList()));
             com.gestionstage.gestionstage.entities.Evaluation evaluation = null;
@@ -957,11 +952,8 @@ public void deposerConventionSigneeParRH(Integer idCandidature, byte[] fichierCo
             dto.setCommentaires(commentaireRepository.findByRapport_Candidature_Id(c.getId()).stream().map(com -> {
                 com.gestionstage.gestionstage.dtos.CommentaireDTO commentaireDTO = new com.gestionstage.gestionstage.dtos.CommentaireDTO();
                 commentaireDTO.setId(com.getId());
-                if (com.getRapport() != null && com.getRapport().getCandidature() != null) {
-                    commentaireDTO.setIdCandidature(com.getRapport().getCandidature().getId());
-                } else {
-                    commentaireDTO.setIdCandidature(null);
-                }
+                commentaireDTO.setContenu(com.getContenu());
+                commentaireDTO.setIdRapport(com.getRapport() != null ? com.getRapport().getId() : null);
                 return commentaireDTO;
             }).collect(java.util.stream.Collectors.toList()));
             com.gestionstage.gestionstage.entities.Evaluation evaluation = null;
