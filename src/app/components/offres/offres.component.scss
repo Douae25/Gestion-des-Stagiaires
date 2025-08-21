@@ -1453,6 +1453,43 @@
   }
 }
 
+// Style moderne pour le bouton "Se connecter pour postuler"
+.login-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px) scale(1.03);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #e0e0e0;
+    color: #aaa;
+  }
+}
+
 // Badge expiré
 .expired-badge {
   position: absolute;

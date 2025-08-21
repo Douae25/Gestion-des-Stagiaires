@@ -1,19 +1,26 @@
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-rh-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],  // ✅ ajouter RouterModule
+  imports: [CommonModule, RouterModule],
   templateUrl: './rh-sidebar.component.html',
   styleUrls: ['./rh-sidebar.component.scss']
 })
 export class RhSidebarComponent {
-  constructor(private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  onLogout() {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']).then(() => {
+      window.location.reload();
+    });
   }
 }

@@ -1,2 +1,86 @@
-<h2>Dashboard RH</h2>
-<p>Bienvenue sur le dashboard RH.</p>
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">Tableau de bord RH</h1>
+            <p class="dashboard-subtitle">Vue d'ensemble et statistiques des stages</p>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-primary">
+                <span class="material-icons">groups</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-number">{{ stats?.stagiairesActuels ?? '-' }}</p>
+                <p class="stat-label">Stagiaires actuels</p>
+                <span class="stat-change positive" *ngIf="stats?.stagiairesActuelsChange">↗ {{ stats?.stagiairesActuelsChange }}% vs mois dernier</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-success">
+                <span class="material-icons">assignment_turned_in</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-number">{{ stats?.stagesEnCours ?? '-' }}</p>
+                <p class="stat-label">Stages en cours</p>
+                <span class="stat-change positive" *ngIf="stats?.stagesEnCoursChange">↗ {{ stats?.stagesEnCoursChange }}% vs mois dernier</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-info">
+                <span class="material-icons">work</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-number">{{ stats?.offresEnCours ?? '-' }}</p>
+                <p class="stat-label">Offres en cours</p>
+                <span class="stat-change negative" *ngIf="stats?.offresEnCoursChange">↘ {{ stats?.offresEnCoursChange }}% vs mois dernier</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-warning">
+                <span class="material-icons">pending_actions</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-number">{{ stats?.offresATraiter ?? '-' }}</p>
+                <p class="stat-label">Offres à traiter</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon stat-icon-success">
+                <span class="material-icons">person</span>
+            </div>
+            <div class="stat-content">
+                <p class="stat-number">{{ stats?.encadrants ?? '-' }}</p>
+                <p class="stat-label">Encadrants</p>
+                <span class="stat-change positive" *ngIf="stats?.encadrantsChange">{{ stats?.encadrantsChange }} nouveaux</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-section dashboard-grid-custom">
+        <div class="dashboard-chart-small">
+            <h3>Diagramme : Nombre de stages par année</h3>
+            <div class="dashboard-chart">
+                <canvas baseChart
+                    [data]="barChartData"
+                    [labels]="barChartLabels"
+                    [options]="barChartOptions"
+                    [type]="barChartType">
+                </canvas>
+            </div>
+        </div>
+        <div class="dashboard-actions-cards">
+            <h3>Dernières actions</h3>
+            <div class="actions-list">
+                <div class="action-card" *ngFor="let a of dernieresActions">
+                    <div class="action-info">
+                        <div class="action-title">{{ a.action }}</div>
+                        <div class="action-user">{{ a.utilisateur }}</div>
+                        <div class="action-date">{{ a.date | date:'short' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -13,6 +13,9 @@
   <li routerLink="profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">person</i>Profile</li>
   </ul>
   <div class="sidebar-footer">
-    <button class="logout-btn" (click)="onLogout()"><i class="material-icons">logout</i>Déconnexion</button>
+            <button class="dropdown-item logout-btn" (click)="logout()">
+              <span class="material-icons">logout</span>
+              <span>Déconnexion</span>
+            </button>
   </div>
 </nav>

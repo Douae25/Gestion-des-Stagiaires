@@ -72,7 +72,7 @@ export class OffreStageService {
    * Récupère toutes les offres de stage
    */
   getAllOffres(): Observable<any[]> {
-    return this.http.get<any[]>(`/api/offres`, {
+    return this.http.get<any[]>(`/api/offres/actives`, {
       headers: this.getHeaders()
     }).pipe(
       catchError(this.handleError)
