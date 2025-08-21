@@ -1,0 +1,90 @@
+<div class="stage-details-container">
+  <button class="back-btn" (click)="goBack()">
+    <span class="material-icons">arrow_back</span> Retour
+  </button>
+  <div class="details-header">
+    <h1><span class="material-icons">info</span> Détails du stage</h1>
+    <p>Informations complètes sur le stage, l'encadrant, les rapports et l'évaluation.</p>
+  </div>
+
+  <div class="details-section">
+    <div class="details-block" *ngIf="stage">
+      <h2>Stage</h2>
+      <ul>
+        <li><strong>Titre :</strong> {{ stage.offre.titre }}</li>
+        <li><strong>Date début :</strong> {{ stage.offre.date_debut }}</li>
+        <li><strong>Date fin :</strong> {{ stage.offre.date_fin }}</li>
+      </ul>
+    </div>
+    <div class="details-block" *ngIf="stage">
+      <h2>Encadrant</h2>
+      <ul>
+        <li><strong>Nom :</strong> {{ stage.encadrant.nom }}</li>
+        <li><strong>Prénom :</strong> {{ stage.encadrant.prenom }}</li>
+        <li><strong>Email :</strong> {{ stage.encadrant.email }}</li>
+      </ul>
+    </div>
+    <div class="details-block" *ngIf="stage">
+      <h2>Stagiaire</h2>
+      <ul>
+        <li><strong>Nom :</strong> {{ stage.stagiaire.nom }}</li>
+        <li><strong>Prénom :</strong> {{ stage.stagiaire.prenom }}</li>
+        <li><strong>Email :</strong> {{ stage.stagiaire.email }}</li>
+      </ul>
+    </div>
+    <div class="details-block" *ngIf="stage">
+      <h2>Rapports déposés</h2>
+      <ul>
+        <li *ngFor="let rapport of stage.rapports">
+          {{ rapport.titre }}
+          <button class="comment-btn" (click)="openModal(rapport)"><span class="material-icons">comment</span>Voir commentaires</button>
+        </li>
+      </ul>
+    </div>
+    <div class="details-block" *ngIf="stage && stage.evaluation">
+      <h2>Évaluation</h2>
+      <div class="evaluation">
+        <span class="note">
+          Note :
+          <span class="stars">
+            <span *ngFor="let star of [1,2,3,4,5]">
+              <span class="material-icons"
+                [ngClass]="star <= getStarCount() ? (getStarCount() === 3 ? 'star-orange' : 'star-filled') : 'star-empty'"
+              >star</span>
+            </span>
+          </span>
+        
+        </span>
+  <span class="evaluation-comment"><span class="label">Commentaire :</span> {{ stage.evaluation.commentaire }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modale pour commentaires -->
+  <!-- Modale de commentaires moderne -->
+  <div class="stagiaire-modal" *ngIf="showModal">
+    <div class="stagiaire-modal-content">
+      <button class="close-btn" (click)="closeModal()">
+        <span class="material-icons">close</span>
+      </button>
+      <h3>Commentaires sur le rapport</h3>
+      <div *ngIf="selectedCommentaires && selectedCommentaires.length > 0; else noComments">
+        <div *ngFor="let commentaire of selectedCommentaires" class="commentaire-item">
+          <div class="commentaire-header">
+            <span class="material-icons">person</span>
+            <span class="commentaire-author">
+              {{ stage.encadrant.nom }} {{ stage.encadrant.prenom }}
+            </span>
+            <span class="commentaire-date">{{ commentaire.datepub | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="commentaire-content">{{ commentaire.contenu }}</div>
+        </div>
+      </div>
+      <ng-template #noComments>
+        <div class="no-comment-message">
+          <span class="material-icons">info</span> Aucun commentaire pour ce rapport.
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

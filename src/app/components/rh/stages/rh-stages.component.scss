@@ -1,7 +1,556 @@
-h2 {
-  color: #263238;
-  margin-bottom: 16px;
+
+.temps-restant-badge {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f59e0b;
+  color: white;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border-radius: 24px;
+  padding: 8px 18px;
+  box-shadow: 0 2px 8px rgba(245,158,11,0.12);
+  z-index: 2;
+  .material-icons {
+    color: white;
+    font-size: 1.2rem;
+  }
 }
-p {
-  color: #37474f;
+.temps-orange {
+  background: #f59e0b;
+}
+.temps-rouge {
+  background: #ef4444;
+  box-shadow: 0 2px 8px rgba(239,68,68,0.12);
+}
+$accent-pink: #ec4899;
+$success-green: #10b981;
+$neutral-dark: #374151;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$primary-blue: #1e3a8a;
+
+.stage-infos-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+.stagiaire-block, .encadrant-block, .dates-block, .temps-restant-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.label {
+  font-size: 0.95rem;
+  color: $primary-blue;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.stagiaire-info, .encadrant-info, .dates, .temps-restant {
+  background: none !important;
+  color: $primary-blue !important;
+  border-radius: 0;
+  padding: 0;
+  font-size: 1rem;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 48px;
+  .material-icons {
+    font-size: 1.1rem;
+    color: $accent-pink;
+    background: none;
+    margin-right: 2px;
+  }
+  strong {
+    color: $success-green;
+  }
+}
+.temps-restant {
+  color: $success-green !important;
+  font-weight: 700;
+  .material-icons {
+    color: $success-green;
+  }
+  .temps-restant-value {
+    color: $success-green;
+    font-weight: 700;
+  }
+}
+.stage-actions.right {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+
+$shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+.stages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.stage-item {
+  background: white;
+  border-radius: 16px;
+  box-shadow: $shadow-lg;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+  border-left: 6px solid $accent-purple;
+  &:hover {
+    box-shadow: 0 16px 32px -8px rgba(139,92,246,0.18);
+    transform: translateY(-2px) scale(1.01);
+    border-left: 6px solid $primary-blue;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(90deg, $accent-purple 0%, $primary-blue 100%);
+    border-radius: 0 0 16px 16px;
+    opacity: 0.08;
+  }
+}
+.stage-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stage-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.18rem;
+  color: $primary-blue;
+  font-weight: 700;
+  .material-icons {
+    color: $accent-purple;
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, $accent-purple 60%, $primary-blue 100%);
+    border-radius: 50%;
+    padding: 2px;
+  }
+}
+.stage-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: center;
+  .stagiaire-info, .encadrant-info, .dates, .temps-restant {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: $neutral-dark;
+    color: white;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(30,58,138,0.08);
+    .material-icons {
+      font-size: 1.1rem;
+      color: $accent-pink;
+      background: none;
+      margin-right: 2px;
+    }
+    strong {
+      color: $success-green;
+    }
+  }
+  .temps-restant {
+    background: $success-green;
+    color: white;
+    font-weight: 700;
+    .material-icons {
+      color: white;
+    }
+    .temps-restant-value {
+      color: white;
+      font-weight: 700;
+    }
+  }
+}
+.stage-actions {
+  margin-top: 8px;
+  .details-btn {
+    background: $accent-purple;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: $shadow-lg;
+    font-size: 1rem;
+    transition: background 0.2s, transform 0.2s;
+    &:hover {
+      background: $primary-blue;
+      transform: scale(1.05);
+    }
+    .material-icons {
+      font-size: 1.2rem;
+      color: white;
+    }
+  }
+}
+@media (max-width: 700px) {
+  .stage-item {
+    padding: 16px 8px;
+  }
+  .stage-infos {
+    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+$shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+.list-container {
+  margin-top: 16px;
+}
+.stages-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.stage-item {
+  background: white;
+  border-radius: 12px;
+  box-shadow: $shadow-lg;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 12px 24px -6px rgba(30,58,138,0.18);
+  }
+}
+.stage-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stage-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.15rem;
+  color: $primary-blue;
+  font-weight: 600;
+  .material-icons {
+    color: $accent-purple;
+    font-size: 1.3rem;
+  }
+}
+.stage-infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  .material-icons {
+    font-size: 1.1rem;
+    vertical-align: middle;
+    color: $secondary-blue;
+    margin-right: 4px;
+  }
+  span {
+    font-size: 1rem;
+    color: $neutral-dark;
+  }
+  strong {
+    color: $primary-blue;
+  }
+}
+.temps-restant {
+  color: $success-green;
+  font-weight: 600;
+  .material-icons {
+    color: $success-green;
+  }
+}
+.stage-actions {
+  margin-top: 8px;
+  .details-btn {
+    background: $accent-purple;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: $shadow-lg;
+    transition: background 0.2s;
+    &:hover {
+      background: $primary-blue;
+    }
+  }
+}
+
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$accent-pink: #ec4899;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-light: #f8fafc;
+$neutral-dark: #374151;
+$gradient-primary: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+$shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+
+.stages-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+.page-header {
+  background: $gradient-primary;
+  color: white;
+  padding: 35px 30px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: $shadow-lg;
+  text-align: center;
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 8px 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    .material-icons {
+      font-size: 1.5rem;
+    }
+  }
+  p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+  }
+}
+
+.content-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: $shadow-lg;
+  padding: 24px;
+}
+
+.section-header h2 {
+  color: $primary-blue;
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-container {
+  margin-top: 16px;
+}
+.stages-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: $neutral-light;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: $shadow-lg;
+  th, td {
+    padding: 12px 16px;
+    text-align: left;
+  }
+  th {
+    background: $secondary-blue;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    border-bottom: 2px solid $primary-blue;
+  }
+  tr {
+    border-bottom: 1px solid #e2e8f0;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  .stage-title-cell {
+    font-weight: 600;
+    color: $primary-blue;
+  }
+  .stagiaire-info, .encadrant-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    .material-icons {
+      color: $accent-purple;
+      font-size: 1.2rem;
+    }
+    strong {
+      color: $primary-blue;
+    }
+    .stagiaire-details, .encadrant-details {
+      color: $neutral-dark;
+      font-size: 0.95rem;
+    }
+  }
+  .temps-restant-cell {
+    color: $success-green;
+    font-weight: 600;
+  }
+}
+
+.details-btn {
+  background: $accent-purple;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: $shadow-lg;
+  transition: background 0.2s;
+  &:hover {
+    background: $primary-blue;
+  }
+}
+
+.stage-details-section {
+  margin-top: 32px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: $shadow-lg;
+  padding: 24px;
+  .details-header h2 {
+    color: $accent-purple;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .details-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    .details-block {
+      flex: 1 1 220px;
+      background: $neutral-light;
+      border-radius: 8px;
+      box-shadow: $shadow-lg;
+      padding: 16px;
+      margin-bottom: 16px;
+      h3 {
+        color: $primary-blue;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        li {
+          margin-bottom: 6px;
+          font-size: 0.98rem;
+        }
+      }
+      .evaluation {
+        margin-top: 8px;
+        .note {
+          color: $success-green;
+          font-weight: 700;
+        }
+        .evaluation-comment {
+          color: $primary-blue;
+          font-size: 0.98rem;
+        }
+      }
+    }
+  }
+}
+
+.comment-btn {
+  background: $accent-pink;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: $shadow-lg;
+  transition: background 0.2s;
+  &:hover {
+    background: $danger-red;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 58, 138, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: $shadow-lg;
+    padding: 32px 24px;
+    min-width: 320px;
+    max-width: 400px;
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 1.5rem;
+      color: $danger-red;
+      cursor: pointer;
+    }
+    h3 {
+      color: $accent-purple;
+      margin-bottom: 12px;
+    }
+    .comment-list {
+      list-style: disc inside;
+      color: $primary-blue;
+      font-size: 0.98rem;
+      li {
+        margin-bottom: 6px;
+      }
+    }
+  }
 }

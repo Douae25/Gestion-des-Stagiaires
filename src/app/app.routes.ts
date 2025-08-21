@@ -114,6 +114,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/rh/stages/rh-stages.component').then(m => m.RhStagesComponent)
       },
       {
+        path: 'stages/details/:id',
+        loadComponent: () => import('../app/components/rh/stages/rh-stages-details.component').then(m => m.RhStagesDetailsComponent)
+      },
+      {
         path: 'historique',
         loadComponent: () => import('./components/rh/historique/rh-historique.component').then(m => m.RhHistoriqueComponent)
       },
