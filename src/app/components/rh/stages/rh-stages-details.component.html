@@ -34,29 +34,40 @@
     </div>
     <div class="details-block" *ngIf="stage">
       <h2>Rapports déposés</h2>
-      <ul>
+      <ul *ngIf="stage.rapports && stage.rapports.length > 0; else noRapport">
         <li *ngFor="let rapport of stage.rapports">
           {{ rapport.titre }}
           <button class="comment-btn" (click)="openModal(rapport)"><span class="material-icons">comment</span>Voir commentaires</button>
         </li>
       </ul>
+      <ng-template #noRapport>
+        <div class="no-comment-message">
+          <span class="material-icons">info</span> Aucun rapport n'a encore été déposé.
+        </div>
+      </ng-template>
     </div>
-    <div class="details-block" *ngIf="stage && stage.evaluation">
+    <div class="details-block">
       <h2>Évaluation</h2>
-      <div class="evaluation">
-        <span class="note">
-          Note :
-          <span class="stars">
-            <span *ngFor="let star of [1,2,3,4,5]">
-              <span class="material-icons"
-                [ngClass]="star <= getStarCount() ? (getStarCount() === 3 ? 'star-orange' : 'star-filled') : 'star-empty'"
-              >star</span>
+      <ng-container *ngIf="stage && stage.evaluation; else noEval">
+        <div class="evaluation">
+          <span class="note">
+            Note :
+            <span class="stars">
+              <span *ngFor="let star of [1,2,3,4,5]">
+                <span class="material-icons"
+                  [ngClass]="star <= getStarCount() ? (getStarCount() === 3 ? 'star-orange' : 'star-filled') : 'star-empty'"
+                >star</span>
+              </span>
             </span>
           </span>
-        
-        </span>
-  <span class="evaluation-comment"><span class="label">Commentaire :</span> {{ stage.evaluation.commentaire }}</span>
-      </div>
+          <span class="evaluation-comment"><span class="label">Commentaire :</span> {{ stage.evaluation.commentaire }}</span>
+        </div>
+      </ng-container>
+      <ng-template #noEval>
+        <div class="no-comment-message">
+          <span class="material-icons">info</span> Aucune évaluation n'a encore été déposée.
+        </div>
+      </ng-template>
     </div>
   </div>
 

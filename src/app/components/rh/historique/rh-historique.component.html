@@ -1,2 +1,210 @@
-<h2>Historique RH</h2>
-<p>Historique des actions RH.</p>
+
+<div class="historique-container">
+	<div class="page-header">
+		<h1>
+			<span class="material-icons">history</span>
+			Historique des stages
+		</h1>
+		<p>Vous trouvez ici tous les stages terminés.</p>
+	</div>
+
+	<div class="content-section">
+	<div class="offres-header" style="margin-bottom:18px;">
+		<button class="switch-btn" [class.active]="showOnlyMine" (click)="setShowOnlyMine(true)">
+			<span class="material-icons">person</span> Mes offres
+		</button>
+		<button class="switch-btn" [class.active]="!showOnlyMine" (click)="setShowOnlyMine(false)">
+			<span class="material-icons">public</span> Tous les offres
+		</button>
+	</div>
+		<div class="section-header">
+			<h2><span class="material-icons">table_chart</span> Historique des stages </h2>
+		</div>
+
+     
+		<div class="table-container">
+			<table class="historique-table" style="font-size:0.92em;">
+				<thead>
+					<tr>
+						<th style="text-align:center;border-top-left-radius:18px;"><span class="material-icons">description</span> Sujet de stage</th>
+						<th style="text-align:center;"><span class="material-icons">person</span> Stagiaire</th>
+						<th style="text-align:center;"><span class="material-icons">badge</span> RH</th>
+						<th style="text-align:center;"><span class="material-icons">school</span> Encadrant</th>
+						<th style="text-align:center;"><span class="material-icons">calendar_month</span> Durée</th>
+						<th style="text-align:center;border-top-right-radius:18px;"><span class="material-icons">info</span> Plus d'infos</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let c of filteredTerminees()">
+						<td style="text-align:center;vertical-align:middle;">
+							<div class="stage-cell" style="display:flex;justify-content:center;">
+							<strong>{{ c.offre_info?.titre || c.offre?.titre || '-' }}</strong>
+							</div>
+						</td>
+						<td style="text-align:center;vertical-align:middle;">
+							<div class="stagiaire-cell" style="display:flex;justify-content:center;">
+								<div class="stagiaire-info" style="justify-content:center;">
+									<span class="material-icons" style="font-size:1.4em;color:#8b5cf6;background:#f3f4f6;border-radius:50%;padding:4px;margin-right:3px;">person</span>
+									<div style="text-align:center;">
+										<strong style="color:#1e3a8a;font-size:1.08em;">{{ c.stagiaire?.nom || '-' }} {{ c.stagiaire?.prenom || '' }}</strong><br>
+									</div>
+								</div>
+							</div>
+						</td>
+						<td style="text-align:center;vertical-align:middle;">
+							<div class="rh-cell" style="display:flex;flex-direction:column;align-items:center;justify-content:center;">
+								<span class="material-icons" style="font-size:1.3em;color:#10b981;vertical-align:middle;">badge</span>
+								<ng-container *ngIf="c.rh?.email === currentUserEmail; else rhName">
+									<strong style="color:#1976d2;">Moi</strong>
+								</ng-container>
+								<ng-template #rhName>
+									<strong style="color:#1976d2;">{{ c.rh?.nom || '-' }}</strong>
+									<span style="font-size:0.98em;color:#374151;opacity:0.8;">{{ c.rh?.prenom || '' }}</span>
+								</ng-template>
+							</div>
+						</td>
+						<td style="text-align:center;vertical-align:middle;">
+							<div class="encadrant-cell" style="display:flex;justify-content:center;">
+								<div class="encadrant-info" style="justify-content:center;">
+									<span class="material-icons" style="font-size:1.3em;color:#f59e0b;vertical-align:middle;">school</span>
+									<div style="text-align:center;">
+										<strong style="color:#1e3a8a;">{{ c.encadrant?.nom || '-' }} {{ c.encadrant?.prenom || '' }}</strong><br>
+										<span style="font-size:0.92em;color:#374151;opacity:0.7;">{{ c.encadrant?.departement || '-' }}</span>
+									</div>
+								</div>
+							</div>
+						</td>
+						<td style="text-align:center;vertical-align:middle;">
+							<div class="dates" style="display:flex;align-items:center;gap:10px;justify-content:center;">
+								<span class="material-icons" style="font-size:1.3em;color:#1e3a8a;background:#e3eafc;border-radius:50%;padding:4px;">calendar_month</span>
+								<div style="display:flex;flex-direction:column;align-items:center;">
+									<span style="font-size:0.88em;color:#1976d2;font-weight:600;">du <span style="background:#e0f2fe;padding:1px 5px;border-radius:7px;">{{ c.offre_info?.date_debut || c.offre?.date_debut | date:'yyyy-MM-dd' }}</span><span style="display:inline-block;width:16px;"></span>au <span style="background:#ffe0b2;padding:1px 5px;border-radius:7px;">{{ c.offre_info?.date_fin || c.offre?.date_fin | date:'yyyy-MM-dd' }}</span></span>
+								</div>
+							</div>
+						</td>
+						<td style="text-align:center;vertical-align:middle;">
+							<div style="height:18px;"></div>
+							<button class="details-btn" (click)="openModal(c)" style="margin:auto;display:flex;justify-content:center;">
+								<span class="material-icons">info</span> Plus d'infos
+							</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!-- Modale pour détails du stage -->
+		<div class="historique-modal" *ngIf="showModal" (click)="closeModal()">
+			<div class="historique-modal-content" (click)="$event.stopPropagation()" style="max-height:90vh;overflow-y:auto;min-width:480px;max-width:700px;">
+				<button class="close-btn" (click)="closeModal()">
+					<span class="material-icons">close</span>
+				</button>
+				<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+					<span class="material-icons" style="font-size:2em;color:#1976d2;background:#e3eafc;border-radius:50%;padding:8px;">info</span>
+					<h3 style="margin:0;font-size:1.25em;color:#1976d2;font-weight:700;">Détails du stage</h3>
+				</div>
+				<hr style="border:none;border-top:1.5px solid #e3eafc;margin-bottom:18px;">
+						<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+
+							<h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:#3b82f6;">description</span> Sujet de stage</h4>
+							<p style="font-size:1em;color:#374151;margin:0 0 8px 0;">{{ selectedCandidature?.offre_info?.titre || selectedCandidature?.offre?.titre || '-' }}</p>
+							<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px;">
+								<span style="font-size:0.95em;color:#1976d2;font-weight:600;">Date début : <span style="background:#e0f2fe;padding:2px 8px;border-radius:8px;">{{ selectedCandidature?.offre_info?.date_debut || selectedCandidature?.offre?.date_debut | date:'yyyy-MM-dd' }}</span></span>
+								<span style="font-size:0.95em;color:#1976d2;font-weight:600;">Date fin : <span style="background:#ffe0b2;padding:2px 8px;border-radius:8px;">{{ selectedCandidature?.offre_info?.date_fin || selectedCandidature?.offre?.date_fin | date:'yyyy-MM-dd' }}</span></span>
+							</div>
+				</div>
+				<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+					<h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:#8b5cf6;">person</span> Stagiaire</h4>
+							<ul style="list-style:none;padding-left:0;margin:0;">
+								<li style="margin-bottom:6px;"><strong>Nom :</strong> aaz doudoud</li>
+								<li style="margin-bottom:6px;"><strong>Email :</strong> <span style="font-size:0.88em;color:#3b82f6;font-weight:500;">douaeaaz632&#64;gmail.com</span></li>
+								<li style="margin-bottom:6px;"><strong>Téléphone :</strong> 0601020304</li>
+											<li style="margin-bottom:10px;">
+												<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+													<button type="button" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(90deg,#1976d2,#2196f3);color:#fff;border:none;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(33,150,243,0.12);cursor:pointer;transition:background 0.2s;"
+															[disabled]="!selectedCandidature?.candidature?.cv"
+															(click)="downloadFile(selectedCandidature?.candidature?.cv, 'cv.pdf')">
+														<span class="material-icons" style="font-size:1.2em;">download</span> CV
+													</button>
+													   <!-- log CV supprimé -->
+
+													<button type="button" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(90deg,#8b5cf6,#3b82f6);color:#fff;border:none;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(139,92,246,0.12);cursor:pointer;transition:background 0.2s;"
+															[disabled]="!selectedCandidature?.candidature?.lettre_motivation"
+															(click)="downloadFile(selectedCandidature?.candidature?.lettre_motivation, 'lettre_motivation.pdf')">
+														<span class="material-icons" style="font-size:1.2em;">download</span> Lettre de motivation
+													</button>
+													   <!-- log Lettre supprimé -->
+
+													<button type="button" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(90deg,#f59e0b,#ff9800);color:#fff;border:none;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(245,158,11,0.12);cursor:pointer;transition:background 0.2s;"
+															[disabled]="!selectedCandidature?.candidature?.convention_signee"
+															(click)="downloadFile(selectedCandidature?.candidature?.convention_signee, 'convention_signee.pdf')">
+														<span class="material-icons" style="font-size:1.2em;">download</span> Convention signée
+													</button>
+													   <!-- log Convention supprimé -->
+												</div>
+											</li>
+							</ul>
+				</div>
+				<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+					<h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:#f59e0b;">school</span> Encadrant</h4>
+							<ul style="list-style:none;padding-left:0;margin:0;">
+								<li style="margin-bottom:6px;"><strong>Nom :</strong> Ali Modifié Benali</li>
+								<li style="margin-bottom:6px;"><strong>Email :</strong> <span style="font-size:0.88em;color:#3b82f6;font-weight:500;">ali.benali&#64;example.com</span></li>
+								<li style="margin-bottom:6px;"><strong>Département :</strong> Mathématiques</li>
+							</ul>
+				</div>
+				<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+					   <h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:#1976d2;">description</span> Rapports déposés</h4>
+					   <ul style="list-style:none;padding-left:0;margin:0;">
+						   <ng-container *ngIf="selectedCandidature?.rapports">
+							   <ng-container *ngFor="let rapport of selectedCandidature.rapports">
+								   <li *ngIf="rapport.titre === 'Rapport final de stage'" style="margin-bottom:10px;display:flex;justify-content:center;">
+									   <button style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(90deg,#1976d2,#2196f3);color:#fff;border:none;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(33,150,243,0.12);cursor:pointer;transition:background 0.2s;"
+											   [disabled]="!rapport.document"
+											   (click)="downloadFile(rapport.document, 'rapport-final.pdf')">
+										   <span class="material-icons" style="font-size:1.2em;">download</span> Rapport final
+									   </button>
+									   <!-- log Rapport supprimé -->
+								   </li>
+							   </ng-container>
+						   </ng-container>
+					   </ul>
+				</div>
+				<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+					<h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:orange;">star</span> Évaluation</h4>
+					<div class="evaluation" style="margin-bottom:8px;">
+						<span class="note" style="font-size:1em;">
+							Note :
+							<span class="stars">
+								<ng-container *ngIf="selectedCandidature?.evaluation?.note as note">
+									<ng-container *ngFor="let star of [1,2,3,4,5]">
+										<span class="material-icons" [ngClass]="star <= note ? 'star-filled' : 'star-empty'">star</span>
+									</ng-container>
+									{{ note }}/5
+								</ng-container>
+								<ng-container *ngIf="!selectedCandidature?.evaluation?.note">-</ng-container>
+							</span>
+						</span>
+						<span class="evaluation-comment" style="display:block;margin-top:6px;font-size:0.97em;color:#374151;">
+							<span class="label" style="font-weight:500;color:#1976d2;margin-right:8px;">Commentaire :</span>
+							{{ selectedCandidature?.evaluation?.commentaire || '-' }}
+						</span>
+					</div>
+				</div>
+				<div class="modal-section" style="background:#f8fafc;border-radius:12px;padding:16px 18px;margin-bottom:18px;box-shadow:0 2px 8px rgba(30,58,138,0.06);">
+					   <h4 style="color:#1e3a8a;font-size:1.08em;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;"><span class="material-icons" style="font-size:1.1em;color:#1976d2;">verified</span> Attestation de stage</h4>
+							   <div style="display:flex;justify-content:center;">
+								   <button type="button"
+										   style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:linear-gradient(90deg,#f59e0b,#ff9800);color:#fff;border:none;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(245,158,11,0.12);cursor:pointer;transition:background 0.2s;margin-top:6px;"
+										   [disabled]="!selectedCandidature?.candidature?.attestation"
+										   (click)="downloadFile(selectedCandidature.candidature.attestation, 'attestation.pdf')">
+									   <span class="material-icons" style="font-size:1.2em;">download</span>
+									   Attestation de stage
+								   </button>
+							   </div>
+				</div>
+			</div>
+	</div>
+</div>
+

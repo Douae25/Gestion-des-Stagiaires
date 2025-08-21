@@ -9,6 +9,7 @@ export interface User {
   email: string;
   nom?: string;
   prenom?: string;
+  numero_telephone?: string;
   role: 'stagiaire' | 'rh' | 'admin' | 'encadrant';
   token?: string;
 }
@@ -108,6 +109,9 @@ export class AuthService {
       return {
         id: payload.userId, // Utiliser userId depuis le JWT
         email: payload.sub, // Le subject contient l'email (username)
+        nom: payload.nom,
+        prenom: payload.prenom,
+        numero_telephone: payload.numero_telephone,
         role: cleanRole
       };
     } catch (error) {
@@ -301,7 +305,7 @@ export class AuthService {
     }
 
     // Appel API pour récupérer les informations complètes de l'utilisateur
-    const url = `/api/utilisateur/${currentUser.id}`;
+    const url = `/api/utilisateurs/${currentUser.id}`;
     return this.http.get<any>(url, { headers: this.getAuthHeaders() })
       .pipe(
         map(response => {
