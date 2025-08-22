@@ -105,14 +105,19 @@ export class EvaluationComponent {
 
   envoyerEvaluation() {
     if (!this.selectedStagiaire || !this.note) return;
-    const idCandidature = this.selectedStagiaire.id;
-    this.candidatureService.addEvaluation({
-      idCandidature: idCandidature,
+    const user = this.authService.getCurrentUser();
+    if (!user || !user.id) return;
+    const evaluation = {
       note: this.note,
-      remarque: this.remarque
-    }).subscribe({
+      commentaire: this.remarque,
+      dateEvaluation: new Date().toISOString().slice(0, 10),
+      id_utilisateur_encadrant: user.id,
+      id_utilisateur_stagiaire: this.selectedStagiaire.id
+    };
+    this.candidatureService.addEvaluation(evaluation).subscribe({
       next: () => {
         this.fermerModalEvaluation();
+        this.ngOnInit(); // Recharge la liste après évaluation
         // Optionnel : afficher un message de succès
       },
       error: () => {

@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CandidatureService {
-  addEvaluation(evaluation: { idCandidature: number, note: number, remarque: string }): Observable<any> {
+  addEvaluation(evaluation: { note: number, commentaire: string, dateEvaluation: string, id_utilisateur_encadrant: number, id_utilisateur_stagiaire: number }): Observable<any> {
     const token = this.authService.getToken();
     const headers = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
     return this.http.post<any>('/api/evaluations', evaluation, { headers });
