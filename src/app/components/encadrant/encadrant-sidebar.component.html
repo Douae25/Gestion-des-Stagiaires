@@ -1,0 +1,14 @@
+<aside class="sidebar">
+	<nav class="menu">
+		<ul>
+			<li *ngFor="let item of menuItems" [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+				<span class="material-icons">{{item.icon}}</span>
+				<span>{{item.label}}</span>
+			</li>
+			<li class="sidebar-bottom" [routerLink]="deconnexionItem.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+				<span class="material-icons">{{deconnexionItem.icon}}</span>
+				<span>{{deconnexionItem.label}}</span>
+			</li>
+		</ul>
+	</nav>
+</aside>

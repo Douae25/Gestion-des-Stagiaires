@@ -1,0 +1,103 @@
+<div class="stages-en-cours-container">
+  <div class="page-header">
+    <h1>
+      <span class="material-icons">work_outline</span>
+      Stages en cours
+    </h1>
+    <p class="page-description">Retrouvez ici l’ensemble des stages que vous encadrez actuellement</p>
+  </div>
+  <div class="stages-list">
+    <div class="stage-card" *ngFor="let stage of stages">
+
+      <div class="stage-card-body">
+        <div class="stage-title-row">
+          <h2 class="stage-title">{{stage.titre}}</h2>
+          <span class="stage-duration">
+            <span class="material-icons">hourglass_bottom</span>
+            {{stage.dureeRestante}}
+          </span>
+        </div>
+        <div class="stage-created-by">Créé par <strong>{{stage.createur}}</strong></div>
+        <p class="stage-description">{{stage.description}}</p>
+        <div class="stage-stagiaire">
+          <span class="stagiaire-label">Stagiaire :</span>
+          <span class="stagiaire-nom">{{stage.stagiaire.prenom}} {{stage.stagiaire.nom}}</span>
+        </div>
+        <div class="stage-dates">
+<span class="date-item">
+  <span class="material-icons">calendar_today</span>
+  <span class="date-label">Début</span><span class="date-sep"> :</span>
+  <span class="date-value">{{stage.dateDebut}}</span>
+</span>
+          <span class="date-item">
+            <span class="material-icons">event</span>
+            <span class="date-label">Fin</span><span class="date-sep"> :</span>
+            <span class="date-value">{{stage.dateFin}}</span>
+          </span>
+        </div>
+      </div>
+      <div class="stage-card-footer">
+        <button class="btn-primary" (click)="openDetailsModal(stage)">Voir détails</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Détails du stage -->
+  <div class="modal-overlay" *ngIf="detailsModalOpen">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Détails du stage</h2>
+        <button class="modal-close" (click)="closeDetailsModal()">&times;</button>
+      </div>
+      <div class="modal-body" *ngIf="selectedStage">
+        <h3 class="stage-title">{{selectedStage.titre}}</h3>
+        <div class="stage-duration">{{selectedStage.dureeRestante}}</div>
+        <p class="stage-description">{{selectedStage.description}}</p>
+        <div class="stagiaire-infos">
+          <h4>Stagiaire</h4>
+          <div>Nom : {{selectedStage.stagiaire.nom}}</div>
+          <div>Prénom : {{selectedStage.stagiaire.prenom}}</div>
+          <div>Email : {{selectedStage.stagiaire.email}}</div>
+          <div>Téléphone : {{selectedStage.stagiaire.telephone}}</div>
+        </div>
+        <div class="stage-reports">
+          <h4>Rapports de stage</h4>
+          <ul>
+            <li class="report-item" *ngFor="let report of selectedStage.rapports">
+              <span class="report-title">{{report.titre}}</span>
+              <span class="report-actions">
+                <button class="btn-secondary">Télécharger</button>
+                <button class="btn-accent" (click)="openRemarksModal(report)">Vos remarques</button>
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Vos remarques -->
+  <div class="modal-overlay" *ngIf="remarksModalOpen">
+    <div class="modal">
+      <div class="modal-header accent">
+        <h2>Vos remarques</h2>
+        <button class="modal-close" (click)="closeRemarksModal()">&times;</button>
+      </div>
+      <div class="modal-body remarks-body" *ngIf="selectedReport">
+        <h3 class="remarks-title">Commentaires sur le rapport</h3>
+        <ul class="comments-list" *ngIf="selectedReport.commentaires && selectedReport.commentaires.length > 0">
+          <li class="comment-item" *ngFor="let comment of selectedReport.commentaires">
+            <span class="comment-text">{{comment}}</span>
+          </li>
+        </ul>
+        <div class="no-comments" *ngIf="!selectedReport.commentaires || selectedReport.commentaires.length === 0">
+          <span>Aucun commentaire pour ce rapport.<br>Vous pouvez en ajouter un ci-dessous.</span>
+        </div>
+        <div class="add-comment">
+          <textarea [(ngModel)]="newComment" placeholder="Ajouter un commentaire..." class="comment-textarea"></textarea>
+          <button class="btn-primary send-comment-btn" (click)="addComment()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

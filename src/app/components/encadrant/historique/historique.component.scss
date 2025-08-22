@@ -1,0 +1,673 @@
+// Palette SCSS
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-white: #ffffff;
+$neutral-light: #f8fafc;
+$neutral-medium: #e2e8f0;
+$neutral-dark: #1e293b;
+
+$shadow-sm: 0 2px 8px rgba(30, 58, 138, 0.08);
+$shadow-md: 0 4px 16px rgba(30, 58, 138, 0.12);
+$shadow-lg: 0 8px 32px rgba(30, 58, 138, 0.16);
+
+
+// ========== OVERRIDES COMPACT TABLE TYPOGRAPHY ========== 
+.documents-table td {
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: $neutral-dark !important;
+  vertical-align: middle !important;
+  margin-left: 12px;
+}
+.stage-cell {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: $primary-blue !important;
+}
+.stagiaire-cell {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: $neutral-dark !important;
+}
+.stagiaire-cell .material-icons {
+  font-size: 1.3rem !important;
+  margin-right: 4px !important;
+  color: $accent-purple !important;
+}
+.email-cell .email-info {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: $secondary-blue !important;
+}
+.phone-cell {
+  font-size: 13px !important;
+  color: $neutral-dark !important;
+}
+.phone-cell .material-icons {
+  font-size: 1.2rem !important;
+  margin-right: 2px !important;
+  color: $secondary-blue !important;
+}
+.download-btn, .generate-btn {
+  padding: 5px 9px !important;
+  font-size: 11.5px !important;
+}
+.btn-accent {
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+}
+.note-display .material-icons {
+  margin: 0 2px !important;
+}
+
+.historique-container {
+  margin-top: 20px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.documents-table {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: $shadow-sm;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: $neutral-white;
+}
+
+.documents-table thead {
+  background: $primary-blue;
+  box-shadow: $shadow-md;
+}
+
+.documents-table th {
+  color: $neutral-white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  padding: 12px 16px;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+  position: relative;
+}
+
+.documents-table th:first-child {
+  border-top-left-radius: 12px;
+}
+.documents-table th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.documents-table th .material-icons {
+  vertical-align: middle;
+  margin-right: 6px;
+  color: $neutral-white;
+  font-size: 1.2rem;
+}
+
+.documents-table tbody tr {
+  background: $neutral-white;
+  transition: background 0.2s;
+}
+.documents-table tbody tr:nth-child(even) {
+  background: $neutral-light;
+}
+.documents-table td {
+  padding: 12px 20px;
+  border-bottom: 1px solid $neutral-medium;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 1.08rem;
+  font-weight: 500;
+  color: $neutral-dark;
+}
+
+// Stagiaire column
+.stagiaire-cell .material-icons {
+  color: $accent-purple;
+  margin-right: 8px;
+  vertical-align: middle;
+  font-size: 1.3rem;
+}
+
+// Email column
+.email-cell a {
+  color: $secondary-blue;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.08rem;
+  transition: text-decoration 0.2s;
+}
+.email-cell a:hover {
+  text-decoration: underline;
+}
+
+// Phone column
+.phone-cell .material-icons {
+  color: $secondary-blue;
+  margin-right: 8px;
+  vertical-align: middle;
+  font-size: 1.2rem;
+}
+
+// Rapport final button
+.download-btn {
+  background: $success-green;
+  color: $neutral-white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 1.08rem;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.download-btn .material-icons {
+  color: $neutral-white;
+  font-size: 1.1rem;
+}
+.download-btn:hover {
+  background: darken($success-green, 10%);
+}
+
+// Note column
+.note-display .material-icons.star-filled {
+  color: $warning-orange;
+  font-size: 1.1rem !important;
+}
+.note-display .material-icons.star-empty {
+  color: $neutral-medium;
+  font-size: 1.1rem !important;
+}
+
+// Remarques button
+.btn-accent {
+  background: $secondary-blue;
+  color: $neutral-white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: $shadow-sm;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-accent:hover {
+  background: $primary-blue;
+  box-shadow: $shadow-md;
+}
+
+@media (max-width: 768px) {
+  .documents-table {
+    font-size: 0.95rem;
+  }
+  .table-wrapper {
+    overflow-x: auto;
+  }
+}
+// Copie du style rh-documents pour harmonisation
+.btn-label {
+  display: block;
+  white-space: pre-line;
+  word-break: break-word;
+}
+/* Styles pour les étoiles de note */
+.star-filled {
+  color: orange;
+}
+.star-empty {
+  color: #ccc;
+}
+
+// Copie du style rh-documents pour harmonisation
+.btn-label {
+  display: block;
+  white-space: pre-line;
+  word-break: break-word;
+}
+/* Styles pour les étoiles de note */
+.star-filled {
+  color: orange;
+}
+.star-empty {
+  color: #ccc;
+}
+// ========== VARIABLES ========== 
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-light: #f8fafc;
+$neutral-dark: #374151;
+
+$gradient-primary: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+$gradient-success: linear-gradient(135deg, $success-green 0%, #059669 100%);
+$gradient-warning: linear-gradient(135deg, $warning-orange 0%, #d97706 100%);
+
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+// ========== CONTENEUR PRINCIPAL ========== 
+.historique-container {
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+}
+
+// ========== EN-TÊTE ========== 
+.page-header {
+  background: $gradient-primary;
+  color: white;
+  padding: 35px 30px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  box-shadow: $shadow-lg;
+  text-align: center;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 8px 0;
+  font-size: 1.5rem;
+    font-weight:700;
+
+    .material-icons {
+      font-size: 1.5rem;
+    }
+  }
+
+  p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 1rem;
+  }
+}
+
+// ========== TABLEAUX ==========
+.table-wrapper {
+  padding: 0;
+}
+
+.documents-table {
+  width: 100%;
+  border-collapse: collapse;
+
+
+  thead {
+    background: linear-gradient(135deg, #2769aa 0%, #9cb7da 100%);
+
+    th {
+      padding: 16px 12px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white !important;
+      border-bottom: 2px solid rgba(30, 58, 138, 0.1);
+
+      .material-icons {
+        margin-right: 6px;
+        vertical-align: middle;
+        font-size: 1.1rem;
+        color: white !important;
+        display: inline-block;
+        text-align: center;
+      }
+    }
+  }
+
+  table-layout: fixed;
+  tbody {
+    .table-row {
+      border-bottom: 1px solid $neutral-light;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(59, 130, 246, 0.05);
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    td {
+      padding: 12px 8px;
+      vertical-align: top;
+      border: none;
+    }
+  }
+}
+
+.documents-table th, .documents-table td {
+  padding: 12px 8px;
+  text-align: left;
+  vertical-align: middle;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  max-width: 220px;
+}
+
+.documents-table th {
+  font-size: 1rem;
+  font-weight: 600;
+}
+    th {
+      background: $primary-blue;
+      color: white;
+      text-align: center;
+      font-weight: 700;
+      .material-icons {
+        color: white !important;
+        vertical-align: middle;
+        margin-right: 6px;
+        font-size: 1.2rem;
+      }
+    }
+.stagiaire-cell {
+  min-width: 120px;
+  max-width: 160px;
+}
+.email-cell {
+  min-width: 160px;
+  max-width: 220px;
+}
+.stage-cell {
+  min-width: 120px;
+  max-width: 180px;
+}
+.encadrant-cell {
+  min-width: 120px;
+  max-width: 180px;
+}
+.rapport-cell {
+  min-width: 120px;
+  max-width: 160px;
+}
+.evaluation-cell {
+  min-width: 120px;
+  max-width: 160px;
+}
+.attestation-cell {
+  min-width: 120px;
+  max-width: 160px;
+}
+
+.download-btn, .generate-btn {
+  min-width: 100px;
+  padding: 6px 0;
+  font-size: 0.92rem;
+}
+
+// ========== CELLULES DU TABLEAU ========== 
+.stagiaire-cell {
+  .stagiaire-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .material-icons {
+      color: $accent-purple;
+      font-size: 2rem;
+    }
+
+    strong {
+      color: $primary-blue;
+      font-weight: 600;
+    }
+
+    .stagiaire-details {
+      font-size: 0.8rem;
+      color: $neutral-dark;
+      opacity: 0.7;
+    }
+  }
+}
+
+.email-cell {
+  .email-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $secondary-blue;
+    font-weight: 500;
+
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.stage-cell {
+  .stage-info {
+    strong {
+      color: $primary-blue;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .stage-details {
+      font-size: 0.8rem;
+      color: $neutral-dark;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+  }
+}
+
+.rapport-cell {
+  .rapport-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .download-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: $gradient-primary;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+
+      .material-icons {
+        font-size: 1rem;
+      }
+    }
+
+    .rapport-details {
+      font-size: 0.8rem;
+      color: $neutral-dark;
+      opacity: 0.7;
+    }
+  }
+
+  .no-rapport {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $danger-red;
+    font-style: italic;
+    opacity: 0.8;
+
+    .material-icons {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.evaluation-cell {
+  .evaluation-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 200px;
+
+    .note-input {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $neutral-dark;
+      }
+
+      .note-field {
+        padding: 8px 12px;
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        width: 80px;
+
+        &:focus {
+          outline: none;
+          border-color: $secondary-blue;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+    }
+
+    .commentaire-input {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: $neutral-dark;
+      }
+
+      .commentaire-field {
+        padding: 8px 12px;
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: 6px;
+        font-size: 0.9rem;
+        resize: vertical;
+        font-family: inherit;
+
+        &:focus {
+          outline: none;
+          border-color: $secondary-blue;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+      }
+    }
+  }
+}
+
+.attestation-cell {
+  .attestation-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .generate-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 16px;
+      background: $gradient-warning;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+
+      &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: $shadow-md;
+      }
+
+      &:disabled {
+        background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      .material-icons {
+        font-size: 1rem;
+      }
+    }
+
+    .attestation-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: $success-green;
+      font-weight: 600;
+
+      .material-icons.success {
+        font-size: 1rem;
+      }
+    }
+  }
+}
+
+// ========== RESPONSIVE ==========
+@media (max-width: 1024px) {
+  .documents-table {
+    font-size: 0.8rem;
+
+    thead th {
+      padding: 12px 8px;
+      font-size: 0.8rem;
+    }
+
+    tbody td {
+      padding: 12px 8px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .historique-container {
+    padding: 15px;
+  }
+
+  .page-header {
+    padding: 20px 15px;
+
+    h1 {
+      font-size: 1.6rem;
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+
+  .documents-table th, .documents-table td {
+    padding: 8px 6px;
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,54 @@
+<div class="evaluation-container">
+  <div class="page-header">
+    <h1>
+      <span class="material-icons">grade</span>
+      Gestion des évaluations
+    </h1>
+    <p class="page-description">
+      Retrouvez ici l’ensemble des stagiaires à évaluer.
+    </p>
+  </div>
+
+  <div class="stagiaires-list">
+    <div class="stagiaire-card" *ngFor="let stagiaire of stagiaires">
+      <div class="card-header">
+        <h2 class="stage-title">{{stagiaire.stageTitre}}</h2>
+        <span class="stage-duration">{{stagiaire.dureeDepuisFin}}</span>
+      </div>
+      <div class="card-body">
+        <div class="stagiaire-nom">
+          <span class="material-icons">person</span>
+          {{stagiaire.nom}} {{stagiaire.prenom}}
+        </div>
+      </div>
+      <div class="card-footer">
+        <button class="btn-success" (click)="telechargerRapport(stagiaire)">Rapport final</button>
+        <button class="btn-warning" (click)="ouvrirModalEvaluation(stagiaire)">Évaluer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal d'évaluation -->
+  <div class="modal-overlay" *ngIf="modalEvaluationOuvert">
+    <div class="modal-evaluation">
+      <div class="modal-header">
+        <h2>Évaluer le stagiaire</h2>
+        <button class="modal-close" (click)="fermerModalEvaluation()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stars-rating">
+          <span *ngFor="let star of [1,2,3,4,5]; let i = index"
+                class="star"
+                [class.selected]="i < note"
+                (mouseenter)="survolerEtoile(i+1)"
+                (mouseleave)="quitterEtoile()"
+                (click)="noter(i+1)">
+            &#9733;
+          </span>
+        </div>
+        <textarea class="remarks-textarea" placeholder="Ajouter une remarque..."></textarea>
+        <button class="btn-primary send-eval-btn">Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>

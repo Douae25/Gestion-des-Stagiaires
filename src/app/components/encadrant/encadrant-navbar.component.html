@@ -1,0 +1,68 @@
+<nav class="encadrant-navbar">
+  <div class="navbar-container">
+    <!-- Titre/Logo Encadrant -->
+    <div class="navbar-brand">
+      <span class="material-icons">school</span>
+      <h1>Espace Encadrant</h1>
+    </div>
+
+    <!-- Barre de recherche -->
+    <div class="search-container">
+      <div class="search-box">
+        <span class="material-icons search-icon">search</span>
+        <input 
+          type="text" 
+          placeholder="Rechercher un stage, un étudiant..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          (keydown.enter)="onSearch()"
+          class="search-input">
+        <button 
+          *ngIf="searchQuery" 
+          class="clear-btn" 
+          (click)="searchQuery=''"
+          type="button">
+          <span class="material-icons">clear</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu de profil -->
+    <div class="profile-container">
+      <div class="profile-menu" (click)="toggleProfileMenu()">
+        <div class="profile-avatar">
+          E
+        </div>
+        <div class="profile-info">
+          <span class="profile-name">Encadrant</span>
+          <span class="profile-role">Encadrant</span>
+        </div>
+        <span class="material-icons dropdown-icon" [class.rotated]="showProfileMenu">
+          keyboard_arrow_down
+        </span>
+      </div>
+
+      <!-- Menu déroulant -->
+      <div class="dropdown-menu" [class.show]="showProfileMenu" (mouseleave)="closeProfileMenu()">
+        <div class="dropdown-content">
+          <div class="dropdown-header">
+            <div class="profile-avatar-large">E</div>
+            <div class="profile-details">
+              <h3>Encadrant</h3>
+              <p>encadrant&#64;email.com</p>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-items">
+            <button class="dropdown-item" routerLink="/encadrant/profile">
+              <span class="material-icons">person</span> Profil
+            </button>
+            <button class="dropdown-item" routerLink="/logout">
+              <span class="material-icons">logout</span> Déconnexion
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,3 +1,4 @@
+// ...existing code...
 import { Routes } from '@angular/router';
 import { AuthGuard, RoleGuard, GuestGuard } from './guards/auth.guard';
 
@@ -146,23 +147,39 @@ export const routes: Routes = [
     ]
   },
 
-  // Routes pour les encadrants
+ // Routes pour les encadrants
   {
     path: 'encadrant',
-    canActivate: [RoleGuard],
-    data: { role: 'encadrant' },
+    loadComponent: () => import('./components/encadrant/encadrant.component').then(m => m.EncadrantComponent),
     children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./components/encadrant/dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'stages-en-cours',
+        loadComponent: () => import('./components/encadrant/stages-en-cours/stages-en-cours.component').then(m => m.StagesEnCoursComponent)
+      },
+      {
+        path: 'evaluation',
+        loadComponent: () => import('./components/encadrant/evaluation/evaluation.component').then(m => m.EvaluationComponent)
+      },
+      {
+        path: 'historique',
+        loadComponent: () => import('./components/encadrant/historique/historique.component').then(m => m.HistoriqueComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/encadrant/profile/profile.component').then(m => m.EncadrantProfileComponent)
+      },
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full'
-      },
-      {
-        path: 'dashboard',
-        loadComponent: () => import('./components/encadrant/dashboard/encadrant-dashboard.component').then(m => m.EncadrantDashboardComponent)
       }
     ]
   },
+
 
   // Route de fallback - Page 404
   {
