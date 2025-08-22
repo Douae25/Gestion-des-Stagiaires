@@ -70,3 +70,18 @@
           </td>
         </tr>
       </tbody>
+
+  <!-- Modal Remarque déplacée après la balise </table> -->
+  <!-- Modal Remarque -->
+  <div class="modal-overlay" *ngIf="modalRemarqueOuvert">
+    <div class="modal-remarque">
+      <div class="modal-header">
+        <h2>Remarque complète</h2>
+        <button class="modal-close" (click)="fermerModalRemarque()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>{{selectedStage?.remarque}}</p>
+      </div>
+    </div>
+  </div>
+   

@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { OnInit } from '@angular/core';
+import { CandidatureService } from '../../../services/candidature.service';
+import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -11,30 +14,59 @@ import { RouterModule } from '@angular/router';
 })
 export class HistoriqueComponent {
 
-
-  historiques = [
-    {
-      titre: 'Développement Angular',
-      nom: 'El Amrani',
-      prenom: 'Ahmed',
-      email: 'ahmed.elamrani@email.com',
-      telephone: '06 12 34 56 78',
-      note: 4,
-      remarque: 'Stage très satisfaisant, stagiaire motivé et autonome.'
-    }
-    // Ajoute d'autres objets ici
-  ];
+  historiques: any[] = [];
 
   modalRemarqueOuvert = false;
   selectedStage: any = null;
+  constructor(
+    private candidatureService: CandidatureService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user && user.id) {
+      this.candidatureService.getCandidaturesEvaluees(user.id).subscribe({
+        next: (data: any[]) => {
+          this.historiques = data.map(item => ({
+            titre: item.offre_info?.titre || item.offre?.titre,
+            nom: item.stagiaire?.nom || item.stagiaire_info?.nom,
+            prenom: item.stagiaire?.prenom || item.stagiaire_info?.prenom,
+            email: item.stagiaire?.email || item.stagiaire_info?.email,
+            telephone: item.stagiaire?.numero_telephone || item.stagiaire_info?.numero_telephone,
+            note: item.evaluation?.note,
+            remarque: item.evaluation?.commentaire,
+            rapport: item.rapportFinal // à utiliser pour le téléchargement
+          }));
+        },
+        error: () => {
+          this.historiques = [];
+        }
+      });
+    }
+  }
 
   telechargerRapport(stage: any) {
-    // Logique de téléchargement
+    const rapport = stage.rapport;
+    if (!rapport || !rapport.document) return;
+    const byteCharacters = atob(rapport.document);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = (rapport.titre || 'rapport-final') + '.pdf';
+    link.click();
+    window.URL.revokeObjectURL(link.href);
   }
 
   ouvrirModalRemarque(stage: any) {
-    this.selectedStage = stage;
-    this.modalRemarqueOuvert = true;
+  this.selectedStage = stage;
+  this.modalRemarqueOuvert = true;
+  // Le commentaire complet est accessible via stage.remarque
   }
 
   fermerModalRemarque() {
