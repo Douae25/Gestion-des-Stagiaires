@@ -46,8 +46,8 @@
             &#9733;
           </span>
         </div>
-        <textarea class="remarks-textarea" placeholder="Ajouter une remarque..."></textarea>
-        <button class="btn-primary send-eval-btn">Envoyer</button>
+  <textarea class="remarks-textarea" placeholder="Ajouter une remarque..." [(ngModel)]="remarque"></textarea>
+  <button class="btn-primary send-eval-btn" (click)="envoyerEvaluation()">Envoyer</button>
       </div>
     </div>
   </div>

@@ -1,52 +1,70 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { CandidatureService } from '../../../services/candidature.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-stages-en-cours',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
+  providers: [CandidatureService, AuthService],
   templateUrl: './stages-en-cours.component.html',
   styleUrls: ['./stages-en-cours.component.scss']
 })
-export class StagesEnCoursComponent {
-  stages = [
-    {
-      id: 1,
-      titre: "Développement d'une application Angular",
-      dureeRestante: "15 jours restants",
-      createur: "Sarah RH",
-      description: "Ce stage consiste à développer une application Angular moderne pour la gestion des stagiaires.",
-      stagiaire: {
-        nom: "El Amrani",
-        prenom: "Ahmed",
-        email: "ahmed.elamrani@email.com",
-        telephone: "06 12 34 56 78"
-      },
-      dateDebut: "01/08/2025",
-      dateFin: "30/09/2025",
-      rapports: [
-        {
-          id: 1,
-          titre: "Rapport 1 : Cahier des charges",
-          commentaires: [
-            "Bien structuré.",
-            "Ajouter plus de détails sur les besoins."
-          ]
+
+export class StagesEnCoursComponent implements OnInit {
+  stages: any[] = [];
+  // (doublons supprimés)
+
+  constructor(
+    private candidatureService: CandidatureService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.authService.getCurrentUser();
+    if (user && user.id) {
+      this.candidatureService.getCandidaturesAcceptees(user.id).subscribe({
+        next: (data: any[]) => {
+          this.stages = data.map((item: any) => ({
+            id: item.candidature?.id || item.candidature?.id_candidature,
+            titre: item.offre?.titre || item.offre_info?.titre,
+            dureeRestante: this.getDureeRestante(item.offre?.date_fin || item.offre_info?.date_fin),
+            createur: item.offre?.rh_info ? `${item.offre.rh_info.prenom} ${item.offre.rh_info.nom}` : (item.offre_info?.rh_info ? `${item.offre_info.rh_info.prenom} ${item.offre_info.rh_info.nom}` : 'RH'),
+            description: item.offre?.description || item.offre_info?.description,
+            stagiaire: {
+              nom: item.stagiaire?.nom || item.stagiaire_info?.nom,
+              prenom: item.stagiaire?.prenom || item.stagiaire_info?.prenom,
+              email: item.stagiaire?.email || item.stagiaire_info?.email,
+              telephone: item.stagiaire?.numero_telephone || item.stagiaire_info?.numero_telephone || ''
+            },
+            dateDebut: item.offre?.date_debut || item.offre_info?.date_debut,
+            dateFin: item.offre?.date_fin || item.offre_info?.date_fin,
+              rapports: (item.rapports || []).map((r: any) => ({
+                id: r.id,
+                titre: r.titre,
+                document: r.document || r.fichier || '',
+                commentaires: Array.isArray(r.commentaires) ? r.commentaires : (r.commentaires ? [r.commentaires] : [])
+              }))
+          }));
         },
-        {
-          id: 2,
-          titre: "Rapport 2 : Conception",
-          commentaires: [
-            "Diagrammes clairs.",
-            "Bonne organisation."
-          ]
+        error: (_err: any) => {
+          this.stages = [];
         }
-      ]
+      });
     }
-    // Ajouter d'autres stages ici
-  ];
+  }
+
+  getDureeRestante(dateFin: string): string {
+    const fin = new Date(dateFin);
+    const now = new Date();
+    const diff = fin.getTime() - now.getTime();
+    if (diff <= 0) return 'Terminé';
+    const jours = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return `${jours} jour${jours > 1 ? 's' : ''} restant${jours > 1 ? 's' : ''}`;
+  }
 
   selectedStage: any = null;
   detailsModalOpen = false;
@@ -81,8 +99,32 @@ export class StagesEnCoursComponent {
 
   addComment() {
     if (this.newComment.trim() && this.selectedReport) {
-      this.selectedReport.commentaires.push(this.newComment.trim());
-      this.newComment = '';
+      this.candidatureService.addCommentToReport(this.selectedReport.id, this.newComment.trim())
+        .subscribe({
+          next: (comment) => {
+            this.selectedReport.commentaires.push(comment);
+            this.newComment = '';
+          },
+          error: () => {
+            // Optionnel : afficher une erreur
+          }
+        });
     }
+  }
+
+  downloadReport(report: any) {
+    if (!report.document) return;
+    const byteCharacters = atob(report.document);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = (report.titre || 'rapport') + '.pdf';
+    link.click();
+    window.URL.revokeObjectURL(link.href);
   }
 }

@@ -1,3 +1,305 @@
+// Palette
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-white: #ffffff;
+$neutral-light: #f8fafc;
+$neutral-medium: #e2e8f0;
+$neutral-dark: #1e293b;
+$shadow-sm: 0 2px 8px rgba(30, 58, 138, 0.08);
+$shadow-md: 0 4px 16px rgba(30, 58, 138, 0.12);
+$shadow-lg: 0 8px 32px rgba(30, 58, 138, 0.16);
+$gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+$gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+
+.dashboard-container {
+  background: $neutral-light;
+  min-height: 100vh;
+  padding: 32px 16px;
+}
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.header-text {
+  flex: 1;
+}
+.dashboard-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: $primary-blue;
+  margin-bottom: 8px;
+}
+.dashboard-subtitle {
+  font-size: 1.1rem;
+  color: $neutral-dark;
+  font-weight: 400;
+}
+.header-avatar {
+  margin-left: 24px;
+}
+.avatar-icon {
+  font-size: 56px;
+  color: $accent-purple;
+  background: $neutral-white;
+  border-radius: 50%;
+  box-shadow: $shadow-md;
+  padding: 8px;
+}
+
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+.stat-card {
+  background: $neutral-white;
+  border-radius: 16px;
+  box-shadow: $shadow-md;
+  padding: 16px;
+  text-align: center;
+  transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.8s forwards;
+}
+.stat-card:hover {
+  box-shadow: $shadow-lg;
+  transform: translateY(-4px) scale(1.03);
+  background: $neutral-light;
+}
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.stat-blue .stat-icon { color: $secondary-blue; }
+.stat-purple .stat-icon { color: $accent-purple; }
+.stat-green .stat-icon { color: $success-green; }
+.stat-orange .stat-icon { color: $warning-orange; }
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $neutral-dark;
+}
+.stat-label {
+  font-size: 1rem;
+  color: $primary-blue;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.section-header h2 {
+  font-size: 1.3rem;
+  color: $primary-blue;
+  font-weight: 600;
+}
+
+.ongoing-stages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 18px;
+}
+.stage-card {
+  background: $neutral-white;
+  border-radius: 16px;
+  box-shadow: $shadow-sm;
+  padding: 16px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.3s, transform 0.3s;
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+}
+.stage-card:hover {
+  box-shadow: $shadow-md;
+  transform: translateY(-2px) scale(1.02);
+}
+.stage-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: $secondary-blue;
+}
+.stage-info {
+  font-size: 0.98rem;
+  color: $neutral-dark;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.btn-accent {
+  background: $accent-purple;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  box-shadow: $shadow-sm;
+  border: none;
+  transition: background 0.2s;
+}
+.btn-accent:hover {
+  background: darken($accent-purple, 10%);
+}
+
+.evaluations-table {
+  background: $neutral-white;
+  border-radius: 16px;
+  box-shadow: $shadow-sm;
+  padding: 12px;
+  overflow-x: auto;
+}
+.evaluations-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.evaluations-table th, .evaluations-table td {
+  padding: 10px 8px;
+  text-align: left;
+  font-size: 0.98rem;
+}
+.evaluations-table th {
+  color: $primary-blue;
+  font-weight: 600;
+  background: $neutral-light;
+}
+.evaluations-table td {
+  color: $neutral-dark;
+}
+.btn-success {
+  background: $success-green;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  box-shadow: $shadow-sm;
+  border: none;
+  transition: background 0.2s;
+}
+.btn-success:hover {
+  background: darken($success-green, 10%);
+}
+
+.timeline {
+  margin-top: 12px;
+  border-left: 3px solid $neutral-medium;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  opacity: 0;
+  animation: fadeIn 1.2s forwards;
+}
+.timeline-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-sm;
+  background: $neutral-white;
+  font-size: 22px;
+}
+.timeline-icon.rapport { background: $accent-purple; color: #fff; }
+.timeline-icon.remarque { background: $secondary-blue; color: #fff; }
+.timeline-icon.evaluation { background: $success-green; color: #fff; }
+.timeline-icon.default { background: $neutral-medium; color: $neutral-dark; }
+.timeline-content {
+  flex: 1;
+}
+.timeline-text {
+  font-size: 1rem;
+  color: $neutral-dark;
+  font-weight: 500;
+}
+.timeline-date {
+  font-size: 0.92rem;
+  color: $neutral-dark;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+// Buttons
+.btn {
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  box-shadow: $shadow-sm;
+  border: none;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.btn-secondary {
+  background: $secondary-blue;
+  color: #fff;
+}
+.btn-secondary:hover {
+  background: darken($secondary-blue, 10%);
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+
+// Responsive
+@media (max-width: 700px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header-avatar {
+    margin-left: 0;
+  }
+  .stat-cards {
+    gap: 12px;
+  }
+  .ongoing-stages {
+    gap: 10px;
+  }
+}
+@media (max-width: 500px) {
+  .dashboard-title {
+    font-size: 1.3rem;
+  }
+  .stat-card {
+    padding: 10px;
+  }
+  .stage-card {
+    padding: 10px;
+  }
+  .evaluations-table th, .evaluations-table td {
+    font-size: 0.92rem;
+    padding: 6px 4px;
+  }
+}
 .dashboard-container {
   padding: 32px;
 }

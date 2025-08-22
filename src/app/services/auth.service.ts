@@ -128,8 +128,8 @@ export class AuthService {
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
     
-    // Redirection vers la page de connexion
-    this.router.navigate(['/login']);
+  // Redirection vers la page de landing
+  this.router.navigate(['/']);
   }
 
   // Méthode pour gérer les erreurs 403 liées aux utilisateurs non trouvés

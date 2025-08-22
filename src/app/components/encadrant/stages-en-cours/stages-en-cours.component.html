@@ -43,8 +43,8 @@
   </div>
 
   <!-- Modal Détails du stage -->
-  <div class="modal-overlay" *ngIf="detailsModalOpen">
-    <div class="modal">
+  <div class="modal-overlay" *ngIf="detailsModalOpen" (click)="closeDetailsModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h2>Détails du stage</h2>
         <button class="modal-close" (click)="closeDetailsModal()">&times;</button>
@@ -62,23 +62,28 @@
         </div>
         <div class="stage-reports">
           <h4>Rapports de stage</h4>
-          <ul>
-            <li class="report-item" *ngFor="let report of selectedStage.rapports">
-              <span class="report-title">{{report.titre}}</span>
-              <span class="report-actions">
-                <button class="btn-secondary">Télécharger</button>
-                <button class="btn-accent" (click)="openRemarksModal(report)">Vos remarques</button>
-              </span>
-            </li>
-          </ul>
+          <ng-container *ngIf="selectedStage.rapports && selectedStage.rapports.length > 0; else noRapport">
+            <ul>
+              <li class="report-item" *ngFor="let report of selectedStage.rapports">
+                <span class="report-title">{{report.titre}}</span>
+                <span class="report-actions">
+                  <button class="btn-secondary" (click)="downloadReport(report)">Télécharger</button>
+                  <button class="btn-accent" (click)="openRemarksModal(report)">Vos remarques</button>
+                </span>
+              </li>
+            </ul>
+          </ng-container>
+          <ng-template #noRapport>
+            <div class="no-rapport">Aucun rapport n'a été encore déposé pour ce stage.</div>
+          </ng-template>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Modal Vos remarques -->
-  <div class="modal-overlay" *ngIf="remarksModalOpen">
-    <div class="modal">
+  <div class="modal-overlay" *ngIf="remarksModalOpen" (click)="closeRemarksModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
       <div class="modal-header accent">
         <h2>Vos remarques</h2>
         <button class="modal-close" (click)="closeRemarksModal()">&times;</button>
@@ -87,7 +92,7 @@
         <h3 class="remarks-title">Commentaires sur le rapport</h3>
         <ul class="comments-list" *ngIf="selectedReport.commentaires && selectedReport.commentaires.length > 0">
           <li class="comment-item" *ngFor="let comment of selectedReport.commentaires">
-            <span class="comment-text">{{comment}}</span>
+            <span class="comment-text">{{comment.contenu || comment.texte || comment.text || comment}}</span>
           </li>
         </ul>
         <div class="no-comments" *ngIf="!selectedReport.commentaires || selectedReport.commentaires.length === 0">

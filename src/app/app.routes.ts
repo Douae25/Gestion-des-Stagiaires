@@ -181,6 +181,11 @@ export const routes: Routes = [
   },
 
 
+  // Route de déconnexion
+  {
+    path: 'logout',
+    loadComponent: () => import('./components/logout/logout.component').then(m => m.LogoutComponent)
+  },
   // Route de fallback - Page 404
   {
     path: '**',
