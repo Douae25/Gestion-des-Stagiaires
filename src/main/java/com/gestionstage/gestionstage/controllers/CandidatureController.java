@@ -20,6 +20,21 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/candidatures")
 public class CandidatureController {
+    @GetMapping("/acceptees/rapport-final/{idUtilisateur}")
+    @PreAuthorize("hasRole('encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> getCandidaturesAvecRapportFinalSansEvaluationByEncadrant(@PathVariable Integer idUtilisateur) {
+        com.gestionstage.gestionstage.entities.Encadrant encadrant = candidatureService.getEncadrantByUtilisateurId(idUtilisateur);
+        if (encadrant == null) throw new IllegalArgumentException("Encadrant introuvable pour cet utilisateur");
+        return candidatureService.getCandidaturesAvecRapportFinalSansEvaluationByEncadrant(encadrant.getId());
+    }
+    @GetMapping("/acceptees/{idUtilisateur}")
+    @PreAuthorize("hasRole('encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesAccepteesSansEvaluationByEncadrant(@PathVariable Integer idUtilisateur, @RequestHeader("Authorization") String authHeader) {
+        // Récupérer l'encadrant via l'id utilisateur
+        com.gestionstage.gestionstage.entities.Encadrant encadrant = candidatureService.getEncadrantByUtilisateurId(idUtilisateur);
+        if (encadrant == null) throw new IllegalArgumentException("Encadrant introuvable pour cet utilisateur");
+        return candidatureService.getCandidaturesAccepteesSansEvaluationByEncadrant(encadrant.getId());
+    }
     @GetMapping("/terminees")
     @PreAuthorize("hasAnyRole('rh', 'admin', 'encadrant')")
     public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesTerminees() {

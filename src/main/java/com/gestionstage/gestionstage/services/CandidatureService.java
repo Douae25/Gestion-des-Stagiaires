@@ -19,6 +19,98 @@ import java.util.stream.Collectors;
 
 @Service
 public class CandidatureService {
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> getCandidaturesAvecRapportFinalSansEvaluationByEncadrant(Integer idEncadrant) {
+        List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> result = new java.util.ArrayList<>();
+        List<Candidature> candidatures = candidatureRepository.findAll();
+        for (Candidature c : candidatures) {
+            if (!c.getStatut().name().equalsIgnoreCase("acceptee")) continue;
+            if (c.getEncadrant() == null || !c.getEncadrant().getId().equals(idEncadrant)) continue;
+            // Vérifier qu'il n'y a pas d'évaluation pour ce stagiaire/encadrant
+            boolean hasEvaluation = evaluationRepository.findByStagiaireIdAndEncadrantId(
+                c.getStagiaire().getId_stagiaire(),
+                idEncadrant
+            ).isPresent();
+            if (hasEvaluation) continue;
+            // Vérifier qu'un rapport final existe
+            com.gestionstage.gestionstage.entities.Rapport rapportFinal = rapportRepository.findByCandidatureId(c.getId()).stream()
+                .filter(r -> "Rapport final de stage".equalsIgnoreCase(r.getTitre()))
+                .findFirst().orElse(null);
+            if (rapportFinal == null) continue;
+            // Mapping DTO
+            com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO();
+            dto.setCandidature(toDTO(c));
+            // Stagiaire
+            if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {
+                com.gestionstage.gestionstage.dtos.StagiaireDTO stagiaireDTO = new com.gestionstage.gestionstage.dtos.StagiaireDTO();
+                stagiaireDTO.setId(c.getStagiaire().getId_stagiaire());
+                stagiaireDTO.setNom(c.getStagiaire().getUtilisateur().getNom());
+                stagiaireDTO.setPrenom(c.getStagiaire().getUtilisateur().getPrenom());
+                stagiaireDTO.setEmail(c.getStagiaire().getUtilisateur().getEmail());
+                dto.setStagiaire(stagiaireDTO);
+            }
+            // Offre
+            dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
+            // Rapport final
+            com.gestionstage.gestionstage.dtos.RapportDTO rapportDTO = new com.gestionstage.gestionstage.dtos.RapportDTO();
+            rapportDTO.setId(rapportFinal.getId());
+            rapportDTO.setTitre(rapportFinal.getTitre());
+            rapportDTO.setDateDepot(rapportFinal.getDateDepot());
+            rapportDTO.setDocument(rapportFinal.getDocument());
+            rapportDTO.setIdCandidature(rapportFinal.getCandidature().getId());
+            dto.setRapportFinal(rapportDTO);
+            result.add(dto);
+        }
+        return result;
+    }
+    public com.gestionstage.gestionstage.entities.Encadrant getEncadrantByUtilisateurId(Integer idUtilisateur) {
+        return encadrantRepository.findByUtilisateurIdUtilisateur(idUtilisateur).orElse(null);
+    }
+    public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesAccepteesSansEvaluationByEncadrant(Integer idEncadrant) {
+        List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> result = new java.util.ArrayList<>();
+        List<Candidature> candidatures = candidatureRepository.findAll();
+        for (Candidature c : candidatures) {
+            if (!c.getStatut().name().equalsIgnoreCase("acceptee")) continue;
+            if (c.getEncadrant() == null || !c.getEncadrant().getId().equals(idEncadrant)) continue;
+            // Vérifier qu'il n'y a pas d'évaluation pour ce stagiaire/encadrant
+            boolean hasEvaluation = evaluationRepository.findByStagiaireIdAndEncadrantId(
+                c.getStagiaire().getId_stagiaire(),
+                idEncadrant
+            ).isPresent();
+            if (hasEvaluation) continue;
+            com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO();
+            dto.setCandidature(toDTO(c));
+            dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
+            // Mapping stagiaire
+            if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {
+                com.gestionstage.gestionstage.dtos.StagiaireDTO stagiaireDTO = new com.gestionstage.gestionstage.dtos.StagiaireDTO();
+                stagiaireDTO.setId(c.getStagiaire().getId_stagiaire());
+                stagiaireDTO.setNom(c.getStagiaire().getUtilisateur().getNom());
+                stagiaireDTO.setPrenom(c.getStagiaire().getUtilisateur().getPrenom());
+                stagiaireDTO.setEmail(c.getStagiaire().getUtilisateur().getEmail());
+                dto.setStagiaire(stagiaireDTO);
+            }
+            // Rapports et commentaires
+            dto.setRapports(rapportRepository.findByCandidatureId(c.getId()).stream().map(r -> {
+                com.gestionstage.gestionstage.dtos.RapportDTO rapportDTO = new com.gestionstage.gestionstage.dtos.RapportDTO();
+                rapportDTO.setId(r.getId());
+                rapportDTO.setTitre(r.getTitre());
+                rapportDTO.setDateDepot(r.getDateDepot());
+                rapportDTO.setDocument(r.getDocument());
+                rapportDTO.setIdCandidature(r.getCandidature().getId());
+                // Ajouter les commentaires pour ce rapport
+                rapportDTO.setCommentaires(commentaireRepository.findByRapportId(r.getId()).stream().map(com -> {
+                    com.gestionstage.gestionstage.dtos.CommentaireDTO commentaireDTO = new com.gestionstage.gestionstage.dtos.CommentaireDTO();
+                    commentaireDTO.setId(com.getId());
+                    commentaireDTO.setContenu(com.getContenu());
+                    commentaireDTO.setIdRapport(com.getRapport() != null ? com.getRapport().getId() : null);
+                    return commentaireDTO;
+                }).collect(java.util.stream.Collectors.toList()));
+                return rapportDTO;
+            }).collect(java.util.stream.Collectors.toList()));
+            result.add(dto);
+        }
+        return result;
+    }
     public List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> getCandidaturesTerminees() {
         List<com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO> result = new java.util.ArrayList<>();
         List<Candidature> candidatures = candidatureRepository.findAll();

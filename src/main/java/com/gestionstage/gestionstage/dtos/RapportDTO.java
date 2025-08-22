@@ -5,6 +5,15 @@ import java.time.LocalDate;
 
 @Data
 public class RapportDTO {
+    private java.util.List<com.gestionstage.gestionstage.dtos.CommentaireDTO> commentaires;
+
+    public java.util.List<com.gestionstage.gestionstage.dtos.CommentaireDTO> getCommentaires() {
+        return commentaires;
+    }
+
+    public void setCommentaires(java.util.List<com.gestionstage.gestionstage.dtos.CommentaireDTO> commentaires) {
+        this.commentaires = commentaires;
+    }
     private Integer id;
     private String titre;
     private LocalDate dateDepot;

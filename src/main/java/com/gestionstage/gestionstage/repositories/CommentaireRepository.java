@@ -10,6 +10,7 @@ import java.util.List;
 public interface CommentaireRepository extends JpaRepository<Commentaire, Integer> {
     // Correction : il n'y a pas de champ candidature dans Commentaire, il faut passer par rapport.candidature.id
     List<Commentaire> findByRapport_Candidature_Id(Integer idCandidature);
+    List<Commentaire> findByRapportId(Integer idRapport);
     List<Commentaire> findByRapport_Id(Integer idRapport);
 }
 
