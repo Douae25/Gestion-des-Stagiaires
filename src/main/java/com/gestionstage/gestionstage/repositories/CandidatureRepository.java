@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.List;
 
 public interface CandidatureRepository extends JpaRepository<Candidature, Integer> {
-    Optional<Candidature> findByStagiaireId(Integer idStagiaire);
+    List<Candidature> findByStagiaireId(Integer idStagiaire);
     List<Candidature> findByStatut(Candidature.Statut statut);
     
     @Query("SELECT c FROM Candidature c WHERE c.stagiaire.utilisateur.id = :idUtilisateur AND c.statut = :statut")

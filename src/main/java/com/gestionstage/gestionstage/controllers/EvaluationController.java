@@ -17,7 +17,12 @@ public class EvaluationController {
     @PostMapping
     @PreAuthorize("hasRole('encadrant')")
     @ResponseStatus(HttpStatus.CREATED)
-    public EvaluationDTO create(@RequestBody EvaluationDTO dto) {
-        return evaluationService.createEvaluation(dto);
-    }
+        public EvaluationDTO create(@RequestBody EvaluationDTO dto) {
+            // On suppose que le front envoie id_utilisateur_encadrant et id_utilisateur_stagiaire
+            Integer idEncadrantTechnique = evaluationService.getEncadrantIdByUtilisateurId(dto.getId_utilisateur_encadrant());
+            Integer idStagiaireTechnique = evaluationService.getStagiaireIdByUtilisateurId(dto.getId_utilisateur_stagiaire());
+            dto.setId_encadrant_fk(idEncadrantTechnique);
+            dto.setId_stagiaire(idStagiaireTechnique);
+            return evaluationService.createEvaluation(dto);
+        }
 }

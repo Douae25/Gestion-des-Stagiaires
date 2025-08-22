@@ -528,8 +528,15 @@ public class CandidatureService {
     }
 
     public void notifierAttestationPourRH(Integer idStagiaire) {
-        Candidature candidature = candidatureRepository.findByStagiaireId(idStagiaire)
-                .orElseThrow(() -> new IllegalArgumentException("Candidature introuvable"));
+        List<Candidature> candidatures = candidatureRepository.findByStagiaireId(idStagiaire);
+        if (candidatures == null || candidatures.isEmpty()) {
+            throw new IllegalArgumentException("Aucune candidature trouvée pour ce stagiaire");
+        }
+        // Choisir la candidature à notifier (par exemple, la plus récente, ou celle acceptée)
+        Candidature candidature = candidatures.stream()
+            .filter(c -> c.getStatut() == Candidature.Statut.acceptee)
+            .findFirst()
+            .orElse(candidatures.get(0)); // fallback sur la première si aucune acceptée
         String emailRh = candidature.getOffre().getRh().getEmail();
         emailService.envoyerEmailHtml(emailRh, "Attestation de stage",
                 "<p>Merci de déposer l'attestation de stage.</p>");

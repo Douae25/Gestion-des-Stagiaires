@@ -8,6 +8,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EvaluationService {
+    // Conversion id utilisateur -> id technique encadrant
+    public Integer getEncadrantIdByUtilisateurId(Integer idUtilisateur) {
+        Encadrant encadrant = encadrantRepository.findByUtilisateurIdUtilisateur(idUtilisateur)
+            .orElseThrow(() -> new IllegalArgumentException("Encadrant introuvable avec id utilisateur : " + idUtilisateur));
+        return encadrant.getId();
+    }
+
+    // Conversion id utilisateur -> id technique stagiaire
+    public Integer getStagiaireIdByUtilisateurId(Integer idUtilisateur) {
+        Stagiaire stagiaire = stagiaireRepository.findByUtilisateurIdUtilisateur(idUtilisateur)
+            .orElseThrow(() -> new IllegalArgumentException("Stagiaire introuvable avec id utilisateur : " + idUtilisateur));
+        return stagiaire.getId();
+    }
 
     @Autowired
     private EvaluationRepository evaluationRepository;
