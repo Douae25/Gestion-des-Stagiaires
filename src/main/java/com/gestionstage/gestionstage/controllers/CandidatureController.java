@@ -20,6 +20,13 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/candidatures")
 public class CandidatureController {
+    @GetMapping("/acceptees/evaluees/{idUtilisateur}")
+    @PreAuthorize("hasRole('encadrant')")
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> getCandidaturesAccepteesAvecEvaluationByEncadrant(@PathVariable Integer idUtilisateur) {
+        com.gestionstage.gestionstage.entities.Encadrant encadrant = candidatureService.getEncadrantByUtilisateurId(idUtilisateur);
+        if (encadrant == null) throw new IllegalArgumentException("Encadrant introuvable pour cet utilisateur");
+        return candidatureService.getCandidaturesAccepteesAvecEvaluationByEncadrant(encadrant.getId());
+    }
     @GetMapping("/acceptees/rapport-final/{idUtilisateur}")
     @PreAuthorize("hasRole('encadrant')")
     public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> getCandidaturesAvecRapportFinalSansEvaluationByEncadrant(@PathVariable Integer idUtilisateur) {

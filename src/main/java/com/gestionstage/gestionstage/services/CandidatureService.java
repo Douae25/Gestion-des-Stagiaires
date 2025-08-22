@@ -19,6 +19,59 @@ import java.util.stream.Collectors;
 
 @Service
 public class CandidatureService {
+    public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> getCandidaturesAccepteesAvecEvaluationByEncadrant(Integer idEncadrant) {
+        List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> result = new java.util.ArrayList<>();
+        List<Candidature> candidatures = candidatureRepository.findAll();
+        for (Candidature c : candidatures) {
+            if (!c.getStatut().name().equalsIgnoreCase("acceptee")) continue;
+            if (c.getEncadrant() == null || !c.getEncadrant().getId().equals(idEncadrant)) continue;
+            // Vérifier qu'une évaluation existe pour ce stagiaire/encadrant
+            java.util.Optional<com.gestionstage.gestionstage.entities.Evaluation> evalOpt = evaluationRepository.findByStagiaireIdAndEncadrantId(
+                c.getStagiaire().getId_stagiaire(),
+                idEncadrant
+            );
+            if (!evalOpt.isPresent()) continue;
+            // Vérifier qu'un rapport final existe
+            com.gestionstage.gestionstage.entities.Rapport rapportFinal = rapportRepository.findByCandidatureId(c.getId()).stream()
+                .filter(r -> "Rapport final de stage".equalsIgnoreCase(r.getTitre()))
+                .findFirst().orElse(null);
+            if (rapportFinal == null) continue;
+            // Mapping DTO
+            com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO();
+            dto.setCandidature(toDTO(c));
+            // Stagiaire
+            if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {
+                com.gestionstage.gestionstage.dtos.StagiaireDTO stagiaireDTO = new com.gestionstage.gestionstage.dtos.StagiaireDTO();
+                stagiaireDTO.setId(c.getStagiaire().getId_stagiaire());
+                stagiaireDTO.setNom(c.getStagiaire().getUtilisateur().getNom());
+                stagiaireDTO.setPrenom(c.getStagiaire().getUtilisateur().getPrenom());
+                stagiaireDTO.setEmail(c.getStagiaire().getUtilisateur().getEmail());
+                dto.setStagiaire(stagiaireDTO);
+            }
+            // Offre
+            dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
+            // Rapport final
+            com.gestionstage.gestionstage.dtos.RapportDTO rapportDTO = new com.gestionstage.gestionstage.dtos.RapportDTO();
+            rapportDTO.setId(rapportFinal.getId());
+            rapportDTO.setTitre(rapportFinal.getTitre());
+            rapportDTO.setDateDepot(rapportFinal.getDateDepot());
+            rapportDTO.setDocument(rapportFinal.getDocument());
+            rapportDTO.setIdCandidature(rapportFinal.getCandidature().getId());
+            dto.setRapportFinal(rapportDTO);
+            // Evaluation
+            com.gestionstage.gestionstage.entities.Evaluation evaluation = evalOpt.get();
+            com.gestionstage.gestionstage.dtos.EvaluationDTO evalDTO = new com.gestionstage.gestionstage.dtos.EvaluationDTO();
+            evalDTO.setId(evaluation.getId());
+            evalDTO.setNote(evaluation.getNote());
+            evalDTO.setCommentaire(evaluation.getCommentaire());
+            evalDTO.setDateEvaluation(evaluation.getDate_evaluation());
+            evalDTO.setId_stagiaire(evaluation.getStagiaire() != null ? evaluation.getStagiaire().getId_stagiaire() : null);
+            evalDTO.setId_encadrant(evaluation.getEncadrant() != null ? evaluation.getEncadrant().getId() : null);
+            dto.setEvaluation(evalDTO);
+            result.add(dto);
+        }
+        return result;
+    }
     public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> getCandidaturesAvecRapportFinalSansEvaluationByEncadrant(Integer idEncadrant) {
         List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalDTO> result = new java.util.ArrayList<>();
         List<Candidature> candidatures = candidatureRepository.findAll();
