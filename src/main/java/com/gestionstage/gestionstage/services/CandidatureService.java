@@ -25,32 +25,44 @@ public class CandidatureService {
         for (Candidature c : candidatures) {
             if (!c.getStatut().name().equalsIgnoreCase("acceptee")) continue;
             if (c.getEncadrant() == null || !c.getEncadrant().getId().equals(idEncadrant)) continue;
-            // Vérifier qu'une évaluation existe pour ce stagiaire/encadrant
             java.util.Optional<com.gestionstage.gestionstage.entities.Evaluation> evalOpt = evaluationRepository.findByStagiaireIdAndEncadrantId(
                 c.getStagiaire().getId_stagiaire(),
                 idEncadrant
             );
             if (!evalOpt.isPresent()) continue;
-            // Vérifier qu'un rapport final existe
             com.gestionstage.gestionstage.entities.Rapport rapportFinal = rapportRepository.findByCandidatureId(c.getId()).stream()
                 .filter(r -> "Rapport final de stage".equalsIgnoreCase(r.getTitre()))
                 .findFirst().orElse(null);
             if (rapportFinal == null) continue;
-            // Mapping DTO
             com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO();
-            dto.setCandidature(toDTO(c));
-            // Stagiaire
+            // Candidature principale (sans sous-DTO)
+            com.gestionstage.gestionstage.dtos.CandidatureDTO candidatureDTO = new com.gestionstage.gestionstage.dtos.CandidatureDTO();
+            candidatureDTO.setId(c.getId());
+            candidatureDTO.setId_stagiaire(c.getStagiaire().getId_stagiaire());
+            candidatureDTO.setId_offre(c.getOffre().getId());
+            candidatureDTO.setStatut(c.getStatut().name());
+            candidatureDTO.setDate_soumission(c.getDate_soumission());
+            candidatureDTO.setDate_acceptation(c.getDate_acceptation());
+            candidatureDTO.setLettre_motivation(c.getLettre_motivation());
+            candidatureDTO.setCv(c.getCv());
+            candidatureDTO.setConvention_stage(c.getConvention_stage());
+            candidatureDTO.setConvention_signee(c.getConvention_signee());
+            candidatureDTO.setAttestation(c.getAttestation());
+            candidatureDTO.setId_encadrant(c.getEncadrant() != null ? c.getEncadrant().getId() : null);
+            dto.setCandidature(candidatureDTO);
+            // Stagiaire unique
             if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {
                 com.gestionstage.gestionstage.dtos.StagiaireDTO stagiaireDTO = new com.gestionstage.gestionstage.dtos.StagiaireDTO();
                 stagiaireDTO.setId(c.getStagiaire().getId_stagiaire());
                 stagiaireDTO.setNom(c.getStagiaire().getUtilisateur().getNom());
                 stagiaireDTO.setPrenom(c.getStagiaire().getUtilisateur().getPrenom());
                 stagiaireDTO.setEmail(c.getStagiaire().getUtilisateur().getEmail());
+                stagiaireDTO.setNumero_telephone(c.getStagiaire().getUtilisateur().getNumero_telephone());
                 dto.setStagiaire(stagiaireDTO);
             }
-            // Offre
+            // Offre unique
             dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
-            // Rapport final
+            // Rapport final unique
             com.gestionstage.gestionstage.dtos.RapportDTO rapportDTO = new com.gestionstage.gestionstage.dtos.RapportDTO();
             rapportDTO.setId(rapportFinal.getId());
             rapportDTO.setTitre(rapportFinal.getTitre());
@@ -58,7 +70,7 @@ public class CandidatureService {
             rapportDTO.setDocument(rapportFinal.getDocument());
             rapportDTO.setIdCandidature(rapportFinal.getCandidature().getId());
             dto.setRapportFinal(rapportDTO);
-            // Evaluation
+            // Evaluation unique
             com.gestionstage.gestionstage.entities.Evaluation evaluation = evalOpt.get();
             com.gestionstage.gestionstage.dtos.EvaluationDTO evalDTO = new com.gestionstage.gestionstage.dtos.EvaluationDTO();
             evalDTO.setId(evaluation.getId());
@@ -131,7 +143,13 @@ public class CandidatureService {
             ).isPresent();
             if (hasEvaluation) continue;
             com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO dto = new com.gestionstage.gestionstage.dtos.CandidatureEnCoursDTO();
-            dto.setCandidature(toDTO(c));
+            com.gestionstage.gestionstage.dtos.CandidatureDTO candidatureDTO = toDTO(c);
+            candidatureDTO.setCv(null);
+            candidatureDTO.setLettre_motivation(null);
+            candidatureDTO.setConvention_stage(null);
+            candidatureDTO.setConvention_signee(null);
+            candidatureDTO.setAttestation(null);
+            dto.setCandidature(candidatureDTO);
             dto.setOffre(c.getOffre() != null ? offreStageService.toDTO(c.getOffre()) : null);
             // Mapping stagiaire
             if (c.getStagiaire() != null && c.getStagiaire().getUtilisateur() != null) {

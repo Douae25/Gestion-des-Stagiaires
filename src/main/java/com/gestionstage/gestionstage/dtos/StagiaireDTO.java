@@ -11,4 +11,5 @@ public class StagiaireDTO {
     private Integer id_stagiaire;
     private String niveau_etude;
     private String etablissement;
+    private String numero_telephone;
 }
