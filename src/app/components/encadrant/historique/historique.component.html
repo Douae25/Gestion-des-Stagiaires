@@ -23,52 +23,64 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let stage of historiques" class="table-row">
-          <td class="stage-cell">
-            <div class="stage-info">
-              <strong>{{stage.titre}}</strong>
-            </div>
-          </td>
-          <td class="stagiaire-cell">
-            <div class="stagiaire-info">
-              <span class="material-icons">account_circle</span>
-              <div>
-                <strong>{{stage.nom}} {{stage.prenom}}</strong>
+        <ng-container *ngIf="historiques.length > 0; else noHistorique">
+          <tr *ngFor="let stage of historiques" class="table-row">
+            <td class="stage-cell">
+              <div class="stage-info">
+                <strong>{{stage.titre}}</strong>
               </div>
-            </div>
-          </td>
-          <td class="email-cell">
-            <div class="email-info">
-              <span class="material-icons">email</span>
-              {{stage.email}}
-            </div>
-          </td>
-          <td class="phone-cell">
-            <div class="phone-info">
-              <span class="material-icons">call</span>
-              {{stage.telephone}}
-            </div>
-          </td>
-          <td class="rapport-cell">
-            <button class="download-btn" (click)="telechargerRapport(stage)">
-              <span class="material-icons">download</span>
-              Télécharger
-            </button>
-          </td>
-          <td class="evaluation-cell">
-            <div class="note-display">
-              <ng-container *ngFor="let star of [1,2,3,4,5]">
-                <span class="material-icons" [ngClass]="{'star-filled': stage.note >= star, 'star-empty': stage.note < star}">
-                  {{ stage.note >= star ? 'star' : 'star_border' }}
-                </span>
-              </ng-container>
-            </div>
-          </td>
-          <td class="remarque-cell">
-            <span *ngIf="stage.remarque && stage.remarque.length <= 30">{{stage.remarque}}</span>
-            <button *ngIf="stage.remarque && stage.remarque.length > 30" class="btn-accent" (click)="ouvrirModalRemarque(stage)">Voir plus</button>
-          </td>
-        </tr>
+            </td>
+            <td class="stagiaire-cell">
+              <div class="stagiaire-info">
+                <span class="material-icons">account_circle</span>
+                <div>
+                  <strong>{{stage.nom}} {{stage.prenom}}</strong>
+                </div>
+              </div>
+            </td>
+            <td class="email-cell">
+              <div class="email-info">
+                <span class="material-icons">email</span>
+                {{stage.email}}
+              </div>
+            </td>
+            <td class="phone-cell">
+              <div class="phone-info">
+                <span class="material-icons">call</span>
+                {{stage.telephone}}
+              </div>
+            </td>
+            <td class="rapport-cell">
+              <button class="download-btn" (click)="telechargerRapport(stage)">
+                <span class="material-icons">download</span>
+                Télécharger
+              </button>
+            </td>
+            <td class="evaluation-cell">
+              <div class="note-display">
+                <ng-container *ngFor="let star of [1,2,3,4,5]">
+                  <span class="material-icons" [ngClass]="{'star-filled': stage.note >= star, 'star-empty': stage.note < star}">
+                    {{ stage.note >= star ? 'star' : 'star_border' }}
+                  </span>
+                </ng-container>
+              </div>
+            </td>
+            <td class="remarque-cell">
+              <span *ngIf="stage.remarque && stage.remarque.length <= 30">{{stage.remarque}}</span>
+              <button *ngIf="stage.remarque && stage.remarque.length > 30" class="btn-accent" (click)="ouvrirModalRemarque(stage)">Voir plus</button>
+            </td>
+          </tr>
+        </ng-container>
+        <ng-template #noHistorique>
+          <tr>
+            <td colspan="7">
+              <div class="no-historique-message">
+                <span class="material-icons">info</span>
+                Aucun historique de stage à afficher.
+              </div>
+            </td>
+          </tr>
+        </ng-template>
       </tbody>
 
   <!-- Modal Remarque déplacée après la balise </table> -->

@@ -27,10 +27,13 @@
       <div *ngIf="editMode" class="form-group">
         <label for="currentPassword">Mot de passe actuel</label>
         <input id="currentPassword" type="password" formControlName="currentPassword" required />
+        <div class="error-message" *ngIf="profileForm.get('currentPassword')?.invalid && profileForm.get('currentPassword')?.touched">
+          Le mot de passe est obligatoire
+        </div>
       </div>
       <div class="form-actions">
         <button type="button" class="btn btn-secondary" *ngIf="!editMode" (click)="editMode = true">Modifier mes informations</button>
-        <button type="submit" class="btn btn-success" *ngIf="editMode">Enregistrer</button>
+        <button type="submit" class="btn btn-success" *ngIf="editMode" (click)="saveProfile()">Enregistrer</button>
         <button type="button" class="btn btn-neutral" *ngIf="editMode" (click)="cancelEdit()">Annuler</button>
       </div>
     </form>
@@ -57,7 +60,7 @@
           <input id="confirmPassword" type="password" formControlName="confirmPassword" required />
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn btn-success">Mettre à jour le mot de passe</button>
+          <button type="button" class="btn btn-success" (click)="changePassword()">Mettre à jour le mot de passe</button>
           <button type="button" class="btn btn-neutral" (click)="showPasswordForm = false">Annuler</button>
         </div>
       </form>

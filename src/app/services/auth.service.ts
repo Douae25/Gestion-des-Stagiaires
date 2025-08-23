@@ -1,3 +1,4 @@
+// ...existing code...
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -10,6 +11,7 @@ export interface User {
   nom?: string;
   prenom?: string;
   numero_telephone?: string;
+  departement?: string;
   role: 'stagiaire' | 'rh' | 'admin' | 'encadrant';
   token?: string;
 }
@@ -40,6 +42,13 @@ export interface AuthResponse {
   providedIn: 'root'
 })
 export class AuthService {
+  // ...existing code...
+
+  // Mettre à jour le profil utilisateur via PUT /utilisateurs/{id}
+  updateUserProfile(id: number, data: any): Observable<any> {
+    const url = `/api/utilisateurs/${id}`;
+    return this.http.put<any>(url, data, { headers: this.getAuthHeaders() });
+  }
   private readonly API_URL = '/api/auth'; 
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'user_info';
@@ -313,13 +322,13 @@ export class AuthService {
           const userWithProfile: User = {
             ...currentUser,
             nom: response.nom || currentUser.nom,
-            prenom: response.prenom || currentUser.prenom
+            prenom: response.prenom || currentUser.prenom,
+            numero_telephone: response.numero_telephone || currentUser.numero_telephone,
+            departement: response.encadrant_info?.departement || (currentUser as any).departement
           };
-          
           // Mettre à jour les informations stockées
           localStorage.setItem(this.USER_KEY, JSON.stringify(userWithProfile));
           this.currentUserSubject.next(userWithProfile);
-          
           console.log('✅ Profil utilisateur mis à jour:', userWithProfile);
           return userWithProfile;
         }),

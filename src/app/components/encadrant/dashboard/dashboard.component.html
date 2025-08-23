@@ -1,13 +1,13 @@
 <div class="dashboard-container">
 
   <!-- Dashboard Header -->
-  <div class="dashboard-header">
-    <div class="header-text">
-      <h1 class="dashboard-title">Bienvenue, {{ encadrantName }}</h1>
-      <p class="dashboard-subtitle">Voici un aperçu de vos activités et suivis de stagiaires</p>
-    </div>
-    <div class="header-avatar">
-      <span class="material-icons avatar-icon">account_circle</span>
+  <div class="dashboard-header page-header">
+    <h1>
+      <span class="material-icons">account_circle</span>
+      Bienvenue, {{ encadrantName }}
+    </h1>
+    <div style="display: flex; justify-content: center;">
+      <p class="page-description" style="margin-top: 0;">Voici un aperçu de vos activités et suivis de stagiaires</p>
     </div>
   </div>
 
@@ -42,16 +42,24 @@
       <button class="btn btn-secondary" (click)="goToStagesEnCours()">Voir tous</button>
     </div>
     <div class="ongoing-stages">
-      <div *ngFor="let stage of derniersStagesEnCours" class="stage-card fade-in">
-        <div class="stage-title">{{ stage.titre }}</div>
-        <div class="stage-info">
-          <span class="material-icons">person</span> {{ stage.stagiaire }}
+      <ng-container *ngIf="derniersStagesEnCours.length > 0; else noStagesEnCours">
+        <div *ngFor="let stage of derniersStagesEnCours" class="stage-card fade-in">
+          <div class="stage-title">{{ stage.titre }}</div>
+          <div class="stage-info">
+            <span class="material-icons">person</span> {{ stage.stagiaire }}
+          </div>
+          <div class="stage-info">
+            <span class="material-icons">schedule</span> {{ stage.dureeRestante }} restantes
+          </div>
+          <button class="btn btn-accent" (click)="voirDetailsStage(stage)">Voir détails</button>
         </div>
-        <div class="stage-info">
-          <span class="material-icons">schedule</span> {{ stage.dureeRestante }} restantes
+      </ng-container>
+      <ng-template #noStagesEnCours>
+        <div class="no-stages-message">
+          <span class="material-icons">info</span>
+          Aucun stage en cours actuellement.
         </div>
-        <button class="btn btn-accent" (click)="voirDetailsStage(stage)">Voir détails</button>
-      </div>
+      </ng-template>
     </div>
   </div>
 
@@ -61,24 +69,32 @@
       <h2>Évaluations en attente</h2>
     </div>
     <div class="evaluations-table">
-      <table>
-        <thead>
-          <tr>
-            <th>Stagiaire</th>
-            <th>Stage</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let eval of evaluationsEnAttente">
-            <td>{{ eval.stagiaire }}</td>
-            <td>{{ eval.stage }}</td>
-            <td>
-              <button class="btn btn-success" (click)="ouvrirModalEvaluation(eval)">Évaluer maintenant</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ng-container *ngIf="evaluationsEnAttente.length > 0; else noEvaluations">
+        <table>
+          <thead>
+            <tr>
+              <th>Stagiaire</th>
+              <th>Stage</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let eval of evaluationsEnAttente">
+              <td>{{ eval.stagiaire }}</td>
+              <td>{{ eval.stage }}</td>
+              <td>
+                <button class="btn btn-success" (click)="ouvrirModalEvaluation(eval)">Évaluer maintenant</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
+      <ng-template #noEvaluations>
+        <div class="no-evaluations-message">
+          <span class="material-icons">info</span>
+          Aucune évaluation en attente actuellement.
+        </div>
+      </ng-template>
     </div>
   </div>
 

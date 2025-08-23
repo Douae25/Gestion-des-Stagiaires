@@ -1,3 +1,178 @@
+.page-header {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 30px 20px;
+  background:linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  border-radius: 20px;
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(30,58,138,0.10);
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    .material-icons {
+      font-size: 2.2rem;
+    }
+  }
+}
+.page-description {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  font-weight: 300;
+  margin: 0;
+}
+.dashboard-header {
+  background: #2563eb;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(30,58,138,0.10);
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.dashboard-header .dashboard-title {
+  color: #fff;
+}
+.dashboard-header .dashboard-subtitle {
+  color: #e0e7ff;
+}
+.dashboard-header .avatar-icon {
+  font-size: 3.2rem;
+  color: #fff;
+}
+// Tableau Évaluations en attente
+.evaluations-table {
+  margin-top: 18px;
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(30,58,138,0.08);
+    overflow: hidden;
+  }
+  thead {
+  background: #1a2236; /* Couleur foncée */
+    th {
+      color: #9a3f3f;
+      font-weight: 700;
+      font-size: 1.08rem;
+      padding: 14px 18px;
+      text-align: center;
+      border: none;
+      letter-spacing: 0.5px;
+    }
+    th:first-child {
+      border-top-left-radius: 14px;
+    }
+    th:last-child {
+      border-top-right-radius: 14px;
+    }
+  }
+  tbody {
+    tr {
+      transition: background 0.18s;
+      &:hover {
+       
+      }
+    }
+    td {
+      padding: 13px 16px;
+      text-align: center;
+      font-size: 1rem;
+      color: #1e293b;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+    td:last-child {
+      min-width: 140px;
+    }
+  }
+  .btn-success {
+    padding: 7px 18px;
+    font-size: 0.98rem;
+    border-radius: 8px;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(16,185,129,0.08);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.18s;
+  }
+  .btn-success:hover {
+    background: linear-gradient(90deg, #059669 0%, #2563eb 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .evaluations-table table {
+    font-size: 0.92rem;
+  }
+  .evaluations-table thead th, .evaluations-table tbody td {
+    padding: 10px 6px;
+  }
+}
+// Message aucune évaluation en attente
+.no-evaluations-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  color: #1e3a8a;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 24px 18px;
+  margin: 28px auto 12px auto;
+  box-shadow: 0 4px 18px rgba(59,130,246,0.11), 0 1.5px 8px rgba(30,58,138,0.09);
+  max-width: 400px;
+  animation: fadeInMsg 0.7s cubic-bezier(.4,0,.2,1);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.no-evaluations-message .material-icons {
+  color: #3b82f6;
+  font-size: 2.1rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 6px #3b82f6aa);
+  opacity: 0.92;
+}
+// Message aucun stage en cours
+.no-stages-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  color: #1e3a8a;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 24px 18px;
+  margin: 28px auto 12px auto;
+  box-shadow: 0 4px 18px rgba(59,130,246,0.11), 0 1.5px 8px rgba(30,58,138,0.09);
+  max-width: 400px;
+  animation: fadeInMsg 0.7s cubic-bezier(.4,0,.2,1);
+  letter-spacing: 0.5px;
+}
+.no-stages-message .material-icons {
+  color: #3b82f6;
+  font-size: 2.1rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 6px #3b82f6aa);
+  opacity: 0.92;
+}
 // Palette
 $primary-blue: #1e3a8a;
 $secondary-blue: #3b82f6;

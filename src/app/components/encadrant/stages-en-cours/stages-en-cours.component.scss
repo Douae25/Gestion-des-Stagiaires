@@ -1,3 +1,29 @@
+// Message aucun stage en cours
+.no-stages-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  color: #1e3a8a;
+  font-size: 1.13rem;
+  font-weight: 700;
+  border-radius: 14px;
+  padding: 24px 18px;
+  margin: 28px auto 12px auto;
+  box-shadow: 0 4px 18px rgba(59,130,246,0.11), 0 1.5px 8px rgba(30,58,138,0.09);
+  max-width: 400px;
+  animation: fadeInMsg 0.7s cubic-bezier(.4,0,.2,1);
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+.no-stages-message .material-icons {
+  color: #3b82f6;
+  font-size: 2.1rem;
+  margin-right: 10px;
+  filter: drop-shadow(0 2px 6px #3b82f6aa);
+  opacity: 0.92;
+}
 $primary-blue: #1e3a8a;
 $secondary-blue: #3b82f6;
 $accent-purple: #8b5cf6;

@@ -7,39 +7,46 @@
     <p class="page-description">Retrouvez ici l’ensemble des stages que vous encadrez actuellement</p>
   </div>
   <div class="stages-list">
-    <div class="stage-card" *ngFor="let stage of stages">
-
-      <div class="stage-card-body">
-        <div class="stage-title-row">
-          <h2 class="stage-title">{{stage.titre}}</h2>
-          <span class="stage-duration">
-            <span class="material-icons">hourglass_bottom</span>
-            {{stage.dureeRestante}}
-          </span>
+    <ng-container *ngIf="stages.length > 0; else noStages">
+      <div class="stage-card" *ngFor="let stage of stages">
+        <div class="stage-card-body">
+          <div class="stage-title-row">
+            <h2 class="stage-title">{{stage.titre}}</h2>
+            <span class="stage-duration">
+              <span class="material-icons">hourglass_bottom</span>
+              {{stage.dureeRestante}}
+            </span>
+          </div>
+          <div class="stage-created-by">Créé par <strong>{{stage.createur}}</strong></div>
+          <p class="stage-description">{{stage.description}}</p>
+          <div class="stage-stagiaire">
+            <span class="stagiaire-label">Stagiaire :</span>
+            <span class="stagiaire-nom">{{stage.stagiaire.prenom}} {{stage.stagiaire.nom}}</span>
+          </div>
+          <div class="stage-dates">
+            <span class="date-item">
+              <span class="material-icons">calendar_today</span>
+              <span class="date-label">Début</span><span class="date-sep"> :</span>
+              <span class="date-value">{{stage.dateDebut}}</span>
+            </span>
+            <span class="date-item">
+              <span class="material-icons">event</span>
+              <span class="date-label">Fin</span><span class="date-sep"> :</span>
+              <span class="date-value">{{stage.dateFin}}</span>
+            </span>
+          </div>
         </div>
-        <div class="stage-created-by">Créé par <strong>{{stage.createur}}</strong></div>
-        <p class="stage-description">{{stage.description}}</p>
-        <div class="stage-stagiaire">
-          <span class="stagiaire-label">Stagiaire :</span>
-          <span class="stagiaire-nom">{{stage.stagiaire.prenom}} {{stage.stagiaire.nom}}</span>
-        </div>
-        <div class="stage-dates">
-<span class="date-item">
-  <span class="material-icons">calendar_today</span>
-  <span class="date-label">Début</span><span class="date-sep"> :</span>
-  <span class="date-value">{{stage.dateDebut}}</span>
-</span>
-          <span class="date-item">
-            <span class="material-icons">event</span>
-            <span class="date-label">Fin</span><span class="date-sep"> :</span>
-            <span class="date-value">{{stage.dateFin}}</span>
-          </span>
+        <div class="stage-card-footer">
+          <button class="btn-primary" (click)="openDetailsModal(stage)">Voir détails</button>
         </div>
       </div>
-      <div class="stage-card-footer">
-        <button class="btn-primary" (click)="openDetailsModal(stage)">Voir détails</button>
+    </ng-container>
+    <ng-template #noStages>
+      <div class="no-stages-message">
+        <span class="material-icons">info</span>
+        Aucun stage en cours à afficher.
       </div>
-    </div>
+    </ng-template>
   </div>
 
   <!-- Modal Détails du stage -->

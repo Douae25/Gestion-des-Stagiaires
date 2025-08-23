@@ -23,7 +23,9 @@ export class EvaluationComponent {
   constructor(
     private candidatureService: CandidatureService,
     private authService: AuthService
-  ) {}
+  ) {
+    this.stagiaires = [];
+  }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
