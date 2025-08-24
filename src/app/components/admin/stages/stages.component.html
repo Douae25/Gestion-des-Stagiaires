@@ -1,0 +1,51 @@
+<div class="admin-stages">
+  <h2 class="stage-title">Gestion des stages</h2>
+  <div class="stage-table-container">
+  <table class="stage-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>RH créateur</th>
+          <th>Date début</th>
+          <th>Date fin</th>
+          <th>Statut</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let stage of stages">
+          <td>{{stage.titre}}</td>
+          <td>{{stage.rh_info?.nom}} {{stage.rh_info?.prenom}}</td>
+          <td>{{stage.date_debut | date:'dd/MM/yyyy'}}</td>
+          <td>{{stage.date_fin | date:'dd/MM/yyyy'}}</td>
+          <td>
+            <span 
+              class="status"
+              [ngClass]="{
+                'active': stage.statut === 'en_cours',
+                'warning': stage.statut === 'fermee',
+                'inactive': stage.statut === 'archivee'
+              }"
+            >
+              {{stage.statut}}
+            </span>
+          </td>
+          <td>
+            <button 
+              class="action-btn"
+              [class.deactivate]="stage.statut === 'archivee'"
+              [class.activate]="stage.statut === 'archivee'"
+              (click)="toggleStage(stage)"
+              *ngIf="stage.statut === 'en_cours' || stage.statut === 'fermee'"
+            >Archiver</button>
+            <button 
+              class="action-btn activate"
+              (click)="toggleStage(stage)"
+              *ngIf="stage.statut === 'archivee'"
+            >Activer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { EncadrantNavbarComponent } from '../encadrant-navbar.component';
 import { AuthService } from '../../../services/auth.service';
 import { CandidatureService } from '../../../services/candidature.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, EncadrantNavbarComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  // Copie des données pour filtrage
+  allStagesEnCours: any[] = [];
+  allEvaluationsEnAttente: any[] = [];
+  allTimelineActions: any[] = [];
   encadrantName = '';
   nbStagiaires = 0;
   nbStagesEnCours = 0;
@@ -45,11 +50,12 @@ export class DashboardComponent implements OnInit {
       next: (stages: any[]) => {
         const enCours = stages.filter(s => s.statut === 'en_cours');
         this.nbStagesEnCours = enCours.length;
-        this.derniersStagesEnCours = enCours.slice(0, 3).map(s => ({
+        this.allStagesEnCours = enCours.map(s => ({
           titre: s.titre,
           stagiaire: s.nom + ' ' + s.prenom,
           dureeRestante: this.getDureeRestante(s.date_fin)
         }));
+        this.derniersStagesEnCours = [...this.allStagesEnCours].slice(0, 3);
       }
     });
 
@@ -65,26 +71,42 @@ export class DashboardComponent implements OnInit {
       next: (rapports: any[]) => {
         const enAttente = rapports.filter(r => !r.evaluation);
         this.nbEvaluationsEnAttente = enAttente.length;
-        this.evaluationsEnAttente = enAttente.map(r => ({
+        this.allEvaluationsEnAttente = enAttente.map(r => ({
           stagiaire: r.stagiaire.nom + ' ' + r.stagiaire.prenom,
           stage: r.offre_info?.titre || r.offre?.titre || ''
         }));
+        this.evaluationsEnAttente = [...this.allEvaluationsEnAttente];
       }
     });
 
     // Timeline (historique)
     this.candidatureService.getCandidaturesEvaluees(user.id).subscribe({
       next: (historiques: any[]) => {
-        this.timelineActions = historiques.slice(0, 5).map(h => ({
+        this.allTimelineActions = historiques.map(h => ({
           icon: 'star',
           type: 'evaluation',
           text: `Évaluation pour ${h.stagiaire?.nom || h.nom || ''} ${h.stagiaire?.prenom || h.prenom || ''} (${h.offre_info?.titre || h.titre || h.offre?.titre || ''})`,
           date: h.dateEvaluation || h.date_fin || ''
         }));
+        this.timelineActions = [...this.allTimelineActions].slice(0, 5);
       }
     });
   }
 
+  onSearch(query: string) {
+    const q = query.trim().toLowerCase();
+    // Filtrer stages en cours
+    this.derniersStagesEnCours = this.allStagesEnCours
+      .filter(s => s.titre.toLowerCase().includes(q) || s.stagiaire.toLowerCase().includes(q))
+      .slice(0, 3);
+    // Filtrer évaluations en attente
+    this.evaluationsEnAttente = this.allEvaluationsEnAttente
+      .filter(e => e.stage.toLowerCase().includes(q) || e.stagiaire.toLowerCase().includes(q));
+    // Filtrer historique
+    this.timelineActions = this.allTimelineActions
+      .filter(a => a.text.toLowerCase().includes(q) || a.date.toLowerCase().includes(q))
+      .slice(0, 5);
+  }
   getDureeRestante(dateFin: string): string {
     if (!dateFin) return '';
     const fin = new Date(dateFin);

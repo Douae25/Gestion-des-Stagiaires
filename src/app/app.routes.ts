@@ -128,12 +128,12 @@ export const routes: Routes = [
       }
     ]
   },
-
   // Routes pour les administrateurs
   {
     path: 'admin',
     canActivate: [RoleGuard],
     data: { role: 'admin' },
+    loadComponent: () => import('./components/admin/admin.component').then(m => m.AdminComponent),
     children: [
       {
         path: '',
@@ -143,9 +143,18 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./components/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./components/admin/users/users.component').then(m => m.AdminUsersComponent)
+      },
+      {
+        path: 'stages',
+        loadComponent: () => import('./components/admin/stages/stages.component').then(m => m.AdminStagesComponent)
       }
     ]
   },
+
 
  // Routes pour les encadrants
   {

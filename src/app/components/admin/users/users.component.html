@@ -1,0 +1,144 @@
+<div class="admin-users">
+  <div class="admin-header">
+    <button class="add-user-btn" (click)="showAddUserModal = true">
+      <i class="material-icons">person_add</i> Ajouter un utilisateur
+    </button>
+  </div>
+
+  <!-- Modale ajout utilisateur -->
+  <div class="modal-backdrop" *ngIf="showAddUserModal">
+    <div class="modal">
+      <h3>Créer un utilisateur</h3>
+      <form (ngSubmit)="submitAddUser()" #addUserForm="ngForm">
+        <div class="form-row">
+          <label for="nom">Nom <span style="color:#ef4444">*</span></label>
+          <input type="text" id="nom" name="nom" [(ngModel)]="newUser.nom" required placeholder="Nom" />
+        </div>
+        <div class="form-row">
+          <label for="prenom">Prénom <span style="color:#ef4444">*</span></label>
+          <input type="text" id="prenom" name="prenom" [(ngModel)]="newUser.prenom" required placeholder="Prénom" />
+        </div>
+        <div class="form-row">
+          <label for="email">Email <span style="color:#ef4444">*</span></label>
+          <input type="email" id="email" name="email" [(ngModel)]="newUser.email" required placeholder="Email" />
+        </div>
+        <div class="form-row">
+          <label for="numero_telephone">Numéro de téléphone <span style="color:#ef4444">*</span></label>
+          <input type="text" id="numero_telephone" name="numero_telephone" [(ngModel)]="newUser.numero_telephone" required placeholder="Numéro de téléphone" />
+        </div>
+        <div class="form-row">
+          <label for="mot_de_passe">Mot de passe <span style="color:#ef4444">*</span></label>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input [type]="hidePassword ? 'password' : 'text'" id="mot_de_passe" name="mot_de_passe" [(ngModel)]="newUser.mot_de_passe" required placeholder="Minimum 8 caractères" style="padding-right:2.5rem;" />
+            <button type="button" (click)="hidePassword = !hidePassword" style="position:absolute;right:0.5rem;background:none;border:none;cursor:pointer;">
+              <i class="material-icons">{{ hidePassword ? 'visibility_off' : 'visibility' }}</i>
+            </button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="confirm_mot_de_passe">Confirmer le mot de passe <span style="color:#ef4444">*</span></label>
+          <div style="position:relative;display:flex;align-items:center;">
+            <input [type]="hideConfirmPassword ? 'password' : 'text'" id="confirm_mot_de_passe" name="confirm_mot_de_passe" [(ngModel)]="newUser.confirm_mot_de_passe" required placeholder="Répétez votre mot de passe" style="padding-right:2.5rem;" />
+            <button type="button" (click)="hideConfirmPassword = !hideConfirmPassword" style="position:absolute;right:0.5rem;background:none;border:none;cursor:pointer;">
+              <i class="material-icons">{{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}</i>
+            </button>
+          </div>
+          <div *ngIf="passwordMismatch" style="color:#ef4444;font-size:0.95rem;margin-top:0.2rem;">
+            Les mots de passe ne correspondent pas.
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="type">Type <span style="color:#ef4444">*</span></label>
+          <select id="type" name="type" [(ngModel)]="newUser.type" required>
+            <option value="stagiaire">Stagiaire</option>
+            <option value="encadrant">Encadrant</option>
+            <option value="rh">RH</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <!-- Champs stagiaire -->
+        <div class="form-row" *ngIf="newUser.type === 'stagiaire'">
+          <label for="niveau_etude">Niveau d'étude <span style="color:#ef4444">*</span></label>
+          <select id="niveau_etude" name="niveau_etude" [(ngModel)]="newUser.niveau_etude" required>
+            <option value="">Sélectionner le niveau</option>
+            <option value="bac">BAC</option>
+            <option value="bac+1">BAC+1</option>
+            <option value="bac+2">BAC+2 (DUT, BTS)</option>
+            <option value="bac+3">BAC+3 (Licence)</option>
+            <option value="bac+4">BAC+4 (Master 1)</option>
+            <option value="bac+5">BAC+5 (Master 2, Ingénieur)</option>
+            <option value="bac+8">BAC+8+ (Doctorat)</option>
+          </select>
+        </div>
+        <div class="form-row" *ngIf="newUser.type === 'stagiaire'">
+          <label for="etablissement">Établissement</label>
+          <input type="text" id="etablissement" name="etablissement" [(ngModel)]="newUser.etablissement" placeholder="Établissement (optionnel)" />
+        </div>
+        <!-- Champs encadrant -->
+        <div class="form-row" *ngIf="newUser.type === 'encadrant'">
+          <label for="departement">Département</label>
+          <input type="text" id="departement" name="departement" [(ngModel)]="newUser.departement" placeholder="Département (optionnel)" />
+        </div>
+        <!-- Aucun champ supplémentaire pour RH/Admin -->
+        <div class="form-actions">
+          <button type="submit" [disabled]="addUserForm.invalid">Créer</button>
+          <button type="button" (click)="showAddUserModal = false">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="apiError" class="api-error">
+    <strong>Erreur API :</strong><br>
+    <span *ngIf="apiError.status">Code : {{apiError.status}}</span><br>
+    <span *ngIf="apiError.statusText">Status : {{apiError.statusText}}</span><br>
+    <span *ngIf="apiError.message">Message : {{apiError.message}}</span><br>
+    <span *ngIf="apiError.error">Body : {{apiError.error | json}}</span>
+  </div>
+
+
+  <div class="user-filters">
+    <button class="filter-btn" [class.active]="selectedType==='stagiaire'" (click)="selectedType='stagiaire'">Stagiaires</button>
+    <button class="filter-btn" [class.active]="selectedType==='encadrant'" (click)="selectedType='encadrant'">Encadrants</button>
+    <button class="filter-btn" [class.active]="selectedType==='rh'" (click)="selectedType='rh'">RH</button>
+  </div>
+
+  <div class="user-table-container">
+    <table class="user-table">
+      <thead>
+        <tr>
+            <th>Nom & Prénom</th>
+            <th class="email-col">Email</th>
+            <th class="telephone-col">Numéro de téléphone</th>
+          <th *ngIf="selectedType==='stagiaire'">Niveau d'étude</th>
+          <th *ngIf="selectedType==='stagiaire'">Établissement</th>
+          <th *ngIf="selectedType==='encadrant'">Département</th>
+          <th *ngIf="selectedType!=='stagiaire'">Rôle</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let user of users | userType:selectedType">
+            <td>{{user.nom}} {{user.prenom}}</td>
+            <td class="email-col">{{user.email}}</td>
+            <td class="telephone-col">{{user.numero_telephone}}</td>
+            <td *ngIf="selectedType==='stagiaire'">{{user.stagiaire_info?.niveau_etude}}</td>
+            <td *ngIf="selectedType==='stagiaire'">{{user.stagiaire_info?.etablissement}}</td>
+            <td *ngIf="selectedType==='encadrant'">{{user.encadrant_info?.departement}}</td>
+            <td *ngIf="selectedType!=='stagiaire'">{{user.type}}</td>
+            <td>
+              <span class="status" [class.active]="user.statut==='active'" [class.inactive]="user.statut!=='active'">
+                {{user.statut === 'active' ? 'Actif' : 'Inactif'}}
+              </span>
+            </td>
+            <td>
+              <button class="action-btn" [class.deactivate]="user.statut==='active'" (click)="toggleUser(user)">
+                {{user.statut === 'active' ? 'Désactiver' : 'Activer'}}
+              </button>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

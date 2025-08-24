@@ -1,0 +1,862 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-white: #ffffff;
+$neutral-light: #f8fafc;
+$neutral-medium: #e2e8f0;
+$neutral-dark: #1e293b;
+
+$shadow-sm: 0 2px 8px rgba(30, 58, 138, 0.08);
+$shadow-md: 0 4px 16px rgba(30, 58, 138, 0.12);
+$shadow-lg: 0 8px 32px rgba(30, 58, 138, 0.16);
+
+$gradient-primary: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+$gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+
+// Bouton Ajouter un utilisateur
+.add-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: linear-gradient(90deg, $primary-blue 0%, $secondary-blue 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 32px;
+  box-shadow: 0 4px 16px rgba($primary-blue, 0.12);
+  padding: 0.85rem 2.2rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  margin-bottom: 0.05rem;
+  margin-left: auto;
+
+  i.material-icons {
+    font-size: 1.5rem;
+    color: $accent-purple;
+    margin-right: 0.5rem;
+  }
+
+  &:hover, &:focus {
+    background: linear-gradient(90deg, $secondary-blue 0%, $primary-blue 100%);
+    box-shadow: 0 8px 32px rgba($primary-blue, 0.18);
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+.admin-header {
+  display: flex;
+  // width: 100%; // Removed width: 100%
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+// Modale utilisateur
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba($primary-blue, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  background: linear-gradient(135deg, $neutral-white 80%, $neutral-light 100%);
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba($primary-blue, 0.18);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 340px;
+  max-width: 95vw;
+  width: 540px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1001;
+  animation: fadeInModal 0.3s ease;
+}
+
+@keyframes fadeInModal {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  color: $primary-blue;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+
+.form-row {
+  display: block;
+  margin-bottom: 1.2rem;
+}
+
+.form-row input,
+.form-row select {
+  display: block;
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid $neutral-medium;
+  font-size: 1rem;
+  background: $neutral-light;
+  transition: border-color 0.2s;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid $neutral-medium;
+  font-size: 1rem;
+  background: $neutral-light;
+  transition: border-color 0.2s;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  border-color: $primary-blue;
+  outline: none;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.form-actions button {
+  padding: 0.7rem 2rem;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, $primary-blue 0%, $accent-purple 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba($primary-blue, 0.10);
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.form-actions button[type="button"] {
+  background: $neutral-medium;
+  color: $neutral-dark;
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.form-actions button:disabled {
+  background: $neutral-light;
+  color: $neutral-medium;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+
+// Modale utilisateur
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(30, 58, 138, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(30, 58, 138, 0.18);
+  padding: 2.5rem 2rem 2rem 2rem;
+  min-width: 340px;
+  max-width: 95vw;
+  width: 500px;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  color: $primary-blue;
+  text-align: center;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.form-row input,
+.form-row select {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 1px solid $neutral-medium;
+  font-size: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.form-actions button {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background: $primary-blue;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-actions button[type="button"] {
+  background: $neutral-medium;
+  color: $neutral-dark;
+}
+// Augmenter l'espace pour le champ Statut (colonne 8)
+.user-table th:nth-child(8), .user-table td:nth-child(8) {
+  min-width: 140px;
+  width: 140px;
+}
+
+// Réduire la largeur du champ numéro de téléphone
+.user-table th:nth-child(4), .user-table td:nth-child(4) {
+  max-width: 110px;
+  width: 110px;
+  text-align: center;
+}
+
+// =============================================
+
+
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+// Largeur personnalisée pour email et téléphone
+.user-table th.email-col, .user-table td.email-col {
+  min-width: 180px;
+  max-width: 260px;
+  width: 260px;
+}
+
+.user-table td.email-col {
+  font-size: 0.90rem;
+}
+
+.user-table th.telephone-col, .user-table td.telephone-col {
+  min-width: 90px;
+  max-width: 110px;
+  width: 80px;
+}
+$box-shadow: $shadow-lg;
+$box-shadow-hover: 0 15px 35px rgba(30, 58, 138, 0.18);
+$transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+$transition-fast: all 0.2s ease;
+
+// Mixins
+@mixin flex-center {
+      th {
+        text-align: center !important;
+        vertical-align: middle;
+      }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card-style {
+  background: white;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  padding: 1.75rem;
+  transition: $transition;
+  
+  &:hover {
+    box-shadow: $box-shadow-hover;
+  }
+}
+
+@mixin gradient-bg {
+  background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+}
+
+// STYLES GÉNÉRAUX
+// =============================================
+
+.admin-users {
+  padding: 2.5rem;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  color: $neutral-dark;
+  background: linear-gradient(135deg, #f5f7fa 0%, #eef2ff 100%);
+  min-height: 100vh;
+  line-height: 1.6;
+
+  // Header principal
+  .admin-header {
+    margin-bottom: 2.5rem;
+    @include flex-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    
+    h2 {
+  color: $primary-blue;
+      margin: 0;
+      font-weight: 700;
+      font-size: 2.2rem;
+      letter-spacing: -0.5px;
+  background: $gradient-primary;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+  background: $gradient-accent;
+        border-radius: 2px;
+      }
+    }
+    
+    .header-actions {
+      @include flex-center;
+      gap: 1rem;
+      
+      .search-box {
+        position: relative;
+        
+        input {
+          padding: 0.75rem 1rem 0.75rem 2.75rem;
+          border: 1px solid $neutral-medium;
+          border-radius: $border-radius;
+          font-size: 0.95rem;
+          width: 250px;
+          transition: $transition-fast;
+          
+          &:focus {
+            outline: none;
+            border-color: $primary-blue;
+            box-shadow: 0 0 0 3px rgba($primary-blue, 0.15);
+          }
+        }
+        
+        .search-icon {
+          position: absolute;
+          left: 1rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: $accent-purple;
+        }
+      }
+      
+      .add-user-btn {
+        @include flex-center;
+        gap: 0.5rem;
+  min-width: 120px;
+  padding: 0.65rem 1.25rem;
+  font-size: 1rem;
+  background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+        color: white;
+        border: none;
+        border-radius: $border-radius;
+        font-weight: 600;
+        cursor: pointer;
+        transition: $transition;
+        
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba($primary-blue, 0.25);
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+        
+        i {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+  // Filtres
+  .user-filters {
+    @include flex-center;
+    gap: 0.75rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    background: white;
+    padding: 1rem;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+
+    .filter-btn {
+  min-width: 120px;
+  padding: 0.65rem 1.25rem;
+  font-size: 1rem;
+  background: $neutral-medium;
+    color: $primary-blue;
+      border-radius: $border-radius-sm;
+  background-color: $neutral-light;
+  color: $neutral-dark;
+      font-weight: 600;
+      cursor: pointer;
+      transition: $transition;
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(white, 0.4), transparent);
+        transition: left 0.7s ease;
+      }
+      
+      &:hover {
+  background-color: $secondary-blue;
+  color: $primary-blue;
+        transform: translateY(-2px);
+        
+        &::before {
+          left: 100%;
+        }
+      }
+      
+      &.active {
+        @include gradient-bg;
+        color: white;
+  box-shadow: 0 5px 15px rgba($primary-blue, 0.3);
+      }
+      
+      .badge {
+                    color: $neutral-dark;
+        padding: 0.15rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        background: rgba(black, 0.15);
+      }
+    }
+  }
+
+  // Tableau
+  .user-table-container {
+    @include card-style;
+  overflow-x: auto;
+  width: 100%;
+    
+    .table-responsive {
+      overflow-x: auto;
+      border-radius: $border-radius-sm;
+      
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      &::-webkit-scrollbar-track {
+    background: $neutral-light;
+        border-radius: 4px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+    background: $neutral-medium;
+        border-radius: 4px;
+        
+        &:hover {
+            background: $neutral-dark;
+        }
+      }
+    }
+
+    .user-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+  min-width: 900px;
+  width: 100%;
+
+      thead {
+        tr {
+          background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+          
+          th {
+            padding: 0.85rem 0.5rem;
+            font-size: 0.75rem;
+            max-width: 180px;
+            white-space: normal;
+            text-align: left;
+            font-weight: 600;
+            color: white;
+            font-size: 0.85rem;
+            position: relative;
+            
+            &:not(:last-child)::after {
+              content: '';
+              position: absolute;
+              right: 0;
+              top: 50%;
+              transform: translateY(-50%);
+              height: 60%;
+              width: 1px;
+              background: rgba(white, 0.2);
+            }
+            
+            &:first-child {
+              border-top-left-radius: $border-radius-sm;
+            }
+            
+            &:last-child {
+              border-top-right-radius: $border-radius-sm;
+            }
+          }
+        }
+      }
+          th {
+            text-align: center;
+            vertical-align: middle;
+          }
+
+      tbody {
+        tr {
+            border-bottom: 1px solid $neutral-medium;
+          transition: $transition-fast;
+          background: white;
+          
+          &:nth-child(even) {
+            background: $neutral-light;
+          }
+          
+          &:hover {
+              background: $neutral-light;
+            transform: scale(1.01);
+          }
+          
+          &:last-child {
+            td:first-child {
+              border-bottom-left-radius: $border-radius-sm;
+            }
+            
+            td:last-child {
+              border-bottom-right-radius: $border-radius-sm;
+            }
+          }
+
+          td {
+            padding: 0.85rem 0.5rem;
+            max-width: 180px;
+            white-space: normal;
+            word-break: break-word;
+            vertical-align: middle;
+            
+            .user-info {
+              @include flex-center;
+              gap: 0.75rem;
+              
+              .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, $primary-blue 0%, $success-green 100%);
+                @include flex-center;
+                color: white;
+                font-weight: 600;
+                font-size: 1.1rem;
+              }
+              
+              .details {
+                .name {
+                  font-weight: 600;
+                  color: $neutral-dark;
+                  margin-bottom: 0.15rem;
+                }
+                
+                .email {
+                    font-size: 0.85rem;
+                  color: $neutral-dark;
+                }
+              }
+            }
+
+            .status {
+              padding: 0.25rem 0.7rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              display: inline-block;
+              text-align: center;
+              min-width: 60px;
+              
+              &.active {
+                  background-color: rgba($success-green, 0.15);
+                    color: $success-green;
+                  box-shadow: 0 2px 8px rgba($success-green, 0.2);
+              }
+              
+              &.inactive {
+                  background-color: rgba($warning-orange, 0.15);
+                    color: $warning-orange;
+                  box-shadow: 0 2px 8px rgba($warning-orange, 0.2);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Boutons d'action
+  .action-btn {
+    padding: 0.75rem 2.2rem;
+    border: none;
+    border-radius: 32px;
+  font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    @include flex-center;
+    gap: 0.7rem;
+    box-shadow: $shadow-md;
+    background: $gradient-primary;
+    color: $neutral-white;
+  min-width: 110px;
+  padding: 0.5rem 1rem;
+    transition: $transition;
+
+    i {
+      font-size: 1.2rem;
+      transition: color 0.2s;
+    }
+
+    &:hover, &:focus {
+      background: $gradient-accent;
+      color: $neutral-white;
+      box-shadow: $shadow-lg;
+      transform: translateY(-2px) scale(1.04);
+      i {
+        color: $accent-purple;
+      }
+    }
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: $shadow-sm;
+    }
+
+    &.deactivate {
+      background: linear-gradient(135deg, $danger-red 0%, $warning-orange 100%);
+      color: $neutral-white;
+      i {
+        color: $danger-red;
+      }
+      &:hover, &:focus {
+        background: linear-gradient(135deg, $warning-orange 0%, $danger-red 100%);
+        color: $neutral-white;
+        box-shadow: $shadow-lg;
+        i {
+          color: $warning-orange;
+        }
+      }
+    }
+
+    &.activate {
+      background: linear-gradient(135deg, $success-green 0%, $secondary-blue 100%);
+      color: $neutral-white;
+      i {
+        color: $success-green;
+      }
+      &:hover, &:focus {
+        background: linear-gradient(135deg, $secondary-blue 0%, $success-green 100%);
+        color: $neutral-white;
+        box-shadow: $shadow-lg;
+        i {
+          color: $secondary-blue;
+        }
+      }
+    }
+  }
+
+  // Indicateur de chargement
+  .loading-indicator {
+    text-align: center;
+    padding: 2rem;
+  color: $neutral-dark;
+    
+    .spinner {
+      width: 40px;
+      height: 40px;
+    border: 4px solid $neutral-medium;
+    border-top: 4px solid $primary-blue;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  }
+}
+
+// =============================================
+// RESPONSIVE DESIGN
+// =============================================
+
+@media (max-width: 1200px) {
+  .admin-users {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .admin-users {
+    padding: 1.5rem;
+    
+    .admin-header {
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-users {
+    padding: 1rem;
+    
+    .admin-header {
+      h2 {
+        font-size: 1.8rem;
+      }
+      
+      .header-actions {
+        flex-direction: column;
+        align-items: stretch;
+        
+        .search-box {
+          width: 100%;
+          
+          input {
+            width: 100%;
+          }
+        }
+      }
+    }
+    
+    .user-filters {
+      flex-direction: column;
+      align-items: stretch;
+      
+      .filter-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+    
+    .user-table-container {
+      padding: 1rem;
+      
+      .user-table {
+        thead {
+          display: none;
+        }
+        
+        tbody {
+          tr {
+            display: block;
+            margin-bottom: 1.5rem;
+            border-radius: $border-radius-sm;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            
+            td {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 1rem;
+              text-align: right;
+              border-bottom: 1px solid $neutral-medium;
+              
+              &::before {
+                content: attr(data-label);
+                font-weight: 600;
+                text-align: left;
+                color: $neutral-dark;
+              }
+              
+              &:last-child {
+                border-bottom: none;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// =============================================
+// ANIMATIONS SUPPLÉMENTAIRES
+// =============================================
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-table tbody tr {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+// Délais d'animation pour les lignes du tableau
+@for $i from 1 through 20 {
+  .user-table tbody tr:nth-child(#{$i}) {
+    animation-delay: #{$i * 0.05}s;
+  }
+}

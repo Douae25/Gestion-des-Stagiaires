@@ -5,15 +5,17 @@ import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { EncadrantNavbarComponent } from '../encadrant-navbar.component';
 
 @Component({
   selector: 'app-evaluation',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, EncadrantNavbarComponent],
   templateUrl: './evaluation.component.html',
   styleUrls: ['./evaluation.component.scss']
 })
 export class EvaluationComponent {
+  allStagiaires: any[] = [];
   remarque: string = '';
   stagiaires: any[] = [];
   selectedStagiaire: any = null;
@@ -32,7 +34,7 @@ export class EvaluationComponent {
     if (user && user.id) {
       this.candidatureService.getRapportsFinaux(user.id).subscribe({
         next: (data: any[]) => {
-          this.stagiaires = data.map(item => {
+          this.allStagiaires = data.map(item => {
             const offre = item.offre_info || item.offre;
             return {
               id: item.stagiaire.id,
@@ -47,6 +49,7 @@ export class EvaluationComponent {
               rapportFinal: item.rapportFinal
             };
           });
+          this.stagiaires = [...this.allStagiaires];
         },
         error: () => {
           this.stagiaires = [];
@@ -54,6 +57,14 @@ export class EvaluationComponent {
       });
     }
   }
+    onSearch(query: string) {
+      const q = (query || '').toString().trim().toLowerCase();
+      this.stagiaires = this.allStagiaires.filter(s =>
+        (s.nom && s.nom.toLowerCase().includes(q)) ||
+        (s.prenom && s.prenom.toLowerCase().includes(q)) ||
+        (s.stageTitre && s.stageTitre.toLowerCase().includes(q))
+      );
+    }
 
   getDureeDepuisFin(dateFin: string): string {
     const fin = new Date(dateFin);

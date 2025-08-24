@@ -4,15 +4,17 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService, User } from '../../../services/auth.service';
+import { EncadrantNavbarComponent } from '../encadrant-navbar.component';
 
 @Component({
   selector: 'app-encadrant-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, EncadrantNavbarComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
 export class EncadrantProfileComponent {
+  allUser: User | null = null;
   profileForm: FormGroup;
   passwordForm: FormGroup;
   editMode = false;
@@ -38,6 +40,7 @@ export class EncadrantProfileComponent {
   ngOnInit() {
     this.authService.getUserProfile().subscribe({
       next: (user: User) => {
+        this.allUser = user;
         this.user = user;
         this.profileForm.patchValue({
           nom: user.nom || '',
@@ -51,6 +54,26 @@ export class EncadrantProfileComponent {
         // Gérer l'erreur si besoin
         console.error('Erreur chargement profil:', err);
       }
+    });
+  }
+
+  onSearch(query: any) {
+    const q = (query || '').toString().trim().toLowerCase();
+    if (!this.allUser) return;
+    const user = this.allUser;
+    const match =
+      (user.nom && user.nom.toLowerCase().includes(q)) ||
+      (user.prenom && user.prenom.toLowerCase().includes(q)) ||
+      (user.email && user.email.toLowerCase().includes(q)) ||
+      ((user.numero_telephone || '').toLowerCase().includes(q)) ||
+      (((user as any).departement || '').toLowerCase().includes(q));
+    this.user = match ? user : null;
+    this.profileForm.patchValue({
+      nom: match ? user.nom : '',
+      prenom: match ? user.prenom : '',
+      email: match ? user.email : '',
+      telephone: match ? user.numero_telephone : '',
+      departement: match ? (user as any).departement : ''
     });
   }
 

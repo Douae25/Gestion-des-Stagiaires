@@ -1,42 +1,53 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { Router } from '@angular/router';
-import { AuthService, User } from '../../../services/auth.service';
+import { OffreStageService } from '../../../services/offre-stage.service';
+import { UtilisateurService } from '../../../services/utilisateur.service';
+import { AdminActionService, AdminAction } from '../../../services/admin-action.service';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.scss'],
+  selector: 'admin-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatToolbarModule]
+  imports: [CommonModule],
+  templateUrl: './admin-dashboard.component.html',
+  styleUrls: ['./admin-dashboard.component.scss']
 })
 export class AdminDashboardComponent implements OnInit {
-  currentUser: User | null = null;
+  stats = {
+    enCours: 0,
+    archivee: 0,
+    terminee: 0,
+    enCoursReel: 0
+  };
+  lastActions: AdminAction[] = [];
+  isLoading = true;
+  apiError: any = null;
 
   constructor(
-    private authService: AuthService,
-    private router: Router
+    private offreStageService: OffreStageService,
+    private utilisateurService: UtilisateurService,
+    private adminActionService: AdminActionService
   ) {}
 
   ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-      if (!user || user.role !== 'admin') {
-        this.router.navigate(['/login']);
+    this.isLoading = true;
+    this.offreStageService.getAllOffres().subscribe({
+      next: (offres) => {
+        const maintenant = new Date();
+        this.stats.enCours = offres.filter(o => o.statut === 'en_cours').length;
+        this.stats.archivee = offres.filter(o => o.statut === 'archivee').length;
+        this.stats.terminee = offres.filter(o => o.statut === 'fermee' && new Date(o.date_fin) < maintenant).length;
+        this.stats.enCoursReel = offres.filter(o => o.statut === 'fermee' && new Date(o.date_debut) < maintenant && new Date(o.date_fin) > maintenant).length;
+        // Récupère les vraies dernières actions admin (offres et utilisateurs)
+        this.lastActions = this.adminActionService.getActions().slice(0, 5);
+        this.isLoading = false;
+        this.apiError = null;
+      },
+      error: (err) => {
+        this.apiError = err;
+        this.isLoading = false;
       }
     });
-  }
-
-  logout(): void {
-    this.authService.logout();
-  }
-
-  goToLanding(): void {
-    this.router.navigate(['/']);
   }
 }
 

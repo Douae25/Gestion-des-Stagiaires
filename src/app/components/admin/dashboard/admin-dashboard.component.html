@@ -1,57 +1,40 @@
-<div class="admin-dashboard-container">
-  <mat-toolbar color="primary" class="dashboard-toolbar">
-    <span>Dashboard Administrateur - StageManager</span>
-    <span class="toolbar-spacer"></span>
-    <button mat-icon-button (click)="goToLanding()" matTooltip="Retour à l'accueil">
-      <mat-icon>home</mat-icon>
-    </button>
-    <button mat-icon-button (click)="logout()" matTooltip="Déconnexion">
-      <mat-icon>logout</mat-icon>
-    </button>
-  </mat-toolbar>
-
-  <div class="dashboard-content">
-    <mat-card class="welcome-card">
-      <mat-card-header>
-        <mat-card-title>
-          <mat-icon>admin_panel_settings</mat-icon>
-          Espace Administrateur
-        </mat-card-title>
-        <mat-card-subtitle>
-          Gestion complète de la plateforme
-        </mat-card-subtitle>
-      </mat-card-header>
-      
-      <mat-card-content>
-        <div class="user-info" *ngIf="currentUser">
-          <p><strong>Email :</strong> {{ currentUser.email }}</p>
-          <p><strong>Rôle :</strong> 
-            <span class="role-badge admin">{{ currentUser.role }}</span>
-          </p>
-        </div>
-        
-        <div class="features-section">
-          <h3>Fonctionnalités Administrateur</h3>
-          <div class="features-grid">
-            <div class="feature-item">
-              <mat-icon>people</mat-icon>
-              <h4>Gestion des utilisateurs</h4>
-              <p>Créer et gérer tous les comptes</p>
-            </div>
-            <div class="feature-item">
-              <mat-icon>security</mat-icon>
-              <h4>Gestion des rôles</h4>
-              <p>Configurer les permissions</p>
-            </div>
-            <div class="feature-item">
-              <mat-icon>settings</mat-icon>
-              <h4>Configuration</h4>
-              <p>Paramètres de la plateforme</p>
-            </div>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
+<div class="admin-dashboard">
+  <h2 class="dashboard-title">Dashboard Administrateur</h2>
+  <div *ngIf="isLoading" class="loading-indicator">Chargement des statistiques...</div>
+  <div *ngIf="apiError" class="error">Erreur API : {{apiError}}</div>
+  <div *ngIf="!isLoading && !apiError">
+    <div class="stats">
+      <div class="stat-card en-cours">
+        <div class="icon"><i class="fas fa-play"></i></div>
+        <div class="stat-label">Offres en cours</div>
+        <div class="stat-value">{{stats.enCours}}</div>
+      </div>
+      <div class="stat-card archivee">
+        <div class="icon"><i class="fas fa-archive"></i></div>
+        <div class="stat-label">Offres archivées</div>
+        <div class="stat-value">{{stats.archivee}}</div>
+      </div>
+      <div class="stat-card terminee">
+        <div class="icon"><i class="fas fa-check"></i></div>
+        <div class="stat-label">Stages terminés</div>
+        <div class="stat-value">{{stats.terminee}}</div>
+      </div>
+      <div class="stat-card en-cours-reel">
+        <div class="icon"><i class="fas fa-hourglass-half"></i></div>
+        <div class="stat-label">Stages en cours (réel)</div>
+        <div class="stat-value">{{stats.enCoursReel}}</div>
+      </div>
+    </div>
+    <div class="actions">
+      <h3 class="actions-title">Dernières actions</h3>
+      <ul class="actions-list">
+        <li *ngFor="let action of lastActions" class="action-item">
+          <span class="action-type">{{action.type}}</span>
+          <span class="action-action">{{action.action}}</span>
+          <span class="action-cible">{{action.cible}}</span>
+          <span class="action-date">{{action.date | date:'dd/MM/yyyy HH:mm'}}</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>
-

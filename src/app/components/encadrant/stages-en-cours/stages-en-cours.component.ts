@@ -4,17 +4,27 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CandidatureService } from '../../../services/candidature.service';
 import { AuthService } from '../../../services/auth.service';
+import { EncadrantNavbarComponent } from '../encadrant-navbar.component';
 
 @Component({
   selector: 'app-stages-en-cours',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, EncadrantNavbarComponent],
   providers: [CandidatureService, AuthService],
   templateUrl: './stages-en-cours.component.html',
   styleUrls: ['./stages-en-cours.component.scss']
 })
 
 export class StagesEnCoursComponent implements OnInit {
+  onSearch(query: any) {
+    const q = (query || '').toString().trim().toLowerCase();
+    this.stages = this.allStages.filter(s =>
+      (s.titre && s.titre.toLowerCase().includes(q)) ||
+      (s.stagiaire.nom && s.stagiaire.nom.toLowerCase().includes(q)) ||
+      (s.stagiaire.prenom && s.stagiaire.prenom.toLowerCase().includes(q))
+    );
+  }
+  allStages: any[] = [];
   stages: any[] = [];
   // (doublons supprimés)
 
@@ -28,7 +38,7 @@ export class StagesEnCoursComponent implements OnInit {
     if (user && user.id) {
       this.candidatureService.getCandidaturesAcceptees(user.id).subscribe({
         next: (data: any[]) => {
-          this.stages = data.map((item: any) => ({
+          this.allStages = data.map((item: any) => ({
             id: item.candidature?.id || item.candidature?.id_candidature,
             titre: item.offre?.titre || item.offre_info?.titre,
             dureeRestante: this.getDureeRestante(item.offre?.date_fin || item.offre_info?.date_fin),
@@ -49,6 +59,7 @@ export class StagesEnCoursComponent implements OnInit {
                 commentaires: Array.isArray(r.commentaires) ? r.commentaires : (r.commentaires ? [r.commentaires] : [])
               }))
           }));
+          this.stages = [...this.allStages];
         },
         error: (_err: any) => {
           this.stages = [];
