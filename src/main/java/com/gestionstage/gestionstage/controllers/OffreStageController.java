@@ -52,7 +52,7 @@ public class OffreStageController {
     }
 
     @PatchMapping("/{id}/statut")
-    @PreAuthorize("hasRole('rh')")
+    @PreAuthorize("hasAnyRole('rh','admin')")
     public ResponseEntity<String> changerStatut(@PathVariable Integer id, @RequestParam String value) {
         offreStageService.changerStatutOffre(id, value);
         return ResponseEntity.ok("Statut mis à jour");

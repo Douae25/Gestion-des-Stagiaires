@@ -109,6 +109,7 @@ public UtilisateurCompletDTO createUtilisateur(UtilisateurCompletDTO dto) {
         case stagiaire:
             Stagiaire s = new Stagiaire();
             s.setUtilisateur(saved);
+            s.setId_stagiaire(saved.getIdUtilisateur()); // Enregistrer l'id utilisateur dans id_stagiaire
             s.setNiveau_etude(dto.getStagiaire_info().getNiveau_etude());
             s.setEtablissement(dto.getStagiaire_info().getEtablissement());
             stagiaireRepository.save(s);
