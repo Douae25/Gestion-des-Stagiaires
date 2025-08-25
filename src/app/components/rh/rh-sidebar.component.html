@@ -1,21 +1,40 @@
 
-<nav class="rh-sidebar">
-  <div class="sidebar-header">
-    <span class="rh-logo">Espace RH</span>
-  </div>
-  <ul class="sidebar-menu">
-  <li routerLink="dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">dashboard</i>Dashboard</li>
-  <li routerLink="offres" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">work_outline</i>Offres de stage</li>
-  <li routerLink="candidatures" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">assignment_ind</i>Gestion de candidatures</li>
-  <li routerLink="documents" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">folder_open</i>Gestion des documents</li>
-  <li routerLink="stages" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">school</i>Stages en cours</li>
-  <li routerLink="historique" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">history</i>Historique</li>
-  <li routerLink="profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"><i class="material-icons">person</i>Profile</li>
-  </ul>
-  <div class="sidebar-footer">
-            <button class="dropdown-item logout-btn" (click)="logout()">
-              <span class="material-icons">logout</span>
-              <span>Déconnexion</span>
-            </button>
-  </div>
-</nav>
+
+<aside class="sidebar">
+  <nav class="menu">
+    <ul>
+      <li routerLink="dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">dashboard</span>
+        <span>Dashboard</span>
+      </li>
+      <li routerLink="offres" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">work_outline</span>
+        <span>Offres de stage</span>
+      </li>
+      <li routerLink="candidatures" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">assignment_ind</span>
+        <span>Gestion de candidatures</span>
+      </li>
+      <li routerLink="documents" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">folder_open</span>
+        <span>Gestion des documents</span>
+      </li>
+      <li routerLink="stages" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">school</span>
+        <span>Stages en cours</span>
+      </li>
+      <li routerLink="historique" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">history</span>
+        <span>Historique</span>
+      </li>
+      <li routerLink="profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-icons">person</span>
+        <span>Profil</span>
+      </li>
+      <li class="sidebar-bottom" (click)="logout()">
+        <span class="material-icons">logout</span>
+        <span>Déconnexion</span>
+      </li>
+    </ul>
+  </nav>
+</aside>

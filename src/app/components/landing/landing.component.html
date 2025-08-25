@@ -4,8 +4,11 @@
     <nav class="nav-container" role="navigation" aria-label="Navigation principale">
       <div class="nav-brand">
         <div class="brand-logo">
-          <mat-icon>school</mat-icon>
+          <div class="logo-icon">
+            <mat-icon>school</mat-icon>
+          </div>
           <span class="brand-text">StageManager</span>
+          <span class="brand-tagline">Pro</span>
         </div>
       </div>
       
@@ -20,27 +23,27 @@
       </div>
       
       <div class="nav-actions">
-        <!-- Affichage conditionnel selon l'état d'authentification -->
         <ng-container *ngIf="!isAuthenticated">
           <button mat-button class="nav-btn secondary" (click)="onLoginClick()">
             <mat-icon>login</mat-icon>
             Connexion
           </button>
-          <button mat-raised-button color="primary" class="nav-btn primary" (click)="onRegisterClick()">
+          <button mat-raised-button class="nav-btn primary" (click)="onRegisterClick()">
             <mat-icon>person_add</mat-icon>
             S'inscrire
           </button>
         </ng-container>
         
-        <!-- Menu utilisateur connecté -->
         <ng-container *ngIf="isAuthenticated && currentUser">
           <button mat-button class="nav-btn user-btn" [matMenuTriggerFor]="userMenu">
-            <mat-icon>account_circle</mat-icon>
-            {{ currentUser.prenom || 'Mon compte' }}
-            <mat-icon>arrow_drop_down</mat-icon>
+            <div class="user-avatar">
+              <mat-icon>account_circle</mat-icon>
+            </div>
+            <span class="user-name">{{ currentUser.prenom || 'Mon compte' }}</span>
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
           </button>
           
-          <mat-menu #userMenu="matMenu">
+          <mat-menu #userMenu="matMenu" class="user-menu">
             <button mat-menu-item (click)="goToDashboard()">
               <mat-icon>dashboard</mat-icon>
               <span>Mon espace</span>
@@ -59,7 +62,9 @@
       </div>
       
       <button class="nav-toggle" (click)="toggleMenu()" aria-label="Ouvrir le menu de navigation">
-        <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
       </button>
     </nav>
   </header>
@@ -67,39 +72,75 @@
   <!-- Hero Section -->
   <section class="hero" role="banner" aria-label="Section principale" id="accueil">
     <div class="hero-background">
+      <div class="hero-gradient"></div>
       <div class="hero-pattern"></div>
-      <div class="hero-overlay"></div>
+      <div class="floating-elements">
+        <div class="floating-element element-1"></div>
+        <div class="floating-element element-2"></div>
+        <div class="floating-element element-3"></div>
+      </div>
     </div>
+    
     <div class="hero-content">
-      <div class="hero-badge">
+      <div class="hero-badge scroll-reveal">
         <mat-icon>star</mat-icon>
-        <span>Plateforme de référence</span>
+        <span>Système interne</span>
+        <div class="badge-glow"></div>
       </div>
-      <h1 class="scroll-reveal">Gestion de stage simplifiée</h1>
-      <p class="scroll-reveal">Optimisez la gestion de vos stages et accompagnez vos stagiaires tout au long de leur parcours professionnel</p>
-      <div class="search-box scroll-reveal">
-        <mat-form-field appearance="outline" class="search-input">
-          <mat-label>Rechercher un stage ou un stagiaire</mat-label>
-          <input matInput placeholder="Ex: Développement, Marketing, RH..." aria-label="Rechercher un stage">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-        <button mat-raised-button color="primary" class="search-btn" (click)="onSearch()" aria-label="Lancer la recherche">
-          <mat-icon>search</mat-icon>
-          Rechercher
-        </button>
+      
+      <h1 class="hero-title scroll-reveal">
+        <span class="title-main">Gestion de stage</span>
+        <span class="title-highlight">simplifiée</span>
+      </h1>
+      
+      <p class="hero-description scroll-reveal">
+        Gérez efficacement nos stagiaires et optimisez leur accompagnement 
+        tout au long de leur parcours au sein de notre entreprise
+      </p>
+      
+      <div class="search-container scroll-reveal">
+        <div class="search-box">
+          <mat-form-field appearance="outline" class="search-input">
+            <mat-label>Rechercher un stage</mat-label>
+            <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchInputChange()" placeholder="Ex: Développement, Marketing, RH..." aria-label="Rechercher un stage">
+            <mat-icon matSuffix class="search-icon">search</mat-icon>
+          </mat-form-field>
+          <button mat-raised-button class="search-btn" (click)="onSearch()" aria-label="Lancer la recherche">
+            <mat-icon>search</mat-icon>
+            <span>Rechercher</span>
+          </button>
+        </div>
       </div>
+      
       <div class="hero-stats scroll-reveal">
-        <div class="stat-item">
-          <span class="stat-number">500+</span>
-          <span class="stat-label">Stages gérés</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">200+</span>
-          <span class="stat-label">Stagiaires</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-number">95%</span>
-          <span class="stat-label">Satisfaction</span>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <mat-icon>work</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">{{ statsStages }}</span>
+              <span class="stat-label">Stages gérés</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <mat-icon>people</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">{{ statsStagiaires }}</span>
+              <span class="stat-label">Stagiaires</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">
+              <mat-icon>thumb_up</mat-icon>
+            </div>
+            <div class="stat-content">
+              <span class="stat-number">{{ statsSatisfaction }}%</span>
+              <span class="stat-label">Satisfaction</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -107,174 +148,267 @@
 
   <!-- Features Section -->
   <section class="features" role="region" aria-labelledby="features-heading" id="services">
-    <div class="section-header">
-      <h2 id="features-heading" class="scroll-reveal">Nos services de gestion de stage</h2>
-      <p class="section-subtitle scroll-reveal">Une solution complète pour optimiser votre processus de recrutement et de suivi</p>
-    </div>
-    <div class="features-grid">
-      <div class="feature-card scroll-reveal" role="article">
-        <div class="feature-icon-wrapper">
-          <mat-icon aria-hidden="true">settings</mat-icon>
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-badge scroll-reveal">
+          <mat-icon>settings</mat-icon>
+          <span>Nos services</span>
         </div>
-        <h3>Gestion centralisée</h3>
-        <p>Centralisez toutes vos offres de stage et candidatures dans une interface unique et intuitive</p>
-        <div class="feature-benefits">
-          <span class="benefit-tag">Interface unifiée</span>
-          <span class="benefit-tag">Gestion simplifiée</span>
-        </div>
+        <h2 id="features-heading" class="section-title scroll-reveal">
+          Un système complet pour nos stages
+        </h2>
+        <p class="section-subtitle scroll-reveal">
+          Optimisez notre processus de recrutement et de suivi avec nos outils internes
+        </p>
       </div>
-      <div class="feature-card scroll-reveal" role="article">
-        <div class="feature-icon-wrapper">
-          <mat-icon aria-hidden="true">bar_chart</mat-icon>
+      
+      <div class="features-grid">
+        <div class="feature-card scroll-reveal" role="article">
+          <div class="feature-header">
+            <div class="feature-icon">
+              <mat-icon>dashboard</mat-icon>
+            </div>
+            <h3 class="feature-title">Gestion centralisée</h3>
+          </div>
+          <p class="feature-description">
+            Centralisez toutes nos offres de stage et candidatures dans une interface unique dédiée à notre entreprise
+          </p>
+          <div class="feature-benefits">
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Interface unifiée</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Gestion simplifiée</span>
+            </div>
+          </div>
+          <div class="feature-overlay"></div>
         </div>
-        <h3>Suivi et reporting</h3>
-        <p>Suivez l'avancement de vos stages avec des tableaux de bord détaillés et des rapports personnalisés</p>
-        <div class="feature-benefits">
-          <span class="benefit-tag">Tableaux de bord</span>
-          <span class="benefit-tag">Rapports détaillés</span>
+        
+        <div class="feature-card scroll-reveal" role="article">
+          <div class="feature-header">
+            <div class="feature-icon">
+              <mat-icon>analytics</mat-icon>
+            </div>
+            <h3 class="feature-title">Suivi et reporting</h3>
+          </div>
+          <p class="feature-description">
+            Suivez l'avancement de nos stages avec des tableaux de bord détaillés et des rapports personnalisés
+          </p>
+          <div class="feature-benefits">
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Tableaux de bord</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Rapports détaillés</span>
+            </div>
+          </div>
+          <div class="feature-overlay"></div>
         </div>
-      </div>
-      <div class="feature-card scroll-reveal" role="article">
-        <div class="feature-icon-wrapper">
-          <mat-icon aria-hidden="true">school</mat-icon>
-        </div>
-        <h3>Accompagnement stagiaire</h3>
-        <p>Accompagnez vos stagiaires de la candidature jusqu'à la fin de leur stage avec un suivi personnalisé</p>
-        <div class="feature-benefits">
-          <span class="benefit-tag">Suivi personnalisé</span>
-          <span class="benefit-tag">Accompagnement complet</span>
+        
+        <div class="feature-card scroll-reveal" role="article">
+          <div class="feature-header">
+            <div class="feature-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <h3 class="feature-title">Accompagnement stagiaire</h3>
+          </div>
+          <p class="feature-description">
+            Accompagnez nos stagiaires de leur arrivée jusqu'à la fin de leur stage avec un suivi personnalisé adapté à notre culture d'entreprise
+          </p>
+          <div class="feature-benefits">
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Suivi personnalisé</span>
+            </div>
+            <div class="benefit-item">
+              <mat-icon>check_circle</mat-icon>
+              <span>Accompagnement complet</span>
+            </div>
+          </div>
+          <div class="feature-overlay"></div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Stats Section -->
-  <section class="stats" role="region" aria-labelledby="stats-heading" id="statistiques">
+  <section class="stats-section" role="region" aria-labelledby="stats-heading" id="statistiques">
     <div class="stats-background">
+      <div class="stats-gradient"></div>
       <div class="stats-pattern"></div>
     </div>
-    <div class="stats-container">
-      <div class="stat-item scroll-reveal" role="article">
-        <div class="stat-icon">
-          <mat-icon>work</mat-icon>
-        </div>
-        <div class="stat-number" aria-label="Plus de 500 stages gérés">500+</div>
-        <div class="stat-label">Stages gérés</div>
-        <div class="stat-description">avec succès</div>
+    
+    <div class="section-container">
+      <div class="section-header">
+        <h2 id="stats-heading" class="section-title light scroll-reveal">
+          Nos performances internes
+        </h2>
+        <p class="section-subtitle light scroll-reveal">
+          Des chiffres qui témoignent de l'efficacité de notre système de gestion des stages
+        </p>
       </div>
-      <div class="stat-item scroll-reveal" role="article">
-        <div class="stat-icon">
-          <mat-icon>people</mat-icon>
+      
+      <div class="stats-grid">
+        <div class="stat-item scroll-reveal" role="article">
+          <div class="stat-icon">
+            <mat-icon>work</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" aria-label="Plus de 500 stages gérés">500+</div>
+            <div class="stat-label">Stages gérés</div>
+            <div class="stat-description">avec succès</div>
+          </div>
+          <div class="stat-glow"></div>
         </div>
-        <div class="stat-number" aria-label="Plus de 200 stagiaires accueillis">200+</div>
-        <div class="stat-label">Stagiaires accueillis</div>
-        <div class="stat-description">et accompagnés</div>
-      </div>
-      <div class="stat-item scroll-reveal" role="article">
-        <div class="stat-icon">
-          <mat-icon>thumb_up</mat-icon>
+        
+        <div class="stat-item scroll-reveal" role="article">
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" aria-label="Plus de 200 stagiaires accueillis">200+</div>
+            <div class="stat-label">Stagiaires accueillis</div>
+            <div class="stat-description">et accompagnés</div>
+          </div>
+          <div class="stat-glow"></div>
         </div>
-        <div class="stat-number" aria-label="95 pour cent de satisfaction">95%</div>
-        <div class="stat-label">Taux de satisfaction</div>
-        <div class="stat-description">des entreprises</div>
+        
+        <div class="stat-item scroll-reveal" role="article">
+          <div class="stat-icon">
+            <mat-icon>thumb_up</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number" aria-label="95 pour cent de satisfaction">95%</div>
+            <div class="stat-label">Taux de satisfaction</div>
+            <div class="stat-description">des stagiaires</div>
+          </div>
+          <div class="stat-glow"></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Latest Offers -->
+  <!-- Offers Section -->
   <section class="offers" role="region" aria-labelledby="offers-heading" id="offres">
-    <div class="section-header">
-      <h2 id="offers-heading" class="scroll-reveal">Nos offres de stage</h2>
-      <p class="section-subtitle scroll-reveal">Découvrez nos opportunités et trouvez le stage qui vous correspond</p>
-      <a routerLink="/offres" class="view-all scroll-reveal" aria-label="Voir toutes nos offres de stage">
-        <span>Voir toutes nos offres</span>
-        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
-      </a>
-    </div>
-    
-    <div class="offers-grid">
-      <!-- Offer cards will be dynamically loaded here -->
-      <div *ngIf="loading" class="loading scroll-reveal" role="status" aria-live="polite">
-        <div class="loading-spinner">
-          <mat-spinner diameter="50" aria-label="Chargement en cours"></mat-spinner>
+    <div class="section-container">
+      <div class="section-header">
+        <div class="section-badge scroll-reveal">
+          <mat-icon>work</mat-icon>
+          <span>Opportunités</span>
         </div>
-        <p>Chargement des offres en cours...</p>
-        <div class="loading-dots">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+        <h2 id="offers-heading" class="section-title scroll-reveal">
+          Nos offres de stage
+        </h2>
+        <p class="section-subtitle scroll-reveal">
+          Découvrez les opportunités de stage disponibles au sein de notre entreprise
+        </p>
+        <a routerLink="/offres" class="view-all-btn scroll-reveal" aria-label="Voir toutes nos offres de stage">
+          <span>Voir toutes nos offres</span>
+          <mat-icon>arrow_forward</mat-icon>
+        </a>
       </div>
       
-      <!-- Affichage des offres -->
-      <div *ngFor="let offre of offres" class="offer-card scroll-reveal" role="article">
-        <div class="offer-status-badge" [class]="'status-' + offre.statut">
-          {{ getStatusLabel(offre.statut) }}
+      <div class="offers-container">
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-state scroll-reveal" role="status" aria-live="polite">
+          <div class="loading-spinner">
+            <mat-spinner diameter="50" aria-label="Chargement en cours"></mat-spinner>
+          </div>
+          <p class="loading-text">Chargement des offres en cours...</p>
         </div>
         
-        <div class="offer-header">
-          <h3>{{ offre.titre }}</h3>
-          <div class="offer-location">
-            <mat-icon aria-hidden="true">place</mat-icon>
-            <span>{{ offre.localisation }}</span>
+        <!-- Offers Grid -->
+        <div *ngIf="!loading && offres.length > 0" class="offers-grid">
+          <div *ngFor="let offre of filteredOffres" class="offer-card scroll-reveal" role="article">
+            <div class="offer-status" [class]="'status-' + offre.statut">
+              <span class="status-dot"></span>
+              <span class="status-text">{{ getStatusLabel(offre.statut) }}</span>
+            </div>
+            
+            <div class="offer-header">
+              <h3 class="offer-title">{{ offre.titre }}</h3>
+              <div class="offer-location">
+                <mat-icon>place</mat-icon>
+                <span>{{ offre.localisation }}</span>
+              </div>
+            </div>
+            
+            <p class="offer-description">{{ offre.description }}</p>
+            
+            <div class="offer-details">
+              <div class="detail-row">
+                <div class="detail-item">
+                  <mat-icon>schedule</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Durée</span>
+                    <span class="detail-value">{{ offre.duree }} mois</span>
+                  </div>
+                </div>
+                <div class="detail-item">
+                  <mat-icon>event</mat-icon>
+                  <div class="detail-content">
+                    <span class="detail-label">Période</span>
+                    <span class="detail-value">{{ offre.date_debut | date:'dd/MM/yyyy' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="offer-competences" *ngIf="offre.competence_requise">
+              <div class="competences-header">
+                <mat-icon>psychology</mat-icon>
+                <span>Compétences requises</span>
+              </div>
+              <div class="competence-tags">
+                <span *ngFor="let competence of offre.competence_requise.split(', ')" class="competence-tag">
+                  {{ competence.trim() }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="offer-footer">
+              <button mat-raised-button 
+                      class="apply-btn" 
+                      [class.disabled]="offre.statut !== 'en_cours'"
+                      [disabled]="offre.statut !== 'en_cours'"
+                      (click)="postulerOffre(offre)">
+                <mat-icon>{{ offre.statut === 'en_cours' ? 'send' : 'block' }}</mat-icon>
+                <span>{{ offre.statut === 'en_cours' ? 'Postuler maintenant' : 'Offre fermée' }}</span>
+              </button>
+            </div>
+            
+            <div class="offer-glow"></div>
           </div>
         </div>
         
-        <p class="offer-description">{{ offre.description }}</p>
-        
-        <div class="offer-details">
-          <div class="detail-item">
-            <mat-icon aria-hidden="true">schedule</mat-icon>
-            <span class="detail-label">Durée</span>
-            <span class="detail-value">{{ offre.duree }} mois</span>
+        <!-- Error State -->
+        <div *ngIf="error && offres.length === 0" class="error-state scroll-reveal" role="alert" aria-live="assertive">
+          <div class="error-icon">
+            <mat-icon>error_outline</mat-icon>
           </div>
-          <div class="detail-item">
-            <mat-icon aria-hidden="true">event</mat-icon>
-            <span class="detail-label">Période</span>
-            <span class="detail-value">{{ offre.date_debut | date:'dd/MM/yyyy' }} - {{ offre.date_fin | date:'dd/MM/yyyy' }}</span>
-          </div>
-        </div>
-        
-        <div class="offer-competences" *ngIf="offre.competence_requise">
-          <span class="competence-label">Compétences requises :</span>
-          <div class="competence-tags">
-            <span *ngFor="let competence of offre.competence_requise.split(', ')" class="competence-tag">
-              {{ competence.trim() }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="offer-footer">
-          <button mat-raised-button color="primary" class="apply-btn" 
-                  [disabled]="offre.statut !== 'en_cours'"
-                  [class.disabled]="offre.statut !== 'en_cours'"
-                  (click)="postulerOffre(offre)">
-            <mat-icon aria-hidden="true">send</mat-icon>
-            {{ offre.statut === 'en_cours' ? 'Postuler maintenant' : 'Offre fermée' }}
+          <h4 class="error-title">Erreur de chargement</h4>
+          <p class="error-message">Impossible de charger les offres. Veuillez réessayer.</p>
+          <button mat-raised-button class="retry-btn" (click)="loadOffres()" aria-label="Réessayer de charger les offres">
+            <mat-icon>refresh</mat-icon>
+            <span>Réessayer</span>
           </button>
         </div>
-      </div>
-      
-      <div *ngIf="error && offres.length === 0" class="error scroll-reveal" role="alert" aria-live="assertive">
-        <div class="error-icon">
-          <mat-icon aria-hidden="true">error_outline</mat-icon>
+        
+        <!-- Empty State -->
+        <div *ngIf="!loading && !error && offres.length === 0" class="empty-state scroll-reveal">
+          <div class="empty-icon">
+            <mat-icon>work_off</mat-icon>
+          </div>
+          <h4 class="empty-title">Aucune offre disponible</h4>
+          <p class="empty-message">
+            Aucune offre de stage disponible pour le moment.<br>
+            Revenez plus tard pour découvrir nos nouvelles opportunités.
+          </p>
         </div>
-        <h4>Erreur de chargement</h4>
-        <p>Impossible de charger les offres. Veuillez réessayer.</p>
-        <button mat-raised-button color="primary" (click)="loadOffres()" aria-label="Réessayer de charger les offres">
-          <mat-icon aria-hidden="true">refresh</mat-icon>
-          Réessayer
-        </button>
-      </div>
-      
-      <!-- Message si aucune offre -->
-      <div *ngIf="!loading && !error && offres.length === 0" class="no-offers scroll-reveal">
-        <div class="no-offers-icon">
-          <mat-icon aria-hidden="true">work_off</mat-icon>
-        </div>
-        <h4>Aucune offre disponible</h4>
-        <p>Aucune offre de stage disponible pour le moment.</p>
-        <p>Revenez plus tard pour découvrir nos nouvelles opportunités.</p>
       </div>
     </div>
   </section>
@@ -282,27 +416,37 @@
   <!-- CTA Section -->
   <section class="cta" role="region" aria-labelledby="cta-heading" id="contact">
     <div class="cta-background">
+      <div class="cta-gradient"></div>
       <div class="cta-pattern"></div>
+      <div class="cta-glow"></div>
     </div>
+    
     <div class="cta-content scroll-reveal">
       <div class="cta-badge">
-        <mat-icon>launch</mat-icon>
+        <mat-icon>rocket_launch</mat-icon>
         <span>Prêt à commencer ?</span>
       </div>
-      <h2 id="cta-heading">Vous cherchez un stage ?</h2>
-      <p>Découvrez nos opportunités et postulez pour rejoindre notre équipe dynamique</p>
+      
+      <h2 id="cta-heading" class="cta-title">
+        Vous cherchez un stage chez nous ?
+      </h2>
+      
+      <p class="cta-description">
+        Découvrez nos opportunités de stage et postulez pour rejoindre notre équipe. 
+        Votre parcours professionnel au sein de notre entreprise commence ici.
+      </p>
+      
       <div class="cta-buttons">
-        <button mat-raised-button color="accent" class="cta-button primary" (click)="onCtaClick()" aria-label="Voir nos offres de stage">
-          <mat-icon aria-hidden="true">work</mat-icon>
-          Voir nos offres
+        <button mat-raised-button class="cta-btn primary" (click)="onCtaClick()" aria-label="Voir nos offres de stage">
+          <mat-icon>work</mat-icon>
+          <span>Voir nos offres</span>
+          <div class="btn-glow"></div>
         </button>
-        <button mat-stroked-button color="accent" class="cta-button secondary" (click)="onContactClick()" aria-label="Nous contacter">
-          <mat-icon aria-hidden="true">contact_support</mat-icon>
-          Nous contacter
+        <button mat-stroked-button class="cta-btn secondary" (click)="onContactClick()" aria-label="Nous contacter">
+          <mat-icon>contact_support</mat-icon>
+          <span>Nous contacter</span>
         </button>
       </div>
     </div>
   </section>
-
-
 </div>

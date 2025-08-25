@@ -91,7 +91,7 @@ export class OffresComponent implements OnInit {
     
     console.log('Chargement de toutes les offres...');
     
-    this.offreStageService.getAllOffres().subscribe({
+    this.offreStageService.getAllOffresActives().subscribe({
       next: (offres) => {
         console.log('Toutes les offres chargées avec succès:', offres);
         this.offres = offres;

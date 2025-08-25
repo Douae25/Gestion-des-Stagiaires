@@ -280,8 +280,7 @@
                       </div>
                     </div>
                     <div *ngIf="!stage.rapports || stage.rapports.length === 0" class="no-rapport-message" style="color:#c00; padding:12px; text-align:center;">
-                      <mat-icon>error</mat-icon> Aucun rapport déposé ou structure de données incorrecte.<br>
-                      <span>Vérifiez que <b>stage.rapports</b> est bien un tableau dans le code TypeScript.</span>
+                      <mat-icon>info</mat-icon> Aucun rapport n'a encore été déposé.
                     </div>
                     <!-- Actions pour déposer un nouveau rapport -->
                     <div class="action-buttons" *ngIf="isStageEnCours(stage)">

@@ -50,8 +50,10 @@ export class AdminDashboardComponent implements OnInit {
         this.stats.archivee = offres.filter(o => o.statut === 'archivee').length;
         this.stats.terminee = offres.filter(o => o.statut === 'fermee' && new Date(o.date_fin) < maintenant).length;
         this.stats.enCoursReel = offres.filter(o => o.statut === 'fermee' && new Date(o.date_debut) < maintenant && new Date(o.date_fin) > maintenant).length;
-        // Récupère les vraies dernières actions admin (offres et utilisateurs)
-        this.lastActions = this.adminActionService.getActions().slice(0, 5);
+        // Récupère uniquement les dernières actions de l'admin (pas RH)
+        this.lastActions = this.adminActionService.getActions()
+          .filter(a => a.cible && !a.cible.toLowerCase().includes('rh'))
+          .slice(0, 5);
         this.isLoading = false;
         this.apiError = null;
       },

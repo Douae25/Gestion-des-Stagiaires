@@ -226,12 +226,18 @@ export interface StagesResponse {
   providedIn: 'root'
 })
 export class StagiaireService {
-  // Récupérer les commentaires d'un rapport
-  getCommentairesRapport(idRapport: number) {
-  const token = this.authService.getToken();
-  const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-  return this.http.get<any[]>(`/api/commentaires/rapport/${idRapport}`, { headers });
+  // Récupérer toutes les candidatures terminées (pour RH dashboard et diagramme)
+  getCandidaturesTerminees(): Observable<any[]> {
+    return this.http.get<any[]>(`/api/candidatures/terminees`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(error => {
+        console.error('❌ Erreur lors de la récupération des candidatures terminées:', error);
+        throw error;
+      })
+    );
   }
+
   private readonly API_URL = '/api';
   private candidaturesCache: Array<{ candidature: Candidature, rapports: Rapport[] }> | null = null;
 
@@ -239,6 +245,25 @@ export class StagiaireService {
     private http: HttpClient,
     private authService: AuthService
   ) {}
+
+  // Récupérer les stages en cours pour un RH (dashboard RH)
+  getStagesEnCoursRh(idRh: number): Observable<any[]> {
+    return this.http.get<any[]>(`/api/candidatures/en-cours/mes`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(error => {
+        console.error('❌ Erreur lors de la récupération des stages en cours RH:', error);
+        throw error;
+      })
+    );
+  }
+
+  // Récupérer les commentaires d'un rapport
+  getCommentairesRapport(idRapport: number) {
+    const token = this.authService.getToken();
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.get<any[]>(`/api/commentaires/rapport/${idRapport}`, { headers });
+  }
 
   private getHeaders() {
     return this.authService.getAuthHeaders();

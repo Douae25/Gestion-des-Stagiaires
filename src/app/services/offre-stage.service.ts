@@ -6,6 +6,7 @@ import { catchError, map } from 'rxjs/operators';
 import { HttpHeaders } from '@angular/common/http';
 import { OffreStage } from '../models/offre-stage';
 import { AuthService } from './auth.service';
+import { AdminActionService } from './admin-action.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,11 @@ export class OffreStageService {
   private apiUrl = '/api/offres/actives';
   private apiBase = '/api/offres';
 
-  constructor(private http: HttpClient, private authService: AuthService) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private adminActionService: AdminActionService
+  ) {}
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'Une erreur est survenue lors de la communication avec le serveur';
@@ -126,6 +131,17 @@ export class OffreStageService {
     return this.http.put<any>(`/api/offres/${id}`, offreData, {
       headers: this.getHeaders()
     }).pipe(
+      map(result => {
+        // Enregistrer l'action RH
+        const currentUser = this.authService.getCurrentUser();
+        this.adminActionService.addAction({
+          type: 'offre',
+          action: 'Modifiée',
+          cible: currentUser ? `RH ${currentUser.nom}` : 'RH',
+          date: new Date().toISOString()
+        });
+        return result;
+      }),
       catchError(this.handleError)
     );
   }

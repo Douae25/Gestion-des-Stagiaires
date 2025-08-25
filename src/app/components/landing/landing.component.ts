@@ -15,6 +15,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService, User } from '../../services/auth.service';
 
@@ -35,16 +36,24 @@ import { AuthService, User } from '../../services/auth.service';
     MatSnackBarModule,
     MatDialogModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    FormsModule
   ]
 })
 export class LandingComponent implements OnInit, AfterViewInit {
+  searchTerm: string = '';
+  filteredOffres: OffreStage[] = [];
   offres: OffreStage[] = [];
   loading = false;
   error: string | null = null;
   isMenuOpen = false; // Pour le menu mobile
   currentUser: User | null = null;
   isAuthenticated = false;
+
+  // Statistiques réelles
+  statsStages = 0;
+  statsStagiaires = 0;
+  statsSatisfaction = 0;
 
   constructor(
     private offreStageService: OffreStageService,
@@ -60,12 +69,48 @@ export class LandingComponent implements OnInit, AfterViewInit {
       this.currentUser = user;
       this.isAuthenticated = !!user;
     });
-    
+
     this.loadOffres();
+  this.filteredOffres = this.offres;
+
+    // Récupérer le nombre de stages gérés (offres actives)
+    this.offreStageService.getAllOffresActives().subscribe({
+      next: (offres) => {
+        this.statsStages = Array.isArray(offres) ? offres.length : 0;
+      },
+      error: () => {
+        this.statsStages = 0;
+      }
+    });
+
+    // Récupérer le nombre de stagiaires (candidatures terminées)
+    // Utilise StagiaireService dynamiquement pour éviter import circulaire
+    import('../../services/stagiaire.service').then(module => {
+      const stagiaireService = new module.StagiaireService(this.offreStageService['http'], this.authService);
+      stagiaireService.getCandidaturesTerminees().subscribe({
+        next: (terminees) => {
+          this.statsStagiaires = Array.isArray(terminees) ? terminees.length : 0;
+        },
+        error: () => {
+          this.statsStagiaires = 0;
+        }
+      });
+    });
+
+    // Satisfaction (statique ou calculée, ici statique 95%)
+    this.statsSatisfaction = 95;
   }
 
   ngAfterViewInit(): void {
-    this.initScrollAnimations();
+      // Force all .scroll-reveal elements to be visible immediately
+      setTimeout(() => {
+        const elements = document.querySelectorAll('.scroll-reveal');
+        elements.forEach(el => {
+          el.classList.add('visible');
+        });
+      }, 0);
+      // Optionally keep scroll animation logic for future use
+      // this.initScrollAnimations();
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -172,6 +217,7 @@ export class LandingComponent implements OnInit, AfterViewInit {
         console.log('Offres chargées avec succès:', offres);
         this.offres = offres;
         this.loading = false;
+  this.filterOffres();
         
         if (offres.length === 0) {
           console.log('Aucune offre active trouvée');
@@ -270,8 +316,22 @@ export class LandingComponent implements OnInit, AfterViewInit {
   }
 
   onSearch(): void {
-    // Logique de recherche
-    console.log('Recherche lancée');
+    this.filterOffres();
+  }
+
+  onSearchInputChange(): void {
+    this.filterOffres();
+  }
+
+  filterOffres(): void {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) {
+      this.filteredOffres = this.offres;
+    } else {
+      this.filteredOffres = this.offres.filter(offre =>
+        offre.titre && offre.titre.toLowerCase().includes(term)
+      );
+    }
   }
 
   onCtaClick(): void {

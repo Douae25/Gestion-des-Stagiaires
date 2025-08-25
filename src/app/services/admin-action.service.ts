@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 export interface AdminAction {
   type: 'offre' | 'utilisateur';
-  action: 'Activée' | 'Archivée';
+  action: 'Activée' | 'Archivée' | 'Modifiée';
   cible: string;
   date: string; // format ISO
 }
