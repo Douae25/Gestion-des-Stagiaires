@@ -193,8 +193,11 @@ public void changerStatutOffre(Integer id, String statut) {
     public List<OffreStageDTO> getOffresPourTraitement(Integer idRh) {
         List<OffreStage> offres = offreStageRepository.findAll().stream()
             .filter(o -> o.getRh() != null && o.getRh().getIdUtilisateur().equals(idRh))
-            .filter(o -> o.getStatut() == OffreStage.StatutOffre.en_cours)
+            .filter(o -> o.getStatut() == OffreStage.StatutOffre.fermee)
             .filter(this::shouldBeClosed)
+            .filter(o -> candidatureRepository.findAll().stream()
+                .filter(c -> c.getOffre() != null && c.getOffre().getId().equals(o.getId()))
+                .noneMatch(c -> c.getStatut().name().equalsIgnoreCase("acceptee")))
             .collect(Collectors.toList());
         return offres.stream().map(this::toDTO).collect(Collectors.toList());
     }
