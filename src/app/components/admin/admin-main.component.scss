@@ -1,0 +1,16 @@
+.admin-main-layout {
+  display: flex;
+  min-height: 100vh;
+}
+.admin-content {
+  margin-left: 220px;
+  width: calc(100% - 220px);
+  display: flex;
+  flex-direction: column;
+}
+.admin-page-content {
+  flex: 1;
+  padding: 32px;
+  background: #f7f8fa;
+  min-height: calc(100vh - 64px);
+}

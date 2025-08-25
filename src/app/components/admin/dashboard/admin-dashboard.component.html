@@ -1,5 +1,10 @@
 <div class="admin-dashboard">
+  <div class="dashboard-header">
+  <!-- Icône dashboard supprimée -->
   <h2 class="dashboard-title">Dashboard Administrateur</h2>
+  <div class="dashboard-divider"></div>
+  <!-- Bouton d'actualisation supprimé -->
+  </div>
   <div *ngIf="isLoading" class="loading-indicator">Chargement des statistiques...</div>
   <div *ngIf="apiError" class="error">Erreur API : {{apiError}}</div>
   <div *ngIf="!isLoading && !apiError">
@@ -8,31 +13,43 @@
         <div class="icon"><i class="fas fa-play"></i></div>
         <div class="stat-label">Offres en cours</div>
         <div class="stat-value">{{stats.enCours}}</div>
+        <span class="stat-badge badge-green">Actives</span>
       </div>
       <div class="stat-card archivee">
         <div class="icon"><i class="fas fa-archive"></i></div>
         <div class="stat-label">Offres archivées</div>
         <div class="stat-value">{{stats.archivee}}</div>
+        <span class="stat-badge badge-red">Archivé</span>
       </div>
       <div class="stat-card terminee">
         <div class="icon"><i class="fas fa-check"></i></div>
         <div class="stat-label">Stages terminés</div>
         <div class="stat-value">{{stats.terminee}}</div>
+        <span class="stat-badge badge-orange">Terminé</span>
       </div>
       <div class="stat-card en-cours-reel">
         <div class="icon"><i class="fas fa-hourglass-half"></i></div>
         <div class="stat-label">Stages en cours (réel)</div>
         <div class="stat-value">{{stats.enCoursReel}}</div>
+        <span class="stat-badge badge-blue">En cours</span>
       </div>
     </div>
     <div class="actions">
       <h3 class="actions-title">Dernières actions</h3>
       <ul class="actions-list">
         <li *ngFor="let action of lastActions" class="action-item">
-          <span class="action-type">{{action.type}}</span>
+          <span class="action-type">
+            <i class="fas" [ngClass]="{
+              'fa-user': action.type === 'utilisateur',
+              'fa-archive': action.action === 'Archivée',
+              'fa-check': action.action === 'Activée',
+              'fa-briefcase': action.type === 'offre'
+            }"></i>
+            {{action.type}}
+          </span>
           <span class="action-action">{{action.action}}</span>
           <span class="action-cible">{{action.cible}}</span>
-          <span class="action-date">{{action.date | date:'dd/MM/yyyy HH:mm'}}</span>
+          <span class="action-date">{{action.date | date:'dd/MM/yyyy'}}</span>
         </li>
       </ul>
     </div>

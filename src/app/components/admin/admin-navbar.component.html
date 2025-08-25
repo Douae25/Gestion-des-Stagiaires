@@ -31,11 +31,11 @@
     <div class="profile-container">
       <div class="profile-menu" (click)="toggleProfileMenu()">
         <div class="profile-avatar">
-          A
+          {{ user?.nom ? (user?.nom?.charAt(0) || 'A') : (user?.email ? (user?.email?.charAt(0) || 'A') : 'A') | uppercase }}
         </div>
         <div class="profile-info">
-          <span class="profile-name">Admin</span>
-          <span class="profile-role">Admin</span>
+          <span class="profile-name">{{ getUserName() }}</span>
+          <span class="profile-role">{{ getUserRole() }}</span>
         </div>
         <span class="material-icons dropdown-icon" [class.rotated]="showProfileMenu">
           keyboard_arrow_down
@@ -46,10 +46,12 @@
       <div class="dropdown-menu" [class.show]="showProfileMenu" (mouseleave)="closeProfileMenu()">
         <div class="dropdown-content">
           <div class="dropdown-header">
-            <div class="profile-avatar-large">A</div>
+            <div class="profile-avatar-large">
+              {{ user?.nom ? (user?.nom?.charAt(0) || 'A') : (user?.email ? (user?.email?.charAt(0) || 'A') : 'A') | uppercase }}
+            </div>
             <div class="profile-details">
-              <h3>Admin</h3>
-              <p>admin&#64;email.com</p>
+              <h3>{{ getUserName() }}</h3>
+              <p>{{ getUserEmail() }}</p>
             </div>
           </div>
           <div class="dropdown-divider"></div>

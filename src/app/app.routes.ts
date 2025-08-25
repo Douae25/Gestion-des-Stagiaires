@@ -151,6 +151,10 @@ export const routes: Routes = [
       {
         path: 'stages',
         loadComponent: () => import('./components/admin/stages/stages.component').then(m => m.AdminStagesComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./components/admin/profil/admin-profil.component').then(m => m.AdminProfilComponent)
       }
     ]
   },

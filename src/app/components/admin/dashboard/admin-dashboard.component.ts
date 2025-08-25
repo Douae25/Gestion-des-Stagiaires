@@ -4,11 +4,23 @@ import { CommonModule } from '@angular/common';
 import { OffreStageService } from '../../../services/offre-stage.service';
 import { UtilisateurService } from '../../../services/utilisateur.service';
 import { AdminActionService, AdminAction } from '../../../services/admin-action.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MessageModule } from 'primeng/message';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ProgressSpinnerModule,
+    MessageModule,
+    TableModule,
+    ButtonModule,
+    TooltipModule
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.scss']
 })
@@ -48,6 +60,9 @@ export class AdminDashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+  refreshStats() {
+    this.ngOnInit();
   }
 }
 

@@ -33,15 +33,15 @@
 }
 // Largeur réduite pour Statut et Action
 .stage-table th:nth-child(5), .stage-table td:nth-child(5) {
-  min-width: 90px;
+  min-width: 50px;
   max-width: 90px;
-  width: 90px;
+  width: 50px;
   text-align: center;
 }
 .stage-table th:nth-child(6), .stage-table td:nth-child(6) {
-  min-width: 90px;
-  max-width: 90px;
-  width: 90px;
+  min-width: 40px;
+  max-width: 50px;
+  width: 30px;
   text-align: center;
 }
 $primary-blue: #1e3a8a;
@@ -72,7 +72,7 @@ $gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
     padding: 1.75rem;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     overflow-x: auto;
-    width: 100%;
+    width: 90%;
     
     .table-responsive {
       overflow-x: auto;
@@ -242,7 +242,7 @@ $gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
 
   // Boutons d'action
   .action-btn {
-    padding: 0.75rem 2.2rem;
+      padding: 0.35rem 0.7rem;
     border: none;
     border-radius: 32px;
   font-size: 0.75rem;
@@ -256,8 +256,9 @@ $gradient-accent: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
     box-shadow: $shadow-md;
     background: $gradient-primary;
     color: $neutral-white;
-  min-width: 110px;
-  padding: 0.5rem 1rem;
+    min-width: 60px;
+    font-size: 0.72rem;
+    padding: 0.35rem 0.7rem;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 
     i {

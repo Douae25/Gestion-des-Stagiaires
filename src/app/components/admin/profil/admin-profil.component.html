@@ -1,0 +1,65 @@
+<div class="profile-container">
+  <h1 class="profile-title">Profil Administrateur</h1>
+  <p class="profile-subtitle">Gérez vos informations personnelles et vos accès</p>
+
+  <div class="profile-card">
+    <form [formGroup]="profileForm" class="profile-form">
+      <div class="form-group">
+        <label for="nom">Nom</label>
+        <input id="nom" formControlName="nom" [readonly]="!editMode" />
+      </div>
+      <div class="form-group">
+        <label for="prenom">Prénom</label>
+        <input id="prenom" formControlName="prenom" [readonly]="!editMode" />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" [readonly]="!editMode" />
+      </div>
+      <div class="form-group">
+        <label for="telephone">Téléphone</label>
+        <input id="telephone" formControlName="telephone" [readonly]="!editMode" />
+      </div>
+      <div *ngIf="editMode" class="form-group">
+        <label for="currentPassword">Mot de passe actuel</label>
+        <input id="currentPassword" type="password" formControlName="currentPassword" required />
+        <div class="error-message" *ngIf="profileForm.get('currentPassword')?.invalid && profileForm.get('currentPassword')?.touched">
+          Le mot de passe est obligatoire
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" *ngIf="!editMode" (click)="editMode = true">Modifier mes informations</button>
+        <button type="submit" class="btn btn-success" *ngIf="editMode" (click)="saveProfile()">Enregistrer</button>
+        <button type="button" class="btn btn-neutral" *ngIf="editMode" (click)="cancelEdit()">Annuler</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="password-section">
+    <div class="password-card">
+      <div class="password-header">
+        <span class="material-icons password-icon">lock</span>
+        <div class="password-desc">Pour sécuriser votre compte, vous pouvez mettre à jour votre mot de passe.</div>
+      </div>
+      <button *ngIf="!showPasswordForm" class="btn password-btn" (click)="showPasswordForm = true">Changer mon mot de passe</button>
+      <form *ngIf="showPasswordForm" [formGroup]="passwordForm" class="password-form">
+        <div class="form-group">
+          <label for="oldPassword">Mot de passe actuel</label>
+          <input id="oldPassword" type="password" formControlName="oldPassword" required />
+        </div>
+        <div class="form-group">
+          <label for="newPassword">Nouveau mot de passe</label>
+          <input id="newPassword" type="password" formControlName="newPassword" required />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirmer le mot de passe</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword" required />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-success" (click)="changePassword()">Mettre à jour le mot de passe</button>
+          <button type="button" class="btn btn-neutral" (click)="showPasswordForm = false">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,297 @@
+$primary-blue: #1e3a8a;
+$secondary-blue: #3b82f6;
+$accent-purple: #8b5cf6;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+$neutral-white: #ffffff;
+$neutral-light: #f8fafc;
+$neutral-medium: #e2e8f0;
+$neutral-dark: #1e293b;
+$shadow-md: 0 4px 16px rgba(30, 58, 138, 0.12);
+$shadow-sm: 0 2px 8px rgba(30, 58, 138, 0.08);
+
+// ...existing code from encadrant profile SCSS...
+// Password section refined style
+.password-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 32px;
+  min-height: 220px;
+}
+.password-card {
+  background: $neutral-white;
+  border-radius: 16px;
+  box-shadow: $shadow-md;
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.password-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0;
+}
+.password-icon {
+  font-size: 36px;
+  color: $accent-purple;
+  margin-bottom: 12px;
+}
+.password-desc {
+  color: $neutral-dark;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  max-width: 320px;
+}
+.password-btn {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  background: $secondary-blue;
+  color: #fff;
+  box-shadow: $shadow-sm;
+  margin-bottom: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.01em;
+}
+.password-btn:hover {
+  background: darken($secondary-blue, 10%);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.12);
+}
+@media (max-width: 400px) {
+  .password-card {
+    padding: 12px 4px;
+  }
+  .password-desc {
+    font-size: 13px;
+  }
+  .password-btn {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+}
+.password-form {
+  width: 100%;
+  margin-top: 8px;
+}
+.password-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+.password-form label {
+  font-weight: 500;
+  color: $primary-blue;
+  margin-bottom: 6px;
+}
+.password-form input {
+  padding: 8px;
+  border: 1px solid $neutral-medium;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: $neutral-dark;
+  background: $neutral-light;
+  transition: border-color 0.2s;
+}
+.password-form input:focus {
+  border-color: $secondary-blue;
+  outline: none;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+.btn-success {
+  background: $success-green;
+  color: $neutral-white;
+}
+.btn-success:hover {
+  background: darken($success-green, 10%);
+}
+.btn-neutral {
+  background: $neutral-medium;
+  color: $neutral-dark;
+}
+.btn-neutral:hover {
+  background: darken($neutral-medium, 10%);
+}
+@media (max-width: 700px) {
+  .password-card {
+    padding: 18px 8px;
+    max-width: 100%;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+}
+body, .profile-bg {
+  background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+  min-height: 100vh;
+}
+.profile-container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, $primary-blue 0%, $secondary-blue 100%);
+  min-height: 100vh;
+}
+.profile-title {
+  color: $primary-blue;
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.profile-subtitle {
+  color: $neutral-dark;
+  font-size: 1.1rem;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.profile-card {
+  background: $neutral-white;
+  box-shadow: $shadow-md;
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin-bottom: 32px;
+}
+.profile-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+.profile-form label {
+  font-weight: 500;
+  color: $primary-blue;
+  margin-bottom: 6px;
+}
+.profile-form input {
+  padding: 8px;
+  border: 1px solid $neutral-medium;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: $neutral-dark;
+  background: $neutral-light;
+  transition: border-color 0.2s;
+}
+.profile-form input:focus {
+  border-color: $secondary-blue;
+  outline: none;
+}
+.profile-form input[readonly] {
+  background: $neutral-medium;
+  color: $neutral-dark;
+  opacity: 0.8;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.btn-secondary {
+  background: $secondary-blue;
+  color: $neutral-white;
+}
+.btn-secondary:hover {
+  background: darken($secondary-blue, 10%);
+}
+.btn-success {
+  background: $success-green;
+  color: $neutral-white;
+}
+.btn-success:hover {
+  background: darken($success-green, 10%);
+}
+.btn-neutral {
+  background: $neutral-medium;
+  color: $neutral-dark;
+}
+.btn-neutral:hover {
+  background: darken($neutral-medium, 10%);
+}
+.password-section {
+  background: $neutral-white;
+  box-shadow: $shadow-md;
+  border-radius: 16px;
+  padding: 32px 24px;
+  margin-bottom: 32px;
+}
+.password-title {
+  color: $primary-blue;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  text-align: center;
+}
+.password-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+.password-form label {
+  font-weight: 500;
+  color: $primary-blue;
+  margin-bottom: 6px;
+}
+.password-form input {
+  padding: 8px;
+  border: 1px solid $neutral-medium;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: $neutral-dark;
+  background: $neutral-light;
+  transition: border-color 0.2s;
+}
+.password-form input:focus {
+  border-color: $secondary-blue;
+  outline: none;
+}
+@media (max-width: 700px) {
+  .profile-container {
+    max-width: 100%;
+    padding: 0 8px;
+  }
+  .profile-card, .password-section {
+    padding: 18px 8px;
+  }
+  .form-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+}
+.profile-container {
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.08);
+}
