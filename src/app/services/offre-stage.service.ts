@@ -12,6 +12,16 @@ import { AdminActionService } from './admin-action.service';
   providedIn: 'root'
 })
 export class OffreStageService {
+  /**
+   * Récupère les statistiques globales (nombre d'offres et de stagiaires)
+   */
+  getStats(): Observable<{ offres: number, stagiaires: number }> {
+    return this.http.get<{ offres: number, stagiaires: number }>(`/api/offres/stats`, {
+      headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
   private apiUrl = '/api/offres/actives';
   private apiBase = '/api/offres';
 

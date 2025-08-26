@@ -258,7 +258,7 @@
             <mat-icon>work</mat-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-number" aria-label="Plus de 500 stages gérés">500+</div>
+            <div class="stat-number" aria-label="Stages gérés">{{ statsStages !== null ? statsStages : 'Non disponible' }}</div>
             <div class="stat-label">Stages gérés</div>
             <div class="stat-description">avec succès</div>
           </div>
@@ -270,7 +270,7 @@
             <mat-icon>people</mat-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-number" aria-label="Plus de 200 stagiaires accueillis">200+</div>
+            <div class="stat-number" aria-label="Stagiaires accueillis">{{ statsStagiaires !== null ? statsStagiaires : 'Non disponible' }}</div>
             <div class="stat-label">Stagiaires accueillis</div>
             <div class="stat-description">et accompagnés</div>
           </div>
@@ -282,7 +282,7 @@
             <mat-icon>thumb_up</mat-icon>
           </div>
           <div class="stat-content">
-            <div class="stat-number" aria-label="95 pour cent de satisfaction">95%</div>
+            <div class="stat-number" aria-label="Taux de satisfaction">{{ statsSatisfaction }}%</div>
             <div class="stat-label">Taux de satisfaction</div>
             <div class="stat-description">des stagiaires</div>
           </div>

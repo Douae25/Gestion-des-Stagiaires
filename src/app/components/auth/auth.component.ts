@@ -80,7 +80,12 @@ export class AuthComponent implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        this.showErrorMessage(error || 'Erreur de connexion');
+        // Si le message d'erreur est celui du compte bloqué
+        if (typeof error === 'string' && error.includes('bloqué')) {
+          this.showErrorMessage(error);
+        } else {
+          this.showErrorMessage(error || 'Erreur de connexion');
+        }
       }
     });
   }

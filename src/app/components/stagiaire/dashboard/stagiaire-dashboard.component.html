@@ -9,9 +9,6 @@
     <span class="toolbar-spacer"></span>
     
     <div class="toolbar-actions">
-      <button mat-icon-button [matMenuTriggerFor]="notificationMenu" matTooltip="Notifications">
-        <mat-icon [matBadge]="notificationCount" matBadgeColor="warn" [matBadgeHidden]="notificationCount === 0">notifications</mat-icon>
-      </button>
       
       <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Menu utilisateur">
         <mat-icon>account_circle</mat-icon>
@@ -19,33 +16,6 @@
     </div>
   </mat-toolbar>
 
-  <!-- Menu Notifications -->
-  <mat-menu #notificationMenu="matMenu">
-    <div class="notification-header">
-      <span>Notifications</span>
-      <button mat-icon-button (click)="markAllAsRead()" matTooltip="Tout marquer comme lu">
-        <mat-icon>done_all</mat-icon>
-      </button>
-    </div>
-    <mat-divider></mat-divider>
-    <div class="notification-list" *ngIf="notifications.length > 0; else noNotifications">
-      <button mat-menu-item *ngFor="let notification of notifications.slice(0, 5)" class="notification-item">
-        <mat-icon [color]="notification.type === 'success' ? 'primary' : 'warn'">
-          {{ getNotificationIcon(notification.type) }}
-        </mat-icon>
-        <div class="notification-content">
-          <span class="notification-title">{{ notification.title }}</span>
-          <span class="notification-time">{{ formatNotificationTime(notification.date) }}</span>
-        </div>
-      </button>
-    </div>
-    <ng-template #noNotifications>
-      <div class="no-notifications">
-        <mat-icon>notifications_none</mat-icon>
-        <span>Aucune notification</span>
-      </div>
-    </ng-template>
-  </mat-menu>
 
   <!-- Menu Utilisateur -->
   <mat-menu #userMenu="matMenu">

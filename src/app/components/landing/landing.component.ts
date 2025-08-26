@@ -51,8 +51,8 @@ export class LandingComponent implements OnInit, AfterViewInit {
   isAuthenticated = false;
 
   // Statistiques réelles
-  statsStages = 0;
-  statsStagiaires = 0;
+  statsStages: number | null = 0;
+  statsStagiaires: number | null = 0;
   statsSatisfaction = 0;
 
   constructor(
@@ -71,30 +71,20 @@ export class LandingComponent implements OnInit, AfterViewInit {
     });
 
     this.loadOffres();
-  this.filteredOffres = this.offres;
+    this.filteredOffres = this.offres;
 
-    // Récupérer le nombre de stages gérés (offres actives)
-    this.offreStageService.getAllOffresActives().subscribe({
-      next: (offres) => {
-        this.statsStages = Array.isArray(offres) ? offres.length : 0;
+    // Récupérer les statistiques globales via /offres/stats
+    this.statsStages = null;
+    this.statsStagiaires = null;
+    this.offreStageService.getStats().subscribe({
+      next: (stats) => {
+        this.statsStages = typeof stats.offres === 'number' ? stats.offres : null;
+        this.statsStagiaires = typeof stats.stagiaires === 'number' ? stats.stagiaires : null;
       },
       error: () => {
-        this.statsStages = 0;
+        this.statsStages = null;
+        this.statsStagiaires = null;
       }
-    });
-
-    // Récupérer le nombre de stagiaires (candidatures terminées)
-    // Utilise StagiaireService dynamiquement pour éviter import circulaire
-    import('../../services/stagiaire.service').then(module => {
-      const stagiaireService = new module.StagiaireService(this.offreStageService['http'], this.authService);
-      stagiaireService.getCandidaturesTerminees().subscribe({
-        next: (terminees) => {
-          this.statsStagiaires = Array.isArray(terminees) ? terminees.length : 0;
-        },
-        error: () => {
-          this.statsStagiaires = 0;
-        }
-      });
     });
 
     // Satisfaction (statique ou calculée, ici statique 95%)

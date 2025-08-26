@@ -15,7 +15,7 @@ import { StagiaireService, Candidature, StagiaireProfile } from '../../../servic
 interface Notification {
   id: number;
   title: string;
-  type: 'success' | 'warning' | 'info';
+  type: 'success' | 'warning' | 'info' | 'error';
   date: Date;
   read: boolean;
 }
@@ -48,23 +48,8 @@ export class StagiaireDashboardComponent implements OnInit {
   activeStagesCount = 0;
   notificationCount = 0;
   
-  // Notifications
-  notifications: Notification[] = [
-    {
-      id: 1,
-      title: 'Nouvelle offre correspondant à votre profil',
-      type: 'info',
-      date: new Date(),
-      read: false
-    },
-    {
-      id: 2,
-      title: 'Candidature acceptée chez TechCorp',
-      type: 'success',
-      date: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      read: false
-    }
-  ];
+  // Notifications réelles
+  notifications: Notification[] = [];
   
   // Candidatures récentes
   recentCandidatures: Candidature[] = [
@@ -121,10 +106,10 @@ export class StagiaireDashboardComponent implements OnInit {
         this.router.navigate(['/login']);
       } else {
         this.loadDashboardData();
+  
       }
     });
-    
-    this.updateNotificationCount();
+
   }
 
   private loadDashboardData(): void {

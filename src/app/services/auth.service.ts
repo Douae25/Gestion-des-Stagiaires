@@ -84,10 +84,19 @@ export class AuthService {
           // Extraire les informations utilisateur du token JWT
           const userInfo = this.decodeJwtToken(response.token);
           if (userInfo) {
+            // Vérifier le statut utilisateur
+            if (userInfo.statut && userInfo.statut === 'archive') {
+              // Compte bloqué, ne pas connecter
+              throw { status: 403, error: 'Votre compte a été bloqué par l\'administrateur.' };
+            }
             this.handleLoginSuccess(response.token, userInfo);
           }
         }),
         catchError(error => {
+          // Gestion du cas compte bloqué
+          if (error && error.status === 403 && error.error) {
+            return throwError(() => error.error);
+          }
           console.error('Erreur de connexion:', error);
           return throwError(() => this.handleLoginError(error));
         })
@@ -115,13 +124,17 @@ export class AuthService {
       // Nettoyer le rôle en supprimant le préfixe ROLE_ s'il existe
       const cleanRole = rawRole.startsWith('ROLE_') ? rawRole.substring(5) : rawRole;
       
+      // Ajout du statut utilisateur (archive, actif, etc.)
+      const statut = payload.statut || null;
+
       return {
         id: payload.userId, // Utiliser userId depuis le JWT
         email: payload.sub, // Le subject contient l'email (username)
         nom: payload.nom,
         prenom: payload.prenom,
         numero_telephone: payload.numero_telephone,
-        role: cleanRole
+        role: cleanRole,
+        statut: statut
       };
     } catch (error) {
       console.error('Erreur lors du décodage du token JWT:', error);
