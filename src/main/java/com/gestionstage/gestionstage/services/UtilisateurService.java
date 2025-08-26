@@ -205,8 +205,8 @@ public UtilisateurUpdateResponse updateUtilisateur(Integer id, UtilisateurComple
     if (!ancienEmail.equals(dto.getEmail())) {
         System.out.println("UtilisateurService: Email modifié de '" + ancienEmail + "' vers '" + dto.getEmail() + "'");
         // Générer un nouveau token avec le nouvel email et le rôle de l'utilisateur
-        String role = "role_" + utilisateur.getType().name();
-        String nouveauToken = jwtService.generateToken(dto.getEmail(), role, id);
+    String role = "role_" + utilisateur.getType().name();
+    String nouveauToken = jwtService.generateToken(dto.getEmail(), role, id, utilisateur.getStatut().name());
         System.out.println("UtilisateurService: Nouveau token généré pour email: " + dto.getEmail());
         return new UtilisateurUpdateResponse(utilisateurDTO, nouveauToken);
     }
