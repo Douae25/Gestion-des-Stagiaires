@@ -14,6 +14,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class OffreStageService {
+    public int countOffres() {
+        return (int) offreStageRepository.count();
+    }
+
+    public int countStagiaires() {
+        return (int) utilisateurRepository.findAll().stream()
+            .filter(u -> u.getType() == com.gestionstage.gestionstage.entities.Utilisateur.TypeUtilisateur.stagiaire)
+            .count();
+    }
 
     @Autowired
     private OffreStageRepository offreStageRepository;

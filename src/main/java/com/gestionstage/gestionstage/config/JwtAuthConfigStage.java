@@ -28,8 +28,8 @@ public class JwtAuthConfigStage {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/offres/actives", "/utilisateurs").permitAll()
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/auth/**", "/offres/actives", "/utilisateurs", "/offres/stats").permitAll()
                         
                         // Stagiaire
                         .requestMatchers("/api/candidatures").hasAnyRole("STAGIAIRE", "RH")

@@ -53,8 +53,8 @@ public class AuthController {
             Utilisateur utilisateur = utilisateurRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-            // Générer le token JWT avec le rôle et l'ID utilisateur
-            String token = jwtService.generateToken(request.getEmail(), role, utilisateur.getIdUtilisateur());
+            // Générer le token JWT avec le rôle, l'ID utilisateur et le statut
+            String token = jwtService.generateToken(request.getEmail(), role, utilisateur.getIdUtilisateur(), utilisateur.getStatut().name());
             // Retourner le token au client
             return ResponseEntity.ok(new JwtResponse(token));
 

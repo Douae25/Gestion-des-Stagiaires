@@ -14,6 +14,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/offres")
 public class OffreStageController {
+    @GetMapping("/stats")
+    public ResponseEntity<java.util.Map<String, Integer>> getStats() {
+        int nbOffres = offreStageService.countOffres();
+        int nbStagiaires = offreStageService.countStagiaires();
+        java.util.Map<String, Integer> stats = new java.util.HashMap<>();
+        stats.put("offres", nbOffres);
+        stats.put("stagiaires", nbStagiaires);
+        return ResponseEntity.ok(stats);
+    }
 
     @Autowired
     private OffreStageService offreStageService;

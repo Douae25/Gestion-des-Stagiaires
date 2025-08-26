@@ -14,16 +14,26 @@ public class JwtService {
     private final String secretKey = "your-secret-key-should-be-at-least-256-bits-long-256-bits-long-256-bits-long";
     private final long expiration = 1000 * 60 * 60 * 24; // 24 heures
 
-    public String generateToken(String username, String role, Integer userId) {
-        // Utiliser le rôle tel quel (en minuscules)
+    public String generateToken(String username, String role, Integer userId, String statut) {
+        // Utiliser le rôle et le statut tel quel
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
                 .claim("userId", userId)
+                .claim("statut", statut)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .compact();
+    }
+
+    public String extractStatut(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("statut", String.class);
     }
 
     public String extractUsername(String token) {
