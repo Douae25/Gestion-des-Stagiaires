@@ -1,3 +1,4 @@
+
 package com.gestionstage.gestionstage.controllers;
 
 import com.gestionstage.gestionstage.dtos.CandidatureDTO;
@@ -20,6 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/candidatures")
 public class CandidatureController {
+    @GetMapping("/{id}/attestation")
+    @PreAuthorize("hasAnyRole('rh', 'admin', 'stagiaire')")
+    public ResponseEntity<String> getAttestation(@PathVariable Integer id) {
+        byte[] attestationBytes = candidatureService.getAttestationFile(id);
+        if (attestationBytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String base64 = new String(attestationBytes);
+        return ResponseEntity.ok(base64);
+    }
     @GetMapping("/acceptees/evaluees/{idUtilisateur}")
     @PreAuthorize("hasRole('encadrant')")
     public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> getCandidaturesAccepteesAvecEvaluationByEncadrant(@PathVariable Integer idUtilisateur) {
@@ -255,4 +266,14 @@ public class CandidatureController {
     Integer idUtilisateur = extractUserIdFromToken(authHeader);
     return candidatureService.getCandidaturesEnCoursByUtilisateur(idUtilisateur);
     }
+        @PostMapping("/{id}/generer-attestation")
+        @PreAuthorize("hasAnyRole('rh', 'admin')")
+        public ResponseEntity<String> genererAttestation(@PathVariable Integer id) {
+            try {
+                candidatureService.genererAttestationDeStage(id);
+                return ResponseEntity.ok("Attestation générée et enregistrée avec succès.");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+        }
 }

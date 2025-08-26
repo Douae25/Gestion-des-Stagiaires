@@ -19,6 +19,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class CandidatureService {
+    public byte[] getAttestationFile(Integer idCandidature) {
+        Candidature candidature = candidatureRepository.findById(idCandidature)
+            .orElseThrow(() -> new IllegalArgumentException("Candidature introuvable"));
+        return candidature.getAttestation();
+    }
     public List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> getCandidaturesAccepteesAvecEvaluationByEncadrant(Integer idEncadrant) {
         List<com.gestionstage.gestionstage.dtos.CandidatureAvecRapportFinalEtEvaluationDTO> result = new java.util.ArrayList<>();
         List<Candidature> candidatures = candidatureRepository.findAll();
@@ -282,6 +287,75 @@ public class CandidatureService {
 
     @Autowired
     private OffreStageService offreStageService;
+        public void genererAttestationDeStage(Integer idCandidature) {
+            Candidature candidature = candidatureRepository.findById(idCandidature)
+                .orElseThrow(() -> new IllegalArgumentException("Candidature introuvable"));
+
+            if (!candidature.getStatut().name().equalsIgnoreCase("acceptee")) {
+                throw new IllegalStateException("La candidature doit être acceptée pour générer une attestation.");
+            }
+            boolean hasRapportFinal = rapportRepository.findByCandidatureId(idCandidature)
+                .stream().anyMatch(r -> "Rapport final de stage".equalsIgnoreCase(r.getTitre()));
+            if (!hasRapportFinal) {
+                throw new IllegalStateException("Le rapport final doit être déposé avant de générer l'attestation.");
+            }
+
+            try {
+                // Générer le PDF enrichi
+                com.lowagie.text.Document document = new com.lowagie.text.Document();
+                java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+                com.lowagie.text.pdf.PdfWriter.getInstance(document, baos);
+                document.open();
+                // Titre principal
+                com.lowagie.text.Font titreFont = new com.lowagie.text.Font(com.lowagie.text.Font.HELVETICA, 18, com.lowagie.text.Font.BOLD);
+                document.add(new com.lowagie.text.Paragraph("Attestation de Stage", titreFont));
+                document.add(new com.lowagie.text.Paragraph("\n"));
+
+                // Informations sur le stagiaire
+                com.lowagie.text.Font normalFont = new com.lowagie.text.Font(com.lowagie.text.Font.HELVETICA, 12, com.lowagie.text.Font.NORMAL);
+                String stagiaireNom = candidature.getStagiaire().getUtilisateur().getNom() + " " + candidature.getStagiaire().getUtilisateur().getPrenom();
+                String stagiaireEmail = candidature.getStagiaire().getUtilisateur().getEmail();
+                String stagiaireTel = candidature.getStagiaire().getUtilisateur().getTelephone();
+                document.add(new com.lowagie.text.Paragraph("Nous certifions que :", normalFont));
+                document.add(new com.lowagie.text.Paragraph("Nom du stagiaire : " + stagiaireNom, normalFont));
+                document.add(new com.lowagie.text.Paragraph("Email : " + stagiaireEmail, normalFont));
+                document.add(new com.lowagie.text.Paragraph("Téléphone : " + (stagiaireTel != null ? stagiaireTel : "N/A"), normalFont));
+                document.add(new com.lowagie.text.Paragraph("\n"));
+
+                // Informations sur le stage
+                String entreprise = "FD Solutions";
+                String dateDebut = String.valueOf(candidature.getOffre().getDate_debut());
+                String dateFin = String.valueOf(candidature.getOffre().getDate_fin());
+                String sujet = candidature.getOffre().getTitre() != null ? candidature.getOffre().getTitre() : "N/A";
+                document.add(new com.lowagie.text.Paragraph("A effectué un stage au sein de l'entreprise : " + entreprise, normalFont));
+                document.add(new com.lowagie.text.Paragraph("Période du stage : du " + dateDebut + " au " + dateFin, normalFont));
+                document.add(new com.lowagie.text.Paragraph("Sujet du stage : " + sujet, normalFont));
+                document.add(new com.lowagie.text.Paragraph("\n"));
+
+                // Informations sur l'encadrant
+                String encadrantNom = "N/A";
+                if (candidature.getEncadrant() != null && candidature.getEncadrant().getUtilisateur() != null) {
+                    encadrantNom = candidature.getEncadrant().getUtilisateur().getNom() + " " + candidature.getEncadrant().getUtilisateur().getPrenom();
+                }
+                document.add(new com.lowagie.text.Paragraph("Encadrant de stage : " + encadrantNom, normalFont));
+                document.add(new com.lowagie.text.Paragraph("\n"));
+
+                // Date et signature
+                document.add(new com.lowagie.text.Paragraph("Fait à " + entreprise + ", le " + java.time.LocalDate.now(), normalFont));
+                document.add(new com.lowagie.text.Paragraph("Signature :", normalFont));
+                document.add(new com.lowagie.text.Paragraph("\n"));
+                document.add(new com.lowagie.text.Paragraph("__________________________", normalFont));
+
+                document.close();
+
+                // Encoder en base64
+                String base64 = java.util.Base64.getEncoder().encodeToString(baos.toByteArray());
+                candidature.setAttestation(base64.getBytes());
+                candidatureRepository.save(candidature);
+            } catch (Exception e) {
+                throw new RuntimeException("Erreur lors de la génération du PDF d'attestation", e);
+            }
+        }
 
     public CandidatureDTO create(CandidatureDTO dto) {
         OffreStage offre = offreStageRepository.findById(dto.getId_offre())
@@ -835,16 +909,6 @@ public void deposerConventionSigneeParRH(Integer idCandidature, byte[] fichierCo
                 offreDTO.setStatut(candidature.getOffre().getStatut().name());
                 offreDTO.setLocalisation(candidature.getOffre().getLocalisation());
                 offreDTO.setCompetence_requise(candidature.getOffre().getCompetence_requise());
-                offreDTO.setDate_publication(candidature.getOffre().getDate_publication());
-                offreDTO.setDuree_candidature(candidature.getOffre().getDuree_candidature());
-                offreDTO.setNombre_limite_candidature(candidature.getOffre().getNombre_limite_candidature());
-                
-                // Ajout des infos RH
-                if (candidature.getOffre().getRh() != null) {
-                    offreDTO.setRh_info(createUtilisateurDTO(candidature.getOffre().getRh()));
-                    dto.setRh_info(createUtilisateurDTO(candidature.getOffre().getRh()));
-                }
-                
                 dto.setOffre_info(offreDTO);
             }
             
@@ -928,13 +992,16 @@ public void deposerConventionSigneeParRH(Integer idCandidature, byte[] fichierCo
                     offreDTO.setDate_publication(candidature.getOffre().getDate_publication());
                     offreDTO.setDuree_candidature(candidature.getOffre().getDuree_candidature());
                     offreDTO.setNombre_limite_candidature(candidature.getOffre().getNombre_limite_candidature());
-                    // Infos RH
+                    
+                    // Ajout des infos RH
                     if (candidature.getOffre().getRh() != null) {
                         offreDTO.setRh_info(createUtilisateurDTO(candidature.getOffre().getRh()));
                         dto.setRh_info(createUtilisateurDTO(candidature.getOffre().getRh()));
                     }
+                    
                     dto.setOffre_info(offreDTO);
                 }
+                
                 return dto;
             })
             .collect(java.util.stream.Collectors.toList());

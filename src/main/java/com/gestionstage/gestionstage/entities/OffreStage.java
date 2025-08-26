@@ -21,6 +21,12 @@ private Utilisateur rh;
 
     private String titre;
     private String description;
+    private String sujet;
+
+    public String getSujet() {
+        return sujet;
+    }
+
     private LocalDate date_debut;
     private LocalDate date_fin;
     private Integer duree;

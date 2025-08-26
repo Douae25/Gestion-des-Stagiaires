@@ -23,6 +23,10 @@ public class Utilisateur {
     private String mot_de_passe;
     private String numero_telephone;
 
+    public String getTelephone() {
+        return numero_telephone;
+    }
+
     @Enumerated(EnumType.STRING)
     private TypeUtilisateur type;
 
