@@ -13,6 +13,28 @@ import { AdminActionService } from './admin-action.service';
 })
 export class OffreStageService {
   /**
+   * Récupère l'attestation générée pour une candidature donnée (GET /candidatures/{id}/attestation)
+   */
+  getAttestationPourCandidature(idCandidature: number): Observable<any> {
+    return this.http.get(`/api/candidatures/${idCandidature}/attestation`, {
+      headers: this.getHeaders(),
+      responseType: 'text' as 'json'
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  /**
+   * Génère et envoie l'attestation pour une candidature donnée (POST /candidatures/{id}/generer-attestation)
+   */
+  genererAttestationPourCandidature(idCandidature: number): Observable<any> {
+    return this.http.post(`/api/candidatures/${idCandidature}/generer-attestation`, {}, {
+      headers: this.getHeaders(),
+      responseType: 'text' as 'json'
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+  /**
    * Récupère les statistiques globales (nombre d'offres et de stagiaires)
    */
   getStats(): Observable<{ offres: number, stagiaires: number }> {

@@ -199,7 +199,7 @@
               <div class="offre-meta">
                 <span class="offre-duration">
                   <mat-icon>schedule</mat-icon>
-                  {{ offre.duree }} mois
+                  {{ offre.duree ? (offre.duree / 30 | number:'1.0-0') + ' mois' : 'Non spécifié' }}
                 </span>
                 <span class="offre-location">
                   <mat-icon>location_on</mat-icon>
@@ -254,7 +254,7 @@
               <div class="offre-meta">
                 <span class="offre-duration">
                   <mat-icon>schedule</mat-icon>
-                  {{ offre.duree }} mois
+                  {{ offre.duree ? (offre.duree / 30 | number:'1.0-0') + ' mois' : 'Non spécifié' }}
                 </span>
                 <span class="offre-location">
                   <mat-icon>location_on</mat-icon>
@@ -318,11 +318,12 @@
               mat-raised-button 
               color="primary" 
               class="apply-btn" 
-              [disabled]="!canPostuler(offre)"
+              [disabled]="!canPostuler(offre) || aDejaPostule(offre)"
               (click)="ouvrirDialogPostuler(offre)"
               *ngIf="currentUser?.role === 'stagiaire'">
               <mat-icon>send</mat-icon>
-              <span *ngIf="canPostuler(offre)">Postuler</span>
+              <span *ngIf="aDejaPostule(offre)">Déjà postulé</span>
+              <span *ngIf="!aDejaPostule(offre) && canPostuler(offre)">Postuler</span>
               <span *ngIf="isOffreExpiree(offre)">Expiré</span>
               <span *ngIf="isCandidaturesCompletes(offre) && !isOffreExpiree(offre)">Complet</span>
               <span *ngIf="!isOffreActive(offre.statut) && !isOffreExpiree(offre) && !isCandidaturesCompletes(offre)">Fermée</span>

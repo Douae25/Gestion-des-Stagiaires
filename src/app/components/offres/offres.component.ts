@@ -29,6 +29,8 @@ import { PostulerComponent } from '../stagiaire/postuler/postuler.component';
   ]
 })
 export class OffresComponent implements OnInit {
+  // Liste des id_offre pour lesquelles le stagiaire a déjà postulé
+  offresPostulees: number[] = [];
   offres: OffreStage[] = [];
   offresFiltrees: OffreStage[] = [];
   loading = false;
@@ -64,7 +66,20 @@ export class OffresComponent implements OnInit {
     this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
       this.isAuthenticated = !!user;
-      
+      if (this.isAuthenticated && this.currentUser?.role === 'stagiaire') {
+        // Charger les candidatures du stagiaire pour savoir où il a déjà postulé
+        import('../../services/stagiaire.service').then(module => {
+          const stagiaireService = new module.StagiaireService(this.offreStageService['http'], this.authService);
+          stagiaireService.getCandidatures().subscribe({
+            next: (candidatures) => {
+              this.offresPostulees = candidatures.map(c => c.id_offre);
+            },
+            error: () => {
+              this.offresPostulees = [];
+            }
+          });
+        });
+      }
       if (!this.isAuthenticated) {
         // Rediriger vers la page de connexion avec returnUrl
         this.snackBar.open('Vous devez vous connecter pour accéder aux offres', 'Se connecter', {
@@ -76,13 +91,20 @@ export class OffresComponent implements OnInit {
         return;
       }
     });
-    
     this.loadAllOffres();
     // Charger la préférence de vue depuis le localStorage
     const savedViewMode = localStorage.getItem('offres-view-mode');
     if (savedViewMode === 'grid' || savedViewMode === 'list') {
-      this.viewMode = savedViewMode;
+      this.viewMode = savedViewMode as 'grid' | 'list';
     }
+  }
+
+  // Vérifie si le stagiaire a déjà postulé à une offre
+  aDejaPostule(offre: OffreStage): boolean {
+    if (!offre || typeof offre.id === 'undefined' || offre.id === null) {
+      return false;
+    }
+    return this.offresPostulees.map(id => Number(id)).includes(Number(offre.id));
   }
 
   loadAllOffres(): void {

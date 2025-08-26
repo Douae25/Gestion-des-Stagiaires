@@ -120,8 +120,8 @@
                 <span>{{ candidature.offre_info.localisation || 'Non spécifié' }}</span>
               </div>
               <div class="detail-item">
-                <mat-icon>schedule</mat-icon>
-                <span>{{ candidature.offre_info.duree }} mois</span>
+                <mat-icon>hourglass_bottom</mat-icon>
+                <span>Durée : {{ getDureeEnMois(candidature.offre_info.date_debut, candidature.offre_info.date_fin) }}</span>
               </div>
               <div class="detail-item">
                 <mat-icon>date_range</mat-icon>

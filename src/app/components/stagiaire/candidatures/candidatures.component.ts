@@ -44,6 +44,24 @@ import { ConfirmCancelDialogComponent } from './confirm-cancel-dialog.component'
   ]
 })
 export class CandidaturesComponent implements OnInit {
+  // Calcule la durée en mois entre deux dates
+  getDureeEnMois(dateDebut: string, dateFin: string): string {
+    if (!dateDebut || !dateFin) return 'Non spécifié';
+    const debut = new Date(dateDebut);
+    const fin = new Date(dateFin);
+    let mois = (fin.getFullYear() - debut.getFullYear()) * 12 + (fin.getMonth() - debut.getMonth());
+    // Si le jour de fin est supérieur ou égal au jour de début, on ajoute 1 mois
+    if (fin.getDate() >= debut.getDate()) {
+      mois += 1;
+    }
+    return mois <= 1 ? '1 mois' : `${mois} mois`;
+  }
+  // Convertit une durée en jours en mois arrondi
+  formatDureeEnMois(dureeJours: number): string {
+    if (!dureeJours || isNaN(dureeJours)) return 'Non spécifié';
+    const mois = Math.round(dureeJours / 30);
+    return mois <= 1 ? '1 mois' : `${mois} mois`;
+  }
   currentUser: User | null = null;
   candidatures: Candidature[] = []; // Toujours initialisé comme tableau vide
   candidaturesFiltrees: Candidature[] = []; // Candidatures filtrées

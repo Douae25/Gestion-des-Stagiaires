@@ -56,6 +56,42 @@ interface Attestation {
   styleUrls: ['./rh-documents.component.scss']
 })
 export class RhDocumentsComponent implements OnInit {
+  // Télécharger l’attestation générée pour une candidature
+  telechargerAttestation(attestation: Attestation) {
+    this.offreService.getAttestationPourCandidature(attestation.id).subscribe({
+      next: (response) => {
+        // Supposons que l’API retourne un document base64 ou un objet { document: base64, titre: string }
+        let base64 = response?.document || response;
+        let titre = response?.titre || `Attestation_${attestation.prenom_stagiaire}_${attestation.nom_stagiaire}`;
+        if (!base64) {
+          alert('Aucune attestation disponible pour ce stagiaire');
+          return;
+        }
+        if (base64.includes(',')) {
+          base64 = base64.split(',')[1];
+        }
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${titre}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (error) => {
+        alert('Erreur lors de la récupération de l’attestation');
+        console.error('Erreur récupération attestation:', error);
+      }
+    });
+  }
   // Navigation
   activeTab: 'conventions' | 'attestations' = 'conventions';
   
@@ -259,18 +295,79 @@ export class RhDocumentsComponent implements OnInit {
       return;
     }
 
-    console.log('Générer attestation pour:', attestation);
     attestation.generating = true;
-    
-    // TODO: Implémenter la génération et l'envoi de l'attestation
-    // Simulation de génération
-    setTimeout(() => {
-      attestation.generating = false;
-      attestation.attestation_envoyee = true;
-      console.log('Attestation générée et envoyée avec succès');
-      
-      // Mettre à jour le compteur
-      this.attestationsCount = this.attestations.filter(a => !a.attestation_envoyee).length;
-    }, 3000);
+    // 1. Générer l'attestation
+    this.offreService.genererAttestationPourCandidature(attestation.id).subscribe({
+      next: (response) => {
+        // Accepte aussi une réponse string comme succès
+        if (typeof response === 'string' && response.includes('Attestation générée')) {
+          attestation.attestation_envoyee = true;
+          console.log('Attestation générée et enregistrée avec succès', response);
+        } else {
+          attestation.attestation_envoyee = true;
+          console.log('Attestation générée et envoyée avec succès', response);
+        }
+        // 2. Récupérer et télécharger l'attestation
+        this.offreService.getAttestationPourCandidature(attestation.id).subscribe({
+          next: (resp) => {
+            attestation.generating = false;
+            console.log('Réponse API attestation:', resp);
+            // Si resp est une chaîne base64 du PDF
+            let base64 = resp;
+            let titre = `Attestation_${attestation.prenom_stagiaire}_${attestation.nom_stagiaire}`;
+            if (!base64 || typeof base64 !== 'string') {
+              alert('Format inattendu de la réponse attestation.');
+              console.error('Format API attendu: chaîne base64', resp);
+              return;
+            }
+            if (base64.includes(',')) {
+              base64 = base64.split(',')[1];
+            }
+            try {
+              const byteCharacters = atob(base64);
+              const byteNumbers = new Array(byteCharacters.length);
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: 'application/pdf' });
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `${titre}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+              // Mettre à jour le compteur
+              this.attestationsCount = this.attestations.filter(a => !a.attestation_envoyee).length;
+            } catch (e) {
+              alert('Erreur lors du décodage ou du téléchargement du PDF. Vérifiez le format retourné par l’API.');
+              console.error('Erreur décodage attestation:', e, base64);
+            }
+          },
+          error: (err) => {
+            attestation.generating = false;
+            let message = 'Erreur lors de la récupération de l\'attestation';
+            if (err?.error?.message) message += ` : ${err.error.message}`;
+            alert(message);
+            console.error('Erreur récupération attestation:', err);
+          }
+        });
+      },
+      error: (error) => {
+        attestation.generating = false;
+        let message = 'Erreur lors de la génération de l\'attestation';
+        if (error?.error?.message) {
+          message += ` : ${error.error.message}`;
+        } else if (error?.message) {
+          message += ` : ${error.message}`;
+        } else {
+          message += ' (erreur réseau ou serveur)';
+        }
+        alert(message);
+        console.error('Erreur génération attestation:', error);
+      }
+    });
   }
 }
