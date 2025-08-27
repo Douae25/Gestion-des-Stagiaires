@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -267,6 +268,49 @@ export class CandidatureDetailComponent implements OnInit {
         }
       });
     }
+  }
+
+
+  downloadAttestation(): void {
+    if (!this.candidature || !this.candidature.id) {
+      this.snackBar.open('Candidature non trouvée', 'Fermer', {
+        duration: 3000,
+        panelClass: ['warning-snackbar']
+      });
+      return;
+    }
+    this.stagiaireService.telechargerAttestation(this.candidature.id).subscribe({
+      next: (blob: Blob) => {
+        if (!blob) {
+          this.snackBar.open('Aucune attestation disponible', 'Fermer', {
+            duration: 3000,
+            panelClass: ['warning-snackbar']
+          });
+          return;
+        }
+        // Créer un lien de téléchargement pour le blob
+  const fileName = `Attestation_${this.candidature?.id ?? ''}.pdf`;
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+        this.snackBar.open(`${fileName} téléchargé avec succès`, 'Fermer', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error: (err: any) => {
+        this.snackBar.open('Erreur lors de la récupération de l\'attestation', 'Fermer', {
+          duration: 5000,
+          panelClass: ['error-snackbar']
+        });
+        console.error('Erreur récupération attestation:', err);
+      }
+    });
   }
 
   goBack(): void {

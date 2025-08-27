@@ -101,7 +101,13 @@ export class MesStagesComponent implements OnInit {
     this.stagiaireService.getStages().subscribe({
       next: (response: StagesResponse) => {
         console.log('Réponse stages:', response);
-        this.stages = response.stages || [];
+        this.stages = (response.stages || []).map(stage => {
+          // Si l'attestation est disponible, le stage est terminé
+          if (stage.attestation_stage && stage.statut !== 'termine') {
+            return { ...stage, statut: 'termine' };
+          }
+          return stage;
+        });
         this.loading = false;
         console.log('Stages assignés:', this.stages);
         // Charger le nombre de commentaires pour chaque rapport

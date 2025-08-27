@@ -136,7 +136,7 @@
               <div class="document-item" *ngIf="candidature.attestation">
                 <mat-icon>verified</mat-icon>
                 <span>Attestation</span>
-                <button mat-stroked-button>
+                <button mat-stroked-button (click)="downloadAttestation()">
                   <mat-icon>download</mat-icon>
                   Télécharger
                 </button>
